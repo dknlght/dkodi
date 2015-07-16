@@ -1,0 +1,18 @@
+[B]Version v2.0.7[/B]
+- Corrected parsing of pinoy movies section.
+
+[B]Version v2.0.4[/B]
+- Made TurtleService more generic.
+
+[B]Version v2.0.3[/B]
+- Few bug fixes
+
+[B]Version v2.0.2[/B]
+- Refined parsing of YouTube HD streaming
+
+[B]Version v2.0.1[/B]
+- Few fixes and new Turtle version
+
+[B]Version v2.0.0[/B]
+- Filipino on Demand v2.0 is launched created using Turtle
+

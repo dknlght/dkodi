@@ -1,0 +1,27 @@
+[B]Version v1.0.0[/B]
+
+- Brought all actions from www.animecrazy.net
+
+[B]Version v1.0.2[/B]
+
+- Corrected Genres
+
+[B]Version v1.0.3[/B]
+
+- Veoh Video Support added.
+
+[B]Version v1.0.4[/B]
+
+- Added new video support
+
+[B]Version v1.0.5[/B]
+
+- Added new YouTube video link support
+
+[B]Version v1.0.7[/B]
+
+- Speedy joe link fixed.
+
+[B]Version v1.0.8[/B]
+
+- Speedy joe link fixed.

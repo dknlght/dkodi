@@ -1,0 +1,5 @@
+0.0.3 - Fetch links on movie page
+
+0.0.2 - Fix missing api name
+
+0.0.1 - Rough testing

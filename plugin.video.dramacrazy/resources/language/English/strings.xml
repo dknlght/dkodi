@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+<!-- Options -->
+	<string id="30030">Download folder:</string>
+	<string id="30031">Delete incomplete download</string>
+	<string id="30032">Ask for filename</string>
+	<string id="30003">480</string>
+	<string id="30004">720 HD</string>
+	<string id="30005">1080 HD</string>
+</strings>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<turtle xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://code.google.com/p/apple-tv2-xbmc/turtle/ turtle.xsd"
+	xmlns="https://code.google.com/p/apple-tv2-xbmc/turtle/">
+
+	<action id="__start__"
+		pmessage="Welcome to Filipino on Demand v2|presented by AJ|based on Turtle">
+		<move module="mymoves.Home" function="displayMenuItems" />
+		<next-action name="TV_Shows" id="display_TV_Channels"
+			isfolder="true" />
+		<next-action name="Movies" id="display_Movies_Menu"
+			isfolder="true" />
+		<next-action name="Live" id="display_Live_FREE_Channels"
+			isfolder="true" />
+	</action>
+
+	<!-- TV Shows actions -->
+	<action id="display_TV_Channels">
+		<move module="mymoves.tvshows.Pinoy_TVShows" function="displayTVShowsMenu"
+			pmessage="Retrieving Channels information" />
+		<next-action name="TV_Channel_GMA" id="display_TV_Episodes"
+			isfolder="true" />
+		<next-action name="TV_Channel_GMA" id="display_TV_Episodes"
+			isfolder="true" />
+		<next-action name="TV_Channel_ABS_CBN" id="display_TV_Episodes"
+			isfolder="true" />
+		<next-action name="TV_Channel_TV5" id="display_TV_Episodes"
+			isfolder="true" />
+		<next-action name="TV_Channel_ALL" id="display_All_TVShows"
+			isfolder="true" />
+		<next-action name="TV_Channel_Search" id="search_TV_Shows"
+			isfolder="true" />
+	</action>
+
+	<action id="display_TV_Episodes">
+		<move module="mymoves.tvshows.Pinoy_TVShows" function="displayTVShowEpisodes"
+			pmessage="Retrieving TV Episodes information|Please wait..." />
+		<next-action name="Show_Episode_VLinks" id="display_EpisodesVLinks"
+			isfolder="true" />
+		<next-action name="Show_Episodes_Next_Page" id="display_TV_Episodes"
+			isfolder="true" />
+	</action>
+
+	<action id="display_All_TVShows">
+		<move module="mymoves.tvshows.Pinoy_TVShows" function="displayAllTVShows"
+			pmessage="Retrieving TV Shows from source|Please wait..." />
+		<next-action name="Show_Episodes" id="display_TV_Episodes"
+			isfolder="true" />
+	</action>
+
+	<action id="search_TV_Shows">
+		<move module="mymoves.tvshows.Pinoy_TVShows" function="searchTVShows" />
+		<redirect-action name="Search_Episodes" id="display_TV_Episodes" />
+	</action>
+
+	<action id="display_EpisodesVLinks">
+		<move module="mymoves.tvshows.Pinoy_TVShows" function="retrieveVideoLinks"
+			pmessage="Retrieving video sources for this episode|Please wait..." />
+		<next-action name="SnapAndPlayVideo" id="snap_and_play_video"
+			isfolder="false" />
+		<next-action name="SnapAndDirectPlayList" id="snap_and_directplay_playlist"
+			isfolder="false" />
+	</action>
+
+
+	<!-- Movies actions -->
+	<action id="display_Movies_Menu">
+		<move module="mymoves.movies.Pinoy_Movies" function="displayMoviesMenu"
+			pmessage="Retrieving Movies Menu information" />
+		<next-action name="Movies_List" id="display_Movies"
+			isfolder="true" />
+		<next-action name="Recent_Movies_List" id="display_Recent_Movies"
+			isfolder="true" />
+		<next-action name="Search_Movies_List" id="search_Movies"
+			isfolder="true" />
+	</action>
+
+	<action id="display_Movies">
+		<move module="mymoves.movies.Pinoy_Movies" function="displayMovies"
+			pmessage="Retrieving Movies information" />
+		<next-action name="Movie_VLinks" id="display_Movie_VLinks"
+			isfolder="true" />
+		<next-action name="Movies_List_Next_Page" id="display_Movies"
+			isfolder="true" />
+	</action>
+
+	<action id="display_Recent_Movies">
+		<move module="mymoves.movies.Pinoy_Movies" function="displayRecentMovies"
+			pmessage="Retrieving Recent Movies information" />
+		<next-action name="Movie_VLinks" id="display_Movie_VLinks"
+			isfolder="true" />
+	</action>
+
+	<action id="search_Movies">
+		<move module="mymoves.movies.Pinoy_Movies" function="searchMovies" />
+		<redirect-action name="Search_Movies" id="display_Movies" />
+	</action>
+
+	<action id="display_Movie_VLinks">
+		<move module="mymoves.movies.Pinoy_Movies" function="retrieveVideoLinks"
+			pmessage="Retrieving video sources for this movie|Please wait..." />
+		<next-action name="SnapAndPlayVideo" id="snap_and_play_video"
+			isfolder="false" />
+		<next-action name="SnapAndDirectPlayList" id="snap_and_directplay_playlist"
+			isfolder="false" />
+	</action>
+
+	<!-- Common Video Link Player mymoves
+
+	
+	<action id="snap_and_play_video">
+		<move module="moves.PreProcessor" function="prepareVideoItem" />
+		<move module="moves.SnapVideo" function="addPlaylistVideosInfo" />
+		<move module="moves.SnapVideo" function="addVideoInfo" />
+		<next-action name="Play" id="__play__" isfolder="false" />
+	</action>
+ -->
+ 	<action id="snap_and_play_video">
+		<move module="mymoves.movies.Pinoy_Movies" function="Playmyvideo"
+			pmessage="Retrieving Recent Movies information" />
+		<next-action name="Play" id="__play__" isfolder="false" />
+	</action>
+	<!-- 
+	<action id="snap_and_directplay_playlist">
+		<move module="moves.PreProcessor" function="preparePlayListItems" />
+		<move module="moves.SnapVideo" function="addPlaylistVideosInfo" />
+		<move module="moves.SnapVideo" function="addVideoInfo" />
+		<next-action name="Play" id="__play__" isfolder="false" />
+	</action>
+-->
+	<action id="snap_and_directplay_playlist">
+		<move module="mymoves.movies.Pinoy_Movies" function="PlaymyvideoList"
+			pmessage="Retrieving Recent Movies information" />
+		<next-action name="Play" id="__play__" isfolder="false" />
+	</action>
+	<!-- LIVE TV -->
+
+	<action id="display_Live_FREE_Channels">
+		<move module="mymoves.live.FREE_Live" function="selectChannelsCategory" />
+		<move module="mymoves.live.FREE_Live" function="displayChannels" />
+		<next-action name="play_Live_Channel" id="play_Live_FREE_Channel"
+			isfolder="false" />
+	</action>
+
+	<action id="play_Live_FREE_Channel">
+		<move module="mymoves.live.FREE_Live" function="playChannel" />
+		<next-action name="Play" id="__play__" isfolder="false" />
+	</action>
+</turtle>

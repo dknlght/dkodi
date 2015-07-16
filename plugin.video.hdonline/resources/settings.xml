@@ -1,0 +1,14 @@
+<settings>
+   <category label="Addon-Settings">
+    <setting id="enableProxy" type="bool" label="Enable Proxy" default="false"/>
+    <setting id="proxyurl" type="text" label="Proxy address" default="183.91.27.133:8080" />
+    <setting id="enableSub" type="bool" label="Enable Subtitle" default="true"/>
+    <setting id="enableTrans" type="bool" label="Enable Translation" default="false"/>
+    <setting id="sublang" type="enum" values="English|Vietnamese" label="Subtitle Language" default="1" enable="true" />
+    <setting id="translang" type="text" label="translation language" default="en" visible="false"/>
+   </category>
+<category label="Auto-View">
+  <setting id="ga_time" type="text" label="GA Called" default="2000-01-01 00:00:00" visible="false"/>
+  <setting id="ga_visitor" type="text" label="GA visitor" default="" visible="false"/>
+</category>
+</settings>
