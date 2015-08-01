@@ -1,4 +1,0 @@
-1.0.11 - fix GMA live
-1.0.1 - added search feature
-1.0
-- Intial release

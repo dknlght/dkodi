@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>		
+	<category label="Downloads">
+	 <setting id="download_folder" type="folder" label="30030" default=""/>
+	 <setting id="del_incomplete_dwnld" type="bool" label="30031" default="true"/>
+	 <setting id="ask_filename" type="bool" label="30032" default="false"/>
+	</category>
+	<category label="YouTube">
+	 <setting label="Video:" type="lsep" />
+	 <setting id="videoQual" label="Video quality" type="enum" default="2" lvalues="30003|30004|30005"/>
+	</category>
+<category label="Auto-View">
+  <setting id="ga_time" type="text" label="GA Called" default="2000-01-01 00:00:00" visible="false"/>
+  <setting id="ga_visitor" type="text" label="GA visitor" default="" visible="false"/>
+</category>
+</settings>

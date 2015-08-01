@@ -1,0 +1,12 @@
+{
+  "ALL": {
+    "GMA 7": {
+      "channelUrl": "rtmp://84.173.146.15/live playpath=gma.sdp pageUrl=http://watchpinoytv.blogspot.com/2008/12/gma-7-live.html live=1 swfUrl=http://player.longtailvideo.com/player.swf",
+      "channelLogo": "http://www.lyngsat-logo.com/logo/tv/gg/gma.jpg"
+    },
+    "ABS-CBN": {
+      "channelUrl": "rtmp://184.173.146.15/live playpath=abscbn.sdp pageUrl=http://watchpinoytv.blogspot.com/2008/12/abs-cbn-live_18.html live=1 swfUrl=http://player.longtailvideo.com/player.swf",
+      "channelLogo": "http://www.lyngsat-logo.com/logo/tv/aa/abs_cbn.jpg"
+    }
+  }
+}

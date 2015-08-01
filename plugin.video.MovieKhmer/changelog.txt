@@ -1,4 +1,0 @@
-1.0.3 - fixed youtube problem
-1.0.1 - updated add due to site changing layout
-1.0
-- Intial release

@@ -1,0 +1,4 @@
+1.0
+- Intial release
+
+1.0.1 - they changed their video link page layout

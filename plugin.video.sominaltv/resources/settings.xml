@@ -1,5 +1,0 @@
-<settings>
-   <category label="Addon-Settings">
-  	<setting id="use-hd" type="bool" label="Enable HD" default="true"/>
-   </category>
-</settings>

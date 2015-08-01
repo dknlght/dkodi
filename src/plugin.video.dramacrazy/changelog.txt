@@ -1,0 +1,67 @@
+[B]Version v1.0.0[/B]
+
+- Brought all actions from www.dramacrazy.net
+
+[B]Version v1.0.1[/B]
+
+- Fixed movies link and dailymotion
+
+[B]Version v1.0.2[/B]
+
+- Added new links support: YAHOO, GOOGLE, MEGAVIDEO and more
+
+[B]Version v1.0.3[/B]
+
+- Fixed search and genre listing issue.
+
+[B]Version v1.0.4[/B]
+
+- Fixed YouTube video link.
+
+[B]Version v1.0.5[/B]
+
+- Added Tudou links.
+
+[B]Version v1.0.6[/B]
+
+- Removed video submenus.
+
+[B]Version v1.0.7[/B]
+
+- Quick Fix
+
+[B]Version v1.0.8[/B]
+
+- Added Videobb support.
+
+[B]Version v1.0.9[/B]
+
+- Added SINGLE to avoid confusion with parts.
+
+[B]Version v1.1.1[/B]
+
+- Veoh Video Support added.
+
+[B]Version v1.1.2[/B]
+
+- Added YouTube video link support.
+
+[B]Version v1.1.3[/B]
+
+- Speedy joe link fixed.
+
+[B]Version v1.1.4[/B]
+
+- Z-Share video link is working now.
+
+[B]Version v1.1.5[/B]
+
+- Speedy joe link fixed again.
+
+[B]Version v1.1.6[/B]
+
+- Videoweed link is fixed.
+
+[B]Version v1.1.7[/B]
+
+- Speedy joe link fixed again.

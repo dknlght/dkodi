@@ -1,0 +1,10 @@
+<settings>
+   <category label="Addon-Settings">
+  	<setting id="use-adult" type="bool" label="Enable Adult" default="false"/>
+   </category>
+<category label="Auto-View">
+  <setting id="ga_time" type="text" label="GA Called" default="2000-01-01 00:00:00" visible="false"/>
+  <setting id="ga_visitor" type="text" label="GA visitor" default="" visible="false"/>
+</category>
+
+</settings>

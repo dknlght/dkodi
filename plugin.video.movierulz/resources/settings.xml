@@ -1,5 +1,0 @@
-<settings>
-   <category label="Addon-Settings">
-  	<setting id="use-adult" type="bool" label="Enable Adult" default="false"/>
-   </category>
-</settings>

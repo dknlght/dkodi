@@ -1,0 +1,232 @@
+<?xml version="1.0"?>
+<channels>
+  <channel>
+    <name>Live TV</name>
+    <info>Indonesian channels from Mivo TV</info>
+	<item>
+      <title>TransTV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/transtv2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDEwOjI3OjQxIFBNJmhhc2hfdmFsdWU9WXl1OXIxb1o1aWt3RExVOWUyeEZEQT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>Mivo TV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/_definst_/mivotv_480p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0ICA0OjEyOjE5IEFNJmhhc2hfdmFsdWU9d1VMeklydWI5TGJvRTdOL0V4M1R5UT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>ANTV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/antv2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDEwOjMwOjQ2IFBNJmhhc2hfdmFsdWU9dk42elprWno4cE5hU2h1dDN0WEFVUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>ASWAJA TV</title>
+      <link>http://cdn.mivo.tv/aswajatv/aswajatv_480p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDEwOjMxOjUzIFBNJmhhc2hfdmFsdWU9TXJVaWlkaUNjZytMMDNkSkFXMFJrdz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>BERITA SATU</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/beritasatu_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDEwOjUwOjM5IFBNJmhhc2hfdmFsdWU9MzVlSFlzaDIwY1l1S29zVzVtM296UT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>BLOOMBERG TVID</title>
+      <link>http://cdn.mivo.tv/bloomberg-id/bloomberg-id_720p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDEwOjUwOjUwIFBNJmhhc2hfdmFsdWU9b3lHMkVXckpUa3haYkNYWHNWZHArZz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>CAHAYA TV</title>
+      <link>http://cdn.mivo.tv/cahayatv/cahayatv_480p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDEwOjUxOjUwIFBNJmhhc2hfdmFsdWU9RmFMaXEwL1pHYTdKRFlyU2RNekMrUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>DAAITV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/daaitv2_480p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDEwOjUxOjUwIFBNJmhhc2hfdmFsdWU9RmFMaXEwL1pHYTdKRFlyU2RNekMrUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>DAMAI TV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/more1_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDEwOjUzOjI2IFBNJmhhc2hfdmFsdWU9ZDZZM2pJQU5Ec1JJb21qc0dLNlJqUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>DMC TV</title>
+      <link>http://cdn.mivo.tv/dmctv/dmctv_480p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDEwOjU1OjQxIFBNJmhhc2hfdmFsdWU9bFArNW0vUlNnbkVlRmkrRkc1YXE5UT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>DW ARABIA</title>
+      <link>rtmp://cp135357.live.edgefcs.net/live/dw_fl_tv-arabia_hq@s82212?auth=daEatcPb7c3bKczbSbBbdc8a.bwcVbXb9aF-bqMnY.-jz6DG-vHpvsDvCtnIBr&amp;aifp=001 live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>DW EUROPA</title>
+      <link>rtmp://cp135356.live.edgefcs.net/live/dw_fl_tv-europa_hq@s82210?auth=daEcYa6c3bjb8bGdfcWdVdgd6a6coa8dpcn-bqMnY.-jz6DG-mFwwoCzCnmFDs&amp;aifp=001 live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>DW LATINO</title>
+      <link>rtmp://cp135360.live.edgefcs.net/live/dw_fl_tv-latino_hq@s82355?auth=daEa.aWdPaXdIaTbtdrdYbqdPchbybSa5bY-bqMnY.-jz6DG-oFwxkBzErlIBw&amp;aifp=001 live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>DW TV</title>
+      <link>rtmp://cp135358.live.edgefcs.net/live/dw_fl_tv-asiaplus_hq@s82221?auth=daEceblc5d4cGaJaqc.bAbZcmdndtdhbdb1-bqMnY.-jz6DG-qGpwqEwDplIAt&amp;aifp=001 live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>GLOBAL TV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/globaltv2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjIwOjUzIFBNJmhhc2hfdmFsdWU9S1JJZFBwR2VkSVpMWXgvMzNhekVxdz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>INDOSIAR</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/indosiar2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjIxOjU1IFBNJmhhc2hfdmFsdWU9MS9iOUxEK1pWcUU2Yi9mNFl2cjZDUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>JAKTV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/jaktv_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjIxOjU1IFBNJmhhc2hfdmFsdWU9MS9iOUxEK1pWcUU2Yi9mNFl2cjZDUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>JTV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/jawatv_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjIyOjU2IFBNJmhhc2hfdmFsdWU9a3V0N1BOK2N4ZGVvRVBiQU8waGJGdz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>KOMPASTV</title>
+      <link>http://cdn.mivo.tv/kompastv/kompastv_720p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjI0OjM3IFBNJmhhc2hfdmFsdWU9cUxvbWxOT2UrbXNabWlrWHBBMkVkUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>LBS A-MOVIE</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/lmovie2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjI1OjAyIFBNJmhhc2hfdmFsdWU9SStmd2pEVTVIY1E0TnRENXdBOWtOQT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>LBS C-DRAMA</title>
+      <link>http://cdn.mivo.tv/lbscdrama/lbscdrama_480p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjI2OjU3IFBNJmhhc2hfdmFsdWU9RzJOZmdHQ0xHY3pMbEw0ME11TS92dz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>LBS K-DRAMA</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/ldrama2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjI3OjU3IFBNJmhhc2hfdmFsdWU9Y1NCSWJoL1VFNngvbkJURWdDM3ZVZz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>LBS MIX</title>
+      <link>http://cdn.mivo.tv/lbsmix/lbsmix_480p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjI4OjU4IFBNJmhhc2hfdmFsdWU9cGxJSExsKzY3MmpPLzhzWldvaHQrdz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>LBS MUSIC</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/lmusic2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjMwOjU5IFBNJmhhc2hfdmFsdWU9bUd3VFEvUzRyTVZFdE1rd0s4RzNadz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>LEJEL SHOPPING</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/lshopping2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjMyOjAxIFBNJmhhc2hfdmFsdWU9MDJGN2lwbkFiRWk4b2hYRVF5V28wdz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>METROTV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/metrotv2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjMzOjAxIFBNJmhhc2hfdmFsdWU9eFlBT00xdElwRzhXQ3FhK0NNZC9QUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>MNCTV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/mnctv2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjM0OjAyIFBNJmhhc2hfdmFsdWU9UjZBbXRaWlBCd251czN4aC9EVUljUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>MORE TV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/more2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjM1OjAyIFBNJmhhc2hfdmFsdWU9L0lDL3FTV1VzVk9Pd3N6R2lvdEVCUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>NET.</title>
+      <link>http://cdn.mivo.tv/nettv/nettv_576p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjM2OjAzIFBNJmhhc2hfdmFsdWU9YmY2bHpyaDB4bThiSzQ4dWloTEppUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>NHK WORLD</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/nhkworld_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjM2OjAzIFBNJmhhc2hfdmFsdWU9YmY2bHpyaDB4bThiSzQ4dWloTEppUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>OCHANNEL</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/ochannel_576p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjM3OjUzIFBNJmhhc2hfdmFsdWU9NTF1UWpYT21RN0p4UTZZSmZKcWV1dz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>RCTI</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/rcti2_576p/media_w1497073176_24369.ts?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjM5OjEzIFBNJmhhc2hfdmFsdWU9bnY5Q0Y1YXJJcEIyV2ZScDRaZHZEZz09JnZhbGlkbWludXRlcz0zNjA%3D live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>RTV</title>
+      <link>http://cdn.mivo.tv/rajawalitv/rajawalitv_480p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQwOjE1IFBNJmhhc2hfdmFsdWU9QTg2Wk0zUDNtNlI1M1Vrd1RUM2lxQT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>SCTV</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/sctv2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQxOjE2IFBNJmhhc2hfdmFsdWU9NXNyQzd4VGJnbk1rYnM2dkZJcDVsUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>SHINE</title>
+      <link>http://cdn.mivo.tv/shine/shine_480p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQxOjU3IFBNJmhhc2hfdmFsdWU9SHlDbURtRUpJcHhpOWhQU1ZEYmVLZz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>SPACETOON</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/spacetoon2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQxOjU3IFBNJmhhc2hfdmFsdWU9SHlDbURtRUpJcHhpOWhQU1ZEYmVLZz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>TRANS7</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/trans72_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQzOjIyIFBNJmhhc2hfdmFsdWU9b0ZhVDlyY1V3dnlCTngzaXo4UTFmUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>TV EDUKASI</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/tvedukasi_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQ0OjI0IFBNJmhhc2hfdmFsdWU9eGVvTzhqaVM3RVM4cGRZNk9icU1kQT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>TVONE</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/tvone2_240p/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQ0OjI0IFBNJmhhc2hfdmFsdWU9eGVvTzhqaVM3RVM4cGRZNk9icU1kQT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>TVRI BUDAYA</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/tvribudaya/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQ1OjAwIFBNJmhhc2hfdmFsdWU9WHo3c0tMd0NsbW9INndYbzFRVXJmUT09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>TVRI JAKARTA</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/tvrijakarta/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQ2OjAzIFBNJmhhc2hfdmFsdWU9djB4STAzUlV1ZzFpMmFrSGlqUE5Ndz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>TVRI NASIONAL</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/tvrinasional/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQ3OjI2IFBNJmhhc2hfdmFsdWU9YlFaczhwRzBhU1ExMFRnb210OTVwZz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+	<item>
+      <title>TVRI OLAHRAGA</title>
+      <link>http://cdn.mivo.tv/mivotvjkt/tvriolahraga/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8yOC8yMDE0IDExOjQ3OjI2IFBNJmhhc2hfdmFsdWU9YlFaczhwRzBhU1ExMFRnb210OTVwZz09JnZhbGlkbWludXRlcz0zNjA= live=true</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+  </channel>
+  <channel>
+    <name>Radio Station</name>
+    <info>Radios from khiptv</info>
+    <item>
+      <title>FM107 Radio</title>
+      <link>http://KhipTV.org:44412/RC_FM107</link>
+      <thumbnail>http://www.mivo.com/assets/logo.png</thumbnail>
+    </item>
+  </channel>
+  <channels></channels>
+</channels>
