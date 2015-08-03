@@ -23,7 +23,7 @@ if ADDON.getSetting('ga_visitor')=='':
 PATH = "KhmerTv"  #<---- PLUGIN NAME MINUS THE "plugin.video"          
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.3" #<---- PLUGIN VERSION
-
+kodiversionNumber = int(xbmc.getInfoLabel("System.BuildVersion" )[0:2])
 TAG_RE = re.compile(r'<[^>]+>')
 
 try:
@@ -290,13 +290,16 @@ def SearchXml(SearchText):
 		
 def Resolver(url):
 		vidlink=url
-		try:
-			line1 = "Please Wait!  Loading selected video."
-			xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%("",line1,3000,""))
-			if(url.find("stmg.net.kh") > -1):
-				data = json.loads(GetContent(url))
-				vidlink=data["url"]+ " live=1"
-		except: pass
+
+		line1 = "Please Wait!  Loading selected video."
+		xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%("",line1,3000,""))
+		if(url.find("stmg.net.kh") > -1):
+			data = json.loads(GetContent(url))
+			if(kodiversionNumber < 15):
+				vidlink=data["url"] + " live=true"
+			else:
+				vidlink=data["url"] 
+
 		return vidlink
 def ParseXml(tagname):
         f = open(filename, "r")
