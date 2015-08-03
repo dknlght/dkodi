@@ -14,7 +14,7 @@ import datetime
 from BeautifulSoup import BeautifulSoup
 from BeautifulSoup import BeautifulStoneSoup
 from BeautifulSoup import SoupStrainer
-import requests
+
 
 ADDON = xbmcaddon.Addon(id='plugin.video.pinoy_ako')
 addon = Addon('plugin.video.pinoy_ako')
@@ -34,7 +34,7 @@ VERSION = "1.0.9" #<---- PLUGIN VERSION
 
 
 strdomain ='http://www.pinoy-ako.ws/'
-strdomain2="http://www.lambingan.ru/"
+strdomain2="http://www.lambingan.ru"
 
 if not os.path.exists(datapath):
         os.makedirs(datapath)
