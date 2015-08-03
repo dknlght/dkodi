@@ -14,10 +14,15 @@ import datetime
 from BeautifulSoup import BeautifulSoup
 from BeautifulSoup import BeautifulStoneSoup
 from BeautifulSoup import SoupStrainer
+import requests
 
 ADDON = xbmcaddon.Addon(id='plugin.video.pinoy_ako')
 addon = Addon('plugin.video.pinoy_ako')
-datapath = addon.get_profile()
+datapath = xbmc.translatePath(ADDON.getAddonInfo('profile'))  
+
+cookie_path = os.path.join(datapath, 'cookies')
+cookiefile = os.path.join(cookie_path, "cookiejar.lwp")
+
 if ADDON.getSetting('ga_visitor')=='':
     from random import randint
     ADDON.setSetting('ga_visitor',str(randint(0, 0x7fffffff)))
@@ -26,32 +31,33 @@ PATH = "pinoy_ako"  #<---- PLUGIN NAME MINUS THE "plugin.video"
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.9" #<---- PLUGIN VERSION
 
+
+
 strdomain ='http://www.pinoy-ako.ws/'
 strdomain2="http://www.lambingan.ru/"
+
+if not os.path.exists(datapath):
+        os.makedirs(datapath)
+if not os.path.exists(cookie_path):
+        os.makedirs(cookie_path)
+		
 def HOME():
         addDir('Search','http://www.pinoy-ako.ws',8,'')
         addDir('Latest Videos','http://www.pinoy-ako.ws',6,'')
         addDir('Pinoy Movies',strdomain2+'/category/pinoy-movies',13,'')
-        ###addDir('Foreign Films','http://www.pinoy-ako.info/movies/foreign-films-uploaded.html',6,'')
-        #addDir('Pinoy Box Office','http://www.pinoy-ako.info/movies/pinoy-box-office.html',6,'')
-        #addDir('Cinema One','http://www.pinoy-ako.info/movies/pinoy-box-office.html',6,'')
-        addDir('Sports','http://www.pinoy-ako.ws/sports/',6,'')
-        #addDir('Sports by category','52',2,'')
-        ###addDir('All TV Shows','http://www.pinoy-ako.info/tv-show-replay.html',10,'')
-        #addDir('ABS-CBN Episode List','http://www.pinoy-ako.ws/category/abs-cbn',6,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
         addDir('ABS-CBN by Shows',strdomain2+'/category/abs-cbn/',13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
         addDir('GMA 7 shows on lambingan',strdomain2+'/category/Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
         addDir('Kapuso','http://www.pinoy-ako.ws/kapuso/',6,'')
-        addDir('Viral Videos','http://www.pinoy-ako.ws/viral/',6,'')
         ###addDir('GMA 7 Old Shows','http://www.pinoy-ako.info/index.php?option=com_content&view=article&id=11671:watch-old-gma-7-kapuso-tv-shows',2,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
         addDir('TV5 Episode List','http://www.pinoy-ako.ws/category/tv-5',6,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
-        addDir('Pinoy Recipes','http://www.pinoy-ako.ws/pinoy-recipes/',2,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
-        addDir('Livestream','http://www.pinoy-ako.ws/category/livestream',6,'')
-        addDir('Trending','http://www.pinoy-ako.ws/trending/',6,'')
-        ###addDir('TV5 Old Shows','http://www.pinoy-ako.info/tv-show-replay/94-tv-guide/59771-watch-old-tv5-kapatid-tv-shows.html',2,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
-        ###addDir('TV Specials','http://www.pinoy-ako.info/tv-show-replay/tv-specials.html',5,'http://img857.imageshack.us/img857/8424/tvspecials.jpg')
-        ###addLink('ABS-CBN live','rtmp://tko.og.abscbn.streamguys.com:1935/abs/_definst_/abs live=true',11,'')
-        ###addLink('GMA live','rtmp://live.iguide.to/edge playpath=tj6zegfdas16p08 swfUrl=http://player.ilive.to/player_ilive_2.swf pageUrl=http://www.ilive.to/embedplayer.php?width=630&height=360&channel=44090&autoplay=true token=#e87JDUJD264YED687 swfVfy=1 live=1 timeout=15',12,'')
+
+		
+        addDir('GMA on Demand','http://www.pinoy-ako.ws/kapuso/',6,'')
+        addDir('PBA on Demand','http://www.pinoy-ako.ws/sports/pba/',6,'')
+        addDir('Boxing on Demand','http://www.pinoy-ako.ws/sports/boxing/',6,'')
+        addDir('Pinoy Recipes','http://www.pinoy-ako.ws/pinoy-recipes/',6,'')
+        addDir('Viral Videos','http://www.pinoy-ako.ws/viral/',6,'')
+        addDir('Trending Videos','http://www.pinoy-ako.ws/trending/',6,'')
 def AllTV(url):
         link = GetContent(url)
         link=link.encode("UTF-8")
@@ -93,7 +99,9 @@ def INDEX(itemnum):
                 addDir(vname.replace("&amp;","&").replace("&#8211;","-").replace("&#8217;","'"),vlink.replace("&amp;amp;","&amp;"),6,"")
 def INDEX2(url):
         link = GetContent(url)
-        link=link.encode("UTF-8")
+        try:
+			link=link.encode("UTF-8")
+        except:pass
         link = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(link)
         vidcontent=soup.findAll('div', {"id" : "content"})[0]
@@ -387,7 +395,95 @@ def ParseSeparate(vcontent,namesearch,urlsearch):
                     addLink(namelink.encode("utf-8"),match2[i],3,"")
                 return True
         return False
-					
+
+def parsestring(strinput):
+		result="";
+		strinput = strinput.replace('"','').replace("'","")
+		if (strinput.find(".substr(") > -1):
+			(x,y)=re.compile('.substr\((.+?),\s*(.+?)\)').findall(strinput)[0]
+			x=int(x)
+			y=int(y)
+			result=strinput.split(".")[0][x:x+y]
+		elif (strinput.find(".fromCharCode") > -1):
+			x=re.compile('.fromCharCode\((.+?)\)').findall(strinput)[0]
+			if(x.find("x") == -1):
+				x=int(x)
+				result=chr(x)
+			else:
+				result=x.replace("0x","").decode("hex")
+		elif (strinput.find(".slice(") > -1):
+			(x,y)=re.compile('.slice\((.+?),\s*(.+?)\)').findall(strinput)[0]
+			x=int(x)
+			y=int(y)
+			result=strinput.split(".")[0][x:y]
+		elif (strinput.find(".charAt(") > -1):
+			x=re.compile('.charAt\((.+?)\)').findall(strinput)[0]
+			x=int(x)
+			result=strinput.split(".")[0][x]
+		else:
+			result =strinput
+		#print strinput+"|"+result
+		return result
+		
+def makecookie(strInput):
+	strresult=""
+	localvar =strInput
+	param2= 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+	localvar=localvar.replace("=","")
+	s = {}
+	U = 0;
+	l = 0;
+	r = '';
+	L = len(localvar)
+	for ctr in range(0, len(param2)): 
+		s[param2[ctr]] = ctr;
+
+	for ictr in range(0, L):
+		c = s[localvar[ictr]];
+		U = (U << 6) + c;
+		l += 6;
+		while (l >= 8):
+			l -= 8
+			usum=U >> l
+			a = usum & 0xff;
+			partil=(ictr < (L - 2));
+			partil2=( a or partil);
+			r += chr(a)
+			(partil2 and (r));
+	r=r[2:]
+	valpair=r.split(";document.cookie=")
+	cookieval=valpair[0].split("+")
+	valstring=""
+	for idx in range(0, len(cookieval)):
+		valstring=valstring+parsestring(cookieval[idx].strip())
+		
+	cookiename=valpair[1].split("+")
+	namestring=""
+	for idx in range(0, len(cookiename)):
+		namestring=namestring+parsestring(cookiename[idx].strip())
+	namestring=namestring.split("=")[0]
+	#print "parsttring|" + r #parsestring("'osucu'.charAt(0)")
+
+	newcookie=cookielib.Cookie(
+version=0,
+name=namestring,
+value=valstring,
+port=None,
+port_specified=False,
+domain="www.lambingan.ru",
+domain_specified=True,
+domain_initial_dot=False,
+path="/",
+path_specified=True,
+secure=False,
+expires=None,
+discard=False,
+comment=None,
+comment_url=None,
+rest=None)
+
+	return newcookie
+	
 def GetContent2(url):
     conn = httplib.HTTPConnection(host="pinoy-ako.re",timeout=30)
     req = url
@@ -399,15 +495,89 @@ def GetContent2(url):
     conn.close()
     return content
 	
-def GetContent(url):
-    print url
-    try:
-       net = Net()
-       second_response = net.http_GET(url)
-       return second_response.content
-    except:	
-       d = xbmcgui.Dialog()
-       d.ok(url,"Can't Connect to site",'Try again in a moment')
+def GetContent(url,html=''):
+    cj = cookielib.LWPCookieJar()
+    cloudcookie=re.compile("S='(.+?)';").findall(html)
+    if(len(cloudcookie)>0):
+			print "secondtime|" + cloudcookie[0]
+			newcookie=makecookie(cloudcookie[0])
+			cj.set_cookie(newcookie)
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+
+    opener.addheaders = [(
+        'Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
+        ('Accept-Encoding', 'gzip, deflate'),
+        ('Referer', "http://www.lambingan.ru/"),
+        ('User-Agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'),
+        ('Connection', 'keep-alive'),
+        ('Accept-Language', 'en-us,en;q=0.5'),
+        ('Pragma', 'no-cache')]
+    usock = opener.open(url)
+    if usock.info().get('Content-Encoding') == 'gzip':
+        buf = StringIO.StringIO(usock.read())
+        f = gzip.GzipFile(fileobj=buf)
+        response = f.read()
+    else:
+        response = usock.read()
+
+    usock.close()
+    if (response.find("sucuri_cloudproxy_js") > -1 and html.strip() =='' and url.find(strdomain2) > -1):
+		response= GetContent(url,response)
+    return (response)
+	
+def GetContent12(url):
+		requests.packages.urllib3.disable_warnings()
+		ses = requests.session()
+		strresult=""
+		headers = {
+	'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+	'Referer': "http://www.lambingan.ru/",
+	'Accept-Encoding': 'gzip, deflate',
+	'Connection': 'keep-alive',
+	'Host': 'www.lambingan.ru',
+	'Cache-Control': 'max-age=0',
+	'Accept-Language': 'en-us,en;q=0.5'
+}
+
+		newcookie=cookielib.Cookie(
+version=0,
+name="sucuri_cloudproxy_uuid_a85b0705f",
+value="0aec86571ff08993f339e6726d91adfa",
+port=None,
+port_specified=False,
+domain="www.lambingan.ru",
+domain_specified=True,
+domain_initial_dot=False,
+path="/",
+path_specified=True,
+secure=False,
+expires=None,
+discard=False,
+comment=None,
+comment_url=None,
+rest=None)
+
+		if os.path.exists(cookiefile):
+			print "it exists"
+			try:
+				cj = cookielib.LWPCookieJar()
+				cj.load(cookiefile, ignore_discard=True)
+				cj.set_cookie(newcookie)
+				ses.cookies=cj
+				#ses.cookies.set(**my_cookie)
+				strresult=ses.get(url,headers=headers).text
+				print str(ses.cookies)
+				ses.cookies.save(cookiefile, ignore_discard=True)
+			except:
+				ses.cookies=cookielib.LWPCookieJar()
+				strresult=ses.get(url,headers=headers).text
+				ses.cookies.save(cookiefile, ignore_discard=True)
+		else:
+			ses.cookies=cookielib.LWPCookieJar()
+			strresult=ses.get(url,headers=headers).text
+			ses.cookies.save(cookiefile, ignore_discard=True)
+		return strresult
 
 def PostContent(referrer,url):
     req = urllib2.Request(url)
@@ -869,30 +1039,32 @@ def loadVideos(url,name):
         #except: pass
 		
 def getDailyMotionUrl(id):
-    maxVideoQuality="720p"
     content = GetContent("http://www.dailymotion.com/embed/video/"+id)
     if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
-        xbmc.executebuiltin('XBMC.Notification(Info:, (DailyMotion)!,5000)')
+        xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
         return ""
+    
     else:
-        matchFullHD = re.compile('"stream_h264_hd1080_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHD = re.compile('"stream_h264_hd_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHQ = re.compile('"stream_h264_hq_url":"(.+?)"', re.DOTALL).findall(content)
-        matchSD = re.compile('"stream_h264_url":"(.+?)"', re.DOTALL).findall(content)
-        matchLD = re.compile('"stream_h264_ld_url":"(.+?)"', re.DOTALL).findall(content)
-        url = ""
-        if matchFullHD and maxVideoQuality == "1080p":
-            url = urllib.unquote_plus(matchFullHD[0]).replace("\\", "")
-        elif matchHD and (maxVideoQuality == "720p" or maxVideoQuality == "1080p"):
-            url = urllib.unquote_plus(matchHD[0]).replace("\\", "")
-        elif matchHQ:
-            url = urllib.unquote_plus(matchHQ[0]).replace("\\", "")
-        elif matchSD:
-            url = urllib.unquote_plus(matchSD[0]).replace("\\", "")
-        elif matchLD:
-            url = urllib.unquote_plus(matchLD[0]).replace("\\", "")
-        return url
-		
+        get_json_code = re.compile(r'dmp\.create\(document\.getElementById\(\'player\'\),\s*([^);]+)').findall(content)[0]
+        #print len(get_json_code)
+        cc= json.loads(get_json_code)['metadata']['qualities']  #['380'][0]['url']
+        #print cc
+        if '1080' in cc.keys():
+            #print 'found hd'
+            return cc['1080'][0]['url']
+        elif '720' in cc.keys():
+            return cc['720'][0]['url']
+        elif '480' in cc.keys():
+            return cc['480'][0]['url']
+        elif '380' in cc.keys():
+            return cc['380'][0]['url']
+        elif '240' in cc.keys():
+            return cc['240'][0]['url']
+        elif 'auto' in cc.keys():
+            return cc['auto'][0]['url']
+        else:
+            xbmc.executebuiltin('XBMC.Notification(Info:, No playable Link found (DailyMotion)!,5000)')
+			
 def extractFlashVars(data):
     for line in data.split("\n"):
             index = line.find("ytplayer.config =")
