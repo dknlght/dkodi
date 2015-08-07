@@ -366,6 +366,14 @@ def SensenGetVideo(url):
 			if(vlink.find("/ADS/") ==-1):
 				addLink(vname+" mirror " +str(ctr),vlink,3,"")
         vidlist = re.compile('<embed [^>]*FlashVars=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)
+        ctr=0
+        for item in vidcontent[0].findAll('span'):
+			if(item.has_key("data-mfp-src")):
+				ctr=ctr+1
+				vlink=vlink=item["data-mfp-src"]
+				vname=vlink.split("/")[2] 
+				addLink(vname+" mirror " +str(ctr),vlink,3,"")
+        vidlist = re.compile('<embed [^>]*FlashVars=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)
         for item in vidlist:
 			vidlist = re.compile('proxy.link=(.+?)&').findall(item)
 			vname=vidlist[0].split("/")[2] 
@@ -516,6 +524,14 @@ def ParseVideoLink(url,name,movieinfo):
                 media_url= ""
                 media_url = re.compile('player.src\(\[{src:\s*"(.+?)",').findall(link)[0]
                 vidlink = media_url
+        elif (redirlink.find("vidxtreme") > -1):
+                paccked= re.compile('<script type=(?:"|\')text/javascript(?:"|\')>(eval\(function\(p,a,c,k,e,d\).*?)</script>').findall(link)
+                if(len(paccked) > 0):
+					pcontent=jsunpack.unpack(paccked[0].replace('"','\''))
+					mediacontent = re.compile('sources:\[(.+?)\]').findall(pcontent)[0]
+					formatjson= "["+mediacontent.replace("file:","'file':").replace("label:","'label':")+"]"
+					mediaurl=json.loads(formatjson.replace("'",'"'))
+                vidlink = mediaurl[-1]["file"]
         elif (redirlink.find(".me/embed") > -1 or redirlink.find(".net/embed") > -1 or redirlink.find(".me/gogo") > -1 or redirlink.find("embed.php?") > -1):
                 media_url= ""
                 media_url = re.compile('_url\s*=\s*"(.+?)";').findall(link)[0]
