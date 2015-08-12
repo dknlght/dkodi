@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.otherguysstuff" name="The other Viet Addons" version="1.0.0" provider-name="dk">
+	<extension point="xbmc.addon.repository" name="The other Viet Addons">
+		<info compressed="false">https://bitbucket.org/dknlght/dk-xbmc-repaddon-rep/raw/master/addons.xml</info>
+		<checksum>https://bitbucket.org/dknlght/dk-xbmc-repaddon-rep/raw/master/addons.xml.md5</checksum>
+		<datadir zip="true">https://bitbucket.org/dknlght/dk-xbmc-repaddon-rep/raw/master/</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>The other Viet Addons</summary>
+		<description>Video plug-ins for XBMC</description>
+		<disclaimer></disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
