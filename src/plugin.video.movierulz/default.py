@@ -699,6 +699,10 @@ def ParseVideoLink(url):
                 media_url= ""
                 media_url = re.compile('<meta property="og:video" content="(.+?)"/>').findall(link)[0]
                 vidlink = media_url
+        elif (redirlink.find("embedzone") > -1):
+                media_url= ""
+                media_url = re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower())[0]
+                vidlink = ParseVideoLink(media_url)
         elif (redirlink.find("hqq.tv") > -1):
                 #print resolve(redirlink)
                 encContent= re.compile('<script src="data:text/javascript;charset=utf-8;base64,(.+?)">').findall(link)[0]
