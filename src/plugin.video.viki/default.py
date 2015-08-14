@@ -15,6 +15,9 @@ from BeautifulSoup import BeautifulStoneSoup
 from BeautifulSoup import SoupStrainer
 from xml.dom.minidom import Document
 import datetime
+import ssl
+from functools import wraps
+
 from textwrap import wrap
 try:
     import urllib2 as request
@@ -111,6 +114,16 @@ def GetContent2(url, useProxy=False):
     conn.close()
     return content
 	
+
+def sslwrap(func):
+    @wraps(func)
+    def bar(*args, **kw):
+        kw['ssl_version'] = ssl.PROTOCOL_TLSv1
+        return func(*args, **kw)
+    return bar
+
+ssl.wrap_socket = sslwrap(ssl.wrap_socket)
+
 def GetContent(url, useProxy=False):
     strresult=""
     response=None
@@ -340,7 +353,11 @@ def UpdatedVideos(url,name):
 						vname=namelist[ctr]
 						vname=vname
 				vlink=divcotent.a["href"]
-				vtype=divcotent.a["data-watch-now-type"]
+				if(divcotent.a.has_key("data-watch-now-type")):
+					vtype=divcotent.a["data-watch-now-type"]
+				else:
+					spandata = item.findAll('span', {"class" : "moonshine"})[0]
+					vtype=spandata["data-watch-now-type"]
 				vidcon=divcotent["data-tooltip-id"]
 				vid=divcotent.a["data-resource-id"]
 				if(vtype=="episode"):
