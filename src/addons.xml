@@ -337,7 +337,7 @@
 
 <addon
   id="plugin.video.hotkhmer"
-  version="1.0.6"
+  version="1.0.7"
   name="hotkhmer"
   provider-name="Dknight">
   <requires>

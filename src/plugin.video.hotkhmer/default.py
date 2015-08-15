@@ -24,16 +24,16 @@ PATH = "hotkhmer"  #<---- PLUGIN NAME MINUS THE "plugin.video"
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.4" #<---- PLUGIN VERSION
 
-strdomain ='http://www.hotkhmer.com'
+strdomain ='http://www.fastkhmer.com'
 
 def HOME():
-        GetMenu("http://www.hotkhmer.com/category.php?cat=thai-lakorn-dubbed")
-        #addDir('Thai Lakorn','http://www.hotkhmer.com/feeds/posts/default/-/Thai%20Parts_Khmer?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        #addDir('Thai Movies','http://www.hotkhmer.com/feeds/posts/default/-/Thai%20Movies_Khmer?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://moviekhmer.com/wp-content/uploads/2012/03/lbach-sneah-prea-kai-180x135.jpg')
-        #addDir('Khmer Drama','http://www.hotkhmer.com/feeds/posts/default/-/Khmer%20Parts?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        #addDir('Khmer Movies','http://www.hotkhmer.com/feeds/posts/default/-/Khmer%20Short?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        #addDir('Chinese Movies','http://www.hotkhmer.com/feeds/posts/default/-/Chinese%20Movies_Khmer?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://d3v6rrmlq7x1jk.cloudfront.net/hwdvideos/thumbs/category29.jpg')
-        #addDir('Chinese Series','http://www.hotkhmer.com/feeds/posts/default/-/Chinese%20Parts_Khmer?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://d3v6rrmlq7x1jk.cloudfront.net/hwdvideos/thumbs/category29.jpg')
+        GetMenu("http://www.film4kh.com/")
+        #addDir('Thai Lakorn','http://www.fastkhmer.com/feeds/posts/default/-/Thai%20Parts_Khmer?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        #addDir('Thai Movies','http://www.fastkhmer.com/feeds/posts/default/-/Thai%20Movies_Khmer?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://moviekhmer.com/wp-content/uploads/2012/03/lbach-sneah-prea-kai-180x135.jpg')
+        #addDir('Khmer Drama','http://www.fastkhmer.com/feeds/posts/default/-/Khmer%20Parts?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        #addDir('Khmer Movies','http://www.fastkhmer.com/feeds/posts/default/-/Khmer%20Short?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        #addDir('Chinese Movies','http://www.fastkhmer.com/feeds/posts/default/-/Chinese%20Movies_Khmer?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://d3v6rrmlq7x1jk.cloudfront.net/hwdvideos/thumbs/category29.jpg')
+        #addDir('Chinese Series','http://www.fastkhmer.com/feeds/posts/default/-/Chinese%20Parts_Khmer?start-index=1&alt=json-in-script&callback=1&max-results=32',2,'http://d3v6rrmlq7x1jk.cloudfront.net/hwdvideos/thumbs/category29.jpg')
 
 
 def Shows():
@@ -129,14 +129,11 @@ def getVimeoUrl(videoid,currentdomain=""):
         collection = {}
         if result["status"] == 200:
             html = result["content"]
-            html = html[html.find(',a={'):]
-            html = html[:html.find('}};') + 2]
-            html = html.replace(",a={", '{')
+            html = html[html.find('={')+1:]
+            html = html[:html.find('}};')]+"}}"
             try:
                   collection = json.loads(html)
-                  codec=collection["request"]["files"]["codecs"][0]
-                  filecol = collection["request"]["files"][codec]
-                  return filecol["sd"]["url"]
+                  return collection["request"]["files"]["h264"]["sd"]["url"]
             except:
                   return getVimeoVideourl(videoid,currentdomain)
 
@@ -214,16 +211,13 @@ def GetMenu(url):
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        menuhead = SoupStrainer('div', {"class" : "navigation"})
+        menuhead = SoupStrainer('ul', {"role" : "menu"})
         soup = BeautifulStoneSoup(newlink, parseOnlyThese=menuhead,convertEntities=BeautifulSoup.XML_ENTITIES)
         for item in soup.findAll('li'):
-			link = item.a['href'].encode('utf-8', 'ignore')
-			if(item.ul==None):
-				vname="---"+str(item.a.contents[0]).strip()
-			else:
-				vname=str(item.a.contents[0]).strip()
-			if(vname.strip() != "---Home" and vname.strip() != "---Khmer Live TV"):
-				addDir(vname,strdomain+link,2,"")
+			if(item.a!=None):
+				vname=item.a.contents[0]
+				link=item.a["href"]
+				addDir(vname,link,2,"")
 				
 def SEARCH():
     try:
@@ -244,17 +238,21 @@ def INDEX(url):
         except: pass
 		
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"class" : "blog-content"})[0]
-        for item in vidcontent.findAll('div', {"class" :re.compile('front-item*')}):
-			vname=item.div.a.img["title"]
-			vurl=item.div.a["href"]
-			vimg=item.div.a.img["src"]
+		
+        vidcontent=soup.findAll('div', {"class" : "thumbnail"})
+        for item in vidcontent:
+			vname=item.center.a["title"]
+			vurl=item.center.a["href"]
+			vimgcontent=item.findAll('img')
+			vimg=""
+			if(len(vimgcontent)>0):
+				vimg=vimgcontent[0]["src"]
 			addDir(vname.encode('utf-8', 'ignore'),vurl,5,vimg)
-        navcontent=soup.findAll('div', {"class" : "pagination pagination-centered"})
+        navcontent=soup.findAll('ul', {"class" : "pagination"})
         if(len(navcontent) > 0):
 			for item in navcontent[0].findAll('li'):
-				if(item["class"]==""):
-					addDir("Page " + item.a.contents[0].replace("&raquo;",">>").replace("&laquo;","<<"),strdomain+"/"+item.a["href"],2,"")
+					if(item.a["href"]!=""):
+						addDir("Page " + item.a.contents[0].replace("&raquo;",">>").replace("&laquo;","<<"),item.a["href"],2,"")
 
 
 def SearchResults(url):
@@ -277,76 +275,22 @@ def Episodes(url,name):
             link =link.encode("UTF-8")
         except: pass
 
-        pagecontent=link
-        match1=re.compile('"playlist":\s*\[(.+?)\]').findall(pagecontent.replace("[END]","(END)"))
-
-        if(len(match1) > 0):
-				if(match1[0].strip()[-1:]==","):
-					urlcontent=match1[0].strip()[:-1]
-				else:
-					urlcontent=match1[0].strip()
-				epList=json.loads("["+urlcontent.replace('"+sitename+"','')+"]")
-				for episodeitem in epList:
-					vLinkName=episodeitem["title"]
-					vLink=episodeitem["file"]
-					vimg=episodeitem["image"]
-					try:
-						vLinkName=vLinkName.encode("UTF-8")
-					except: pass
-					addLink(vLinkName.encode("utf-8"),vLink,3,vimg)
-        matchcontent=re.compile('<div class="drama-info">(.+?)</div>').findall(pagecontent.replace("[END]","(END)"))
-        if(len(matchcontent) > 0):
-				match1=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>(.+?)</a>').findall(matchcontent[0])
-				for vLink,vLinkName in match1:
-					try:
-						vLinkName=vLinkName.encode("UTF-8")
-					except: pass
-					addLink(vLinkName.encode("utf-8"),vLink,3,"")
-        match1=re.compile('var list\s*=\s*\[(.+?)\];').findall(pagecontent.replace("[END]","(END)"))
-        if(len(match1) > 0):
-				strList= "["+match1[0].strip()+"]"
-				epList=json.loads(strList.replace(", ]","]").replace(",]","]"))
-				if(len(epList) > 0  and epList[0].has_key('idGD')):
-					ctr=0
-
-					vidhost=re.compile('selectedPlayAllVideo\(list,"(.+?)"\)').findall(pagecontent)
-					if(len(vidhost) > 0):
-						vidhost=vidhost[0]
-					else:
-						vidhost="vimeo"
-					if(vidhost=="YT"):
-						vLinkroot="http://www.youtube.com/watch?v=%s"
-						epList=epList[0]["idGD"].split("0!?^0!?")
-					elif(vidhost=="GD"):
-						vLinkroot="http://docs.google.com/file/d/%s/preview"
-						epList=epList[0]["idGD"].split("0!?^0!?A")
-					elif(vidhost=="vimeo"):
-						vLinkroot="%s"
-						epList=epList[0]["idGD"].split("0!?^0!?")
-					for episodeitem in epList:
-						ctr=ctr+1
-						vLinkName="part " + str(ctr)
-						vLink=vLinkroot%episodeitem
-						vimg=""
-						addLink(vLinkName.encode("utf-8"),vLink,3,vimg)
-				else:
-					for episodeitem in epList:
-						vLinkName=episodeitem["title"]
-						vLink=episodeitem["file"]
-						try:
-							vimg=episodeitem["image"]
-						except:
-							vimg=""
-						addLink(vLinkName.encode("utf-8"),vLink,3,vimg)
-        match1=re.compile('<ul class="v-list" id="vList">(.+?)</ul>').findall(pagecontent)
-        if(len(match1) > 0):
-				match1=re.compile('data-vid="(.+?)">\s*<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>\s*<span class="v-title">(.+?)</span>').findall(match1[0])
-				for mcontent in match1:
-					vLink,vimage,vLinkName=mcontent
-					addLink(vLinkName.encode("utf-8"),"http://docs.google.com/file/d/"+vLink+"/preview",3,vimage)
-        match1=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(pagecontent)
-        if(len(match1) > 0):
-				addLink(name,match1[0],3,"")
+        soup = BeautifulSoup(link)
+		
+        vidcontent=soup.findAll('div', {"class" : "thumbnail"})
+        for item in vidcontent:
+			vname=item.center.a["title"]
+			vurl=item.center.a["href"]
+			vimgcontent=item.findAll('img')
+			vimg=""
+			if(len(vimgcontent)>0):
+				vimg=vimgcontent[0]["src"]
+			addLink(vname.encode('utf-8', 'ignore'),vurl,3,vimg)
+        navcontent=soup.findAll('ul', {"class" : "pagination"})
+        if(len(navcontent) > 0):
+			for item in navcontent[0].findAll('li'):
+					if(item.a["href"]!=""):
+						addDir("Page " + item.a.contents[0].replace("&raquo;",">>").replace("&laquo;","<<"),item.a["href"],2,"")
  
               
     #except: pass		
@@ -497,18 +441,20 @@ def playVideo(videoType,videoId):
 	
 def loadVideos(url,name):
         #try:
-           newlink=url
+           linkcontent= GetContent(url)
+           soup = BeautifulSoup(linkcontent)
+           vidcontent=soup.findAll('iframe', {"class" : "embed-responsive-item"})[0]
+           newlink=vidcontent["src"]
            xbmc.executebuiltin("XBMC.Notification(Please Wait!,Loading selected video)")
-           print newlink
            if (newlink.find("dailymotion") > -1):
                 match=re.compile('(dailymotion\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink)
                 lastmatch = match[0][len(match[0])-1]
                 link = 'http://www.dailymotion.com/'+str(lastmatch)
                 vidlink=getDailyMotionUrl(lastmatch)
                 playVideo('dailymontion',vidlink)
-           elif (newlink.find("docs.google.com") > -1):  
+           elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
                 vidcontent = GetContent(newlink)
-                html = vidcontent.encode("utf-8","ignore")
+                html = vidcontent.decode('utf8')
                 stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)[0].replace("\/", "/")
                 formatArray = stream_map.split(',')
                 for formatContent in formatArray:
