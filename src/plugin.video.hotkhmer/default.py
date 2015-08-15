@@ -290,7 +290,7 @@ def Episodes(url,name):
         if(len(navcontent) > 0):
 			for item in navcontent[0].findAll('li'):
 					if(item.a["href"]!=""):
-						addDir("Page " + item.a.contents[0].replace("&raquo;",">>").replace("&laquo;","<<"),item.a["href"],2,"")
+						addDir("Page " + item.a.contents[0].replace("&raquo;",">>").replace("&laquo;","<<"),item.a["href"],5,"")
  
               
     #except: pass		
