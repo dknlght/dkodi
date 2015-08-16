@@ -9,6 +9,7 @@ try: import simplejson as json
 except ImportError: import json
 import cgi
 import datetime
+import urlresolver
 from BeautifulSoup import BeautifulSoup
 from BeautifulSoup import BeautifulStoneSoup
 from BeautifulSoup import SoupStrainer
@@ -296,29 +297,31 @@ def Episodes(url,name):
     #except: pass		
 
 def getDailyMotionUrl(id):
-    maxVideoQuality="720p"
     content = GetContent("http://www.dailymotion.com/embed/video/"+id)
     if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
         xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
         return ""
+    
     else:
-        matchFullHD = re.compile('"stream_h264_hd1080_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHD = re.compile('"stream_h264_hd_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHQ = re.compile('"stream_h264_hq_url":"(.+?)"', re.DOTALL).findall(content)
-        matchSD = re.compile('"stream_h264_url":"(.+?)"', re.DOTALL).findall(content)
-        matchLD = re.compile('"stream_h264_ld_url":"(.+?)"', re.DOTALL).findall(content)
-        url = ""
-        if matchFullHD and maxVideoQuality == "1080p":
-            url = urllib.unquote_plus(matchFullHD[0]).replace("\\", "")
-        elif matchHD and (maxVideoQuality == "720p" or maxVideoQuality == "1080p"):
-            url = urllib.unquote_plus(matchHD[0]).replace("\\", "")
-        elif matchHQ:
-            url = urllib.unquote_plus(matchHQ[0]).replace("\\", "")
-        elif matchSD:
-            url = urllib.unquote_plus(matchSD[0]).replace("\\", "")
-        elif matchLD:
-            url = urllib.unquote_plus(matchLD[0]).replace("\\", "")
-        return url
+        get_json_code = re.compile(r'dmp\.create\(document\.getElementById\(\'player\'\),\s*([^);]+)').findall(content)[0]
+        #print len(get_json_code)
+        cc= json.loads(get_json_code)['metadata']['qualities']  #['380'][0]['url']
+        #print cc
+        if '1080' in cc.keys():
+            #print 'found hd'
+            return cc['1080'][0]['url']
+        elif '720' in cc.keys():
+            return cc['720'][0]['url']
+        elif '480' in cc.keys():
+            return cc['480'][0]['url']
+        elif '380' in cc.keys():
+            return cc['380'][0]['url']
+        elif '240' in cc.keys():
+            return cc['240'][0]['url']
+        elif 'auto' in cc.keys():
+            return cc['auto'][0]['url']
+        else:
+            xbmc.executebuiltin('XBMC.Notification(Info:, No playable Link found (DailyMotion)!,5000)')
 		
 def ParseXml(newcontent):
         try:
@@ -447,10 +450,14 @@ def loadVideos(url,name):
            newlink=vidcontent["src"]
            xbmc.executebuiltin("XBMC.Notification(Please Wait!,Loading selected video)")
            if (newlink.find("dailymotion") > -1):
-                match=re.compile('(dailymotion\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink)
-                lastmatch = match[0][len(match[0])-1]
-                link = 'http://www.dailymotion.com/'+str(lastmatch)
-                vidlink=getDailyMotionUrl(lastmatch)
+                match=re.compile('http://www.dailymotion.com/embed/video/(.+?)\?').findall(newlink)
+                if(len(match) == 0):
+                        match=re.compile('/video/(.+?)&dk;').findall(newlink+"&dk;")
+                if(len(match) == 0):
+                        match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(newlink)
+                if(len(match) == 0):
+                	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink.replace("$","?"))
+                vidlink=getDailyMotionUrl(match[0])
                 playVideo('dailymontion',vidlink)
            elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
                 vidcontent = GetContent(newlink)
@@ -475,22 +482,24 @@ def loadVideos(url,name):
                 playlistid=re.compile('\?list=(.+?)&').findall(newlink+"&")
                 vidlink="plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0]
                 playVideo('moviekhmer',vidlink)
+           elif (newlink.find("vidd.me") > -1 or newlink.find("vid.me") > -1):
+				tmpcontent=GetContent(newlink)
+				vidlink=re.compile('<meta property="og:video:url" [^>]*content=["\']?([^>^"^\']+)["\']?[^>]*>').findall(tmpcontent)[-1]
+				playVideo('moviekhmer',vidlink.replace("&amp;","&"))
            else:
-                if (newlink.find("linksend.net") > -1):
-                     d = xbmcgui.Dialog()
-                     d.ok('Not Implemented','Sorry videos on linksend.net does not work','Site seem to not exist')		
-                newlink1 = urllib2.unquote(newlink).decode("utf8")+'&dk;'
-                print 'NEW url = '+ newlink1
-                match=re.compile('(youtu\.be\/|youtube-nocookie\.com\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink1)
-                if(len(match) == 0):
-                    match=re.compile('http://www.youtube.com/watch\?v=(.+?)&dk;').findall(newlink1)
-                if(len(match) > 0):
-                    lastmatch = match[0][len(match[0])-1].replace('v/','')
-                    #d = xbmcgui.Dialog()
-                    #d.ok('mode 2',str(lastmatch),'launching yout')
-                    playVideo('youtube',lastmatch)
-                else:
-                    playVideo('moviekhmer',urllib2.unquote(newlink).decode("utf8"))
+                if(newlink.find("putlocker.com") > -1 or newlink.find("sockshare.com") > -1):
+                        redir = newlink.split("/file/")
+                        newlink = redir[0] +"/file/" + redir[1].upper()
+                sources = []
+                label=name
+                hosted_media = urlresolver.HostedMediaFile(url=newlink, title=label)
+                sources.append(hosted_media)
+                source = urlresolver.choose_source(sources)
+                print "inresolver=" + newlink
+                if source:
+						vidlink = source.resolve()
+						playVideo('moviekhmer',vidlink)
+						
         #except: pass
         
 def OtherContent():
