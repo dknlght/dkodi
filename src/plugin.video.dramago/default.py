@@ -410,7 +410,34 @@ def GetDirVideoUrl(url):
     # urllib2.install_opener(opener)
     usock = opener.open(url)
     return redirhndler.video_url
-
+	
+def getDailyMotionUrl(id):
+    content = GetContent("http://www.dailymotion.com/embed/video/"+id)
+    if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
+        xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
+        return ""
+    
+    else:
+        get_json_code = re.compile(r'dmp\.create\(document\.getElementById\(\'player\'\),\s*([^);]+)').findall(content)[0]
+        #print len(get_json_code)
+        cc= json.loads(get_json_code)['metadata']['qualities']  #['380'][0]['url']
+        #print cc
+        if '1080' in cc.keys():
+            #print 'found hd'
+            return cc['1080'][0]['url']
+        elif '720' in cc.keys():
+            return cc['720'][0]['url']
+        elif '480' in cc.keys():
+            return cc['480'][0]['url']
+        elif '380' in cc.keys():
+            return cc['380'][0]['url']
+        elif '240' in cc.keys():
+            return cc['240'][0]['url']
+        elif 'auto' in cc.keys():
+            return cc['auto'][0]['url']
+        else:
+            xbmc.executebuiltin('XBMC.Notification(Info:, No playable Link found (DailyMotion)!,5000)')
+			
 def ParseVideoLink(url,name,movieinfo):
     dialog = xbmcgui.DialogProgress()
     dialog.create('Resolving', 'Resolving video Link...')       
@@ -432,6 +459,16 @@ def ParseVideoLink(url,name,movieinfo):
                 vidmatch=re.compile('(youtu\.be\/|youtube-nocookie\.com\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(redirlink)
                 vidlink=vidmatch[0][len(vidmatch[0])-1].replace('v/','')
                 vidlink='plugin://plugin.video.youtube?path=/root/video&action=play_video&videoid='+vidlink
+        elif (redirlink.find("dailymotion") > -1):
+                match=re.compile('http://www.dailymotion.com/embed/video/(.+?)\?').findall(redirlink)
+                if(len(match) == 0):
+                        match=re.compile('http://www.dailymotion.com/video/(.+?)&dk;').findall(redirlink+"&dk;")
+                if(len(match) == 0):
+                        match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(redirlink)
+                if(len(match) == 0):
+                	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(redirlink.replace("$","?"))
+                print match
+                vidlink=getDailyMotionUrl(match[0])
         elif (redirlink.find(".me/embed") > -1 or redirlink.find(".net/embed") > -1 or redirlink.find(".me/gogo") > -1 or redirlink.find("embed.php?") > -1):
                 media_url= ""
                 media_url = re.compile('_url\s*=\s*"(.+?)";').findall(link)[0]
