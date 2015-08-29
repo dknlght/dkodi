@@ -44,7 +44,7 @@ if not os.path.exists(cookie_path):
 def HOME():
         addDir('Search','http://www.pinoy-ako.ws',8,'')
         addDir('Latest Videos','http://www.pinoy-ako.ws',6,'')
-        addDir('Pinoy Movies',strdomain2+'/category/pinoy-movies',13,'')
+        addDir('Pinoy Movies','http://www.pinoymovie.se/videos',15,'')
         addDir('ABS-CBN by Shows',strdomain2+'/category/abs-cbn/',13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
         addDir('GMA 7 shows on lambingan',strdomain2+'/category/Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
         addDir('Kapuso','http://www.pinoy-ako.ws/kapuso/',6,'')
@@ -68,7 +68,24 @@ def AllTV(url):
             vurlc=re.compile('<a href="(.+?)" class="category">(.+?)</a>').findall(moviecontent)
             (vurl,vname)=vurlc[0]
             addDir(vname,strdomain+vurl,5,"")
-
+			
+def MovieINDEX2(url):
+        link = GetContent(url)
+        try:
+            link=link.encode("UTF-8")
+        except: pass
+        soup = BeautifulSoup(link)
+        vidcontent=soup.findAll('div', {"id" : "content_box"})[0]
+        for item in vidcontent.findAll('div', {"class" :"thumbnailvid"}):
+			vname=item.a["title"].replace("Permanent Link to ","").encode('utf-8','ignore')
+			vurl=item.a["href"]
+			vimg=item.a.img["src"]
+			addDir(vname.replace("&amp;","&").replace("&#8211;","-").replace("&#8217;","'"),vurl.replace("&amp;amp;","&amp;"),16,vimg)
+        navcontent=soup.findAll('div', {"class" : "pagination"})
+        if(len(navcontent) > 0):
+			for item in navcontent[0].findAll('a'):
+					addDir("Page " + item.contents[0].replace("&raquo;",">>").replace("&laquo;","<<").replace("&rsaquo;","next"),item["href"],15,"")
+					
 def INDEXlamb(url):
         link = GetContent(url)
         try:
@@ -178,7 +195,18 @@ def GetXmlPlaylist(url, name):
                 vname = embvid.replace("http://","").replace("https://","").split(".")[1]
                 partcnt=partcnt+1
                 addLink(name+ " youtube part " + str(partcnt),embvid,3,"")
-				
+def GetMovieLinks(url):
+        link = GetContent(url)
+        try:
+            link=link.encode("UTF-8")
+        except: pass
+        soup = BeautifulSoup(link)
+        vidcontent=soup.findAll('div', {"class" : "tabcontents"})[0]
+        for item in vidcontent.findAll('iframe'):
+			vname= item["src"].replace("http://","").replace("https://","").split(".")[0] 
+			vurl=item["src"]
+			addLink(vname,vurl,3,"")
+					
 def GetVideoLinkslamb(url):
         link = GetContent(url)
         link = ''.join(link.splitlines()).replace('\'','"')
@@ -495,7 +523,8 @@ def GetContent2(url):
     conn.close()
     return content
 	
-def GetContent(url,html=''):
+
+def GetContent(url,html='',strReferer="http://www.lambingan.ru/"):
     cj = cookielib.LWPCookieJar()
     cloudcookie=re.compile("S='(.+?)';").findall(html)
     if(len(cloudcookie)>0):
@@ -507,11 +536,11 @@ def GetContent(url,html=''):
     opener.addheaders = [(
         'Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
         ('Accept-Encoding', 'gzip, deflate'),
-        ('Referer', "http://www.lambingan.ru/"),
-        ('User-Agent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'),
+        ('Referer', strReferer),
+        ('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:15.0) Gecko/20100101 Firefox/15.0.1'),
         ('Connection', 'keep-alive'),
         ('Accept-Language', 'en-us,en;q=0.5'),
-        ('Pragma', 'no-cache')]
+        ('Host', 'videomega.tv')]
     usock = opener.open(url)
     if usock.info().get('Content-Encoding') == 'gzip':
         buf = StringIO.StringIO(usock.read())
@@ -883,7 +912,13 @@ def postContent2(url,data,referr):
     data=response.read()
     response.close()
     return data
-	
+def getinnerlink(url):
+		newlink=url
+		if (url.find("watchnew") > -1):
+				pcontent=GetContent(url)
+				pcontent=''.join(pcontent.splitlines()).replace('\'','"')
+                newlink = re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(pcontent.lower())[0]
+		return newlink
 def loadVideos(url,name):
         #try:
            GA("LoadVideo",name)
@@ -893,15 +928,19 @@ def loadVideos(url,name):
 	   __icon__ = __addon__.getAddonInfo('icon')
 	   line1 = "Please Wait!  Loading selected video."
            xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1,3000,__icon__))
+           if (newlink.find("watchnew") > -1):
+				newlink=getinnerlink(newlink)
            print "newlink=" + newlink
            if (newlink.find("dailymotion") > -1):
-                match=re.compile('http://www.dailymotion.com/embed/video/(.+?)\?').findall(url)
+                match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink)
                 if(len(match) == 0):
-                        match=re.compile('http://www.dailymotion.com/video/(.+?)&dk;').findall(url+"&dk;")
+                        match=re.compile('http://www.dailymotion.com/video/(.+?)&dk;').findall(newlink+"&dk;")
+                else:
+						match=re.compile('www.dailymotion.com/video/(.+?)&dk;').findall(match[0]+"&dk;")
                 if(len(match) == 0):
-                        match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(url)
+                        match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(newlink)
                 if(len(match) == 0):
-                	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(url.replace("$","?"))
+                	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink.replace("$","?"))
                 print match
                 vidlink=getDailyMotionUrl(match[0])
            elif (newlink.find("cloudy") > -1):
@@ -915,13 +954,11 @@ def loadVideos(url,name):
                 urlcode = re.compile('url=(.+?)&').findall(pcontent)[0]
                 vidlink=urllib.unquote_plus(urlcode)
            elif (newlink.find("videomega") > -1):
-                refkey= re.compile('\?ref=(.+?)&dk').findall(newlink+"&dk")[0]
-                vidcontent="http://videomega.tv/iframe.php?ref="+refkey
-                pcontent=GetContent(vidcontent)
+                #refkey= re.compile('\?ref=(.+?)&dk').findall(newlink+"&dk")[0]
+                #vidcontent="http://videomega.tv/iframe.php?ref="+refkey
+                pcontent=GetContent(newlink,strReferer="http://www.pinoymovie.se/video/")
                 pcontent=''.join(pcontent.splitlines()).replace('\'','"')
-                urlcode = re.compile('else{\s*document.write\(unescape\("(.+?)"\)').findall(pcontent)[0]
-                vidcontent=urllib.unquote_plus(urlcode)
-                vidlink = re.compile('file:\s*"(.+?)"\s*,').findall(vidcontent)[0]
+                vidlink = re.compile('<source [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(pcontent)[0]
            elif (newlink.find("allmyvideos") > -1):
                 videoid=  re.compile('http://allmyvideos.net/embed-(.+?).html').findall(newlink)
                 if(len(videoid)>0):
@@ -1480,4 +1517,8 @@ elif mode==13:
        INDEXlamb(url)   
 elif mode==14:
        GetVideoLinkslamb(url)
+elif mode==15:
+       MovieINDEX2(url)
+elif mode==16:
+	   GetMovieLinks(url)
 xbmcplugin.endOfDirectory(int(sysarg))
