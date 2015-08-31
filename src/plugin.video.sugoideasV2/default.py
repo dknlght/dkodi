@@ -337,6 +337,7 @@ def SensenGetVideo(url):
 				else:
 					vname="Play Full"
 				vlink=url
+
 			else:
 				vname=item.a.contents[0].encode('utf-8', 'ignore')
 				vlink=item.a["href"]
@@ -464,29 +465,31 @@ def GetDirVideoUrl(url):
     return redirhndler.video_url
 	
 def getDailyMotionUrl(id):
-    maxVideoQuality="720p"
     content = GetContent("http://www.dailymotion.com/embed/video/"+id)
     if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
-        xbmc.executebuiltin('XBMC.Notification(Info:, (DailyMotion)!,5000)')
+        xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
         return ""
+    
     else:
-        matchFullHD = re.compile('"stream_h264_hd1080_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHD = re.compile('"stream_h264_hd_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHQ = re.compile('"stream_h264_hq_url":"(.+?)"', re.DOTALL).findall(content)
-        matchSD = re.compile('"stream_h264_url":"(.+?)"', re.DOTALL).findall(content)
-        matchLD = re.compile('"stream_h264_ld_url":"(.+?)"', re.DOTALL).findall(content)
-        url = ""
-        if matchFullHD and maxVideoQuality == "1080p":
-            url = urllib.unquote_plus(matchFullHD[0]).replace("\\", "")
-        elif matchHD and (maxVideoQuality == "720p" or maxVideoQuality == "1080p"):
-            url = urllib.unquote_plus(matchHD[0]).replace("\\", "")
-        elif matchHQ:
-            url = urllib.unquote_plus(matchHQ[0]).replace("\\", "")
-        elif matchSD:
-            url = urllib.unquote_plus(matchSD[0]).replace("\\", "")
-        elif matchLD:
-            url = urllib.unquote_plus(matchLD[0]).replace("\\", "")
-        return url
+        get_json_code = re.compile(r'dmp\.create\(document\.getElementById\(\'player\'\),\s*([^);]+)').findall(content)[0]
+        #print len(get_json_code)
+        cc= json.loads(get_json_code)['metadata']['qualities']  #['380'][0]['url']
+        #print cc
+        if '1080' in cc.keys():
+            #print 'found hd'
+            return cc['1080'][0]['url']
+        elif '720' in cc.keys():
+            return cc['720'][0]['url']
+        elif '480' in cc.keys():
+            return cc['480'][0]['url']
+        elif '380' in cc.keys():
+            return cc['380'][0]['url']
+        elif '240' in cc.keys():
+            return cc['240'][0]['url']
+        elif 'auto' in cc.keys():
+            return cc['auto'][0]['url']
+        else:
+            xbmc.executebuiltin('XBMC.Notification(Info:, No playable Link found (DailyMotion)!,5000)')
 		
 def ParseVideoLink(url,name,movieinfo):
     dialog = xbmcgui.DialogProgress()
@@ -505,9 +508,20 @@ def ParseVideoLink(url,name,movieinfo):
     soup = BeautifulSoup(link)
     vidcontent=soup.findAll('div', {"id" : "playerdiv"})
     if(len(vidcontent)>0):
-		redirlink=vidcontent[0].iframe["src"]
-		link =GetContent(redirlink)
-		link = ''.join(link.splitlines()).replace('\'','"')
+		if(vidcontent[0].iframe!=None):
+			redirlink=vidcontent[0].iframe["src"].replace("https://","//").replace("http://","//").replace("//","http://")
+			vidlink=ParseVideoLink(redirlink,name,movieinfo)
+			if(vidlink==None):
+				link =GetContent(redirlink)
+				link = ''.join(link.splitlines()).replace('\'','"')
+			else:
+				return vidlink
+		else:
+			base64url=re.compile('file:\s*window.atob\("(.+?)"\)').findall(str(vidcontent[0]).replace('window.atob("")',""))
+			for urlitem in base64url:
+				if(len(urlitem)>0):
+					vidlink=urlitem.decode("base64")
+					return vidlink
     else:
 		redirlink=url
     try:
@@ -521,13 +535,14 @@ def ParseVideoLink(url,name,movieinfo):
                 media_url = re.compile('_url\s*=\s*"(.+?)";').findall(link)[0]
                 vidlink = urllib.unquote_plus(media_url) #GetDirVideoUrl(media_url)
         elif (redirlink.find("dailymotion") > -1):
-                match=re.compile('http://www.dailymotion.com/embed/video/(.+?)\?').findall(url)
+                match=re.compile('//www.dailymotion.com/embed/video/(.+?)\?').findall(url)
                 if(len(match) == 0):
-                        match=re.compile('http://www.dailymotion.com/video/(.+?)&dk;').findall(url+"&dk;")
+                        match=re.compile('//www.dailymotion.com/video/(.+?)&dk;').findall(url+"&dk;")
                 if(len(match) == 0):
-                        match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(url)
+                        match=re.compile('//www.dailymotion.com/swf/(.+?)\?').findall(url)
                 if(len(match) == 0):
                 	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(url.replace("$","?"))
+                print "indaily|" + match[0]
                 vidlink=getDailyMotionUrl(match[0])
         elif (redirlink.find("yourupload") > -1 or redirlink.find("oose.io") > -1):
                 media_url= ""

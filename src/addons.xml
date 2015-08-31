@@ -791,7 +791,7 @@
 
 <addon
   id="plugin.video.sugoideasV2"
-  version="1.0.10"
+  version="1.0.11"
   name="sugoideasV2"
   provider-name="Dknight">
   <requires>

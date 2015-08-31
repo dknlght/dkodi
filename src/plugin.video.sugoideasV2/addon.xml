@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon
   id="plugin.video.sugoideasV2"
-  version="1.0.10"
+  version="1.0.11"
   name="sugoideasV2"
   provider-name="Dknight">
   <requires>
