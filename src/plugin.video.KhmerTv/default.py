@@ -196,7 +196,7 @@ def initDatabase():
 
     db.close()
 
-def GetContent(url):
+def GetContent2(url):
     try:
        net = Net()
        second_response = net.http_GET(url)
@@ -204,7 +204,26 @@ def GetContent(url):
     except:	
        d = xbmcgui.Dialog()
        d.ok(url,"Can't Connect to site",'Try again in a moment')
+	   
+def GetContent(url):
 
+    cj = cookielib.LWPCookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    opener.addheaders = [('Accept-Encoding', 'gzip, deflate'),
+        ('User-Agent', 'SupreNet_iPad/2.3.7.6 (iPad; iOS 8.3; Scale/2.00)'),
+        ('Connection', 'keep-alive'),
+        ('Accept-Language', 'en;q=1'),
+        ('Host', 'mobile.interface.stmg.net.kh')]
+    usock = opener.open(url)
+    if usock.info().get('Content-Encoding') == 'gzip':
+        buf = StringIO.StringIO(usock.read())
+        f = gzip.GzipFile(fileobj=buf)
+        response = f.read()
+    else:
+        response = usock.read()
+    usock.close()
+    return (response)
+	
 def GetArtist(url,name):
         dialog = xbmcgui.DialogProgress()
         dialog.create('Refreshing Data', 'Refreshing Database...')       
@@ -294,12 +313,12 @@ def Resolver(url):
 		line1 = "Please Wait!  Loading selected video."
 		xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%("",line1,3000,""))
 		if(url.find("stmg.net.kh") > -1):
-			data = json.loads(GetContent(url))
+			mydata=GetContent(url)
+			data = json.loads(mydata)
 			if(kodiversionNumber < 15):
 				vidlink=data["url"] + " live=true"
 			else:
 				vidlink=data["url"] 
-
 		return vidlink
 def ParseXml(tagname):
         f = open(filename, "r")
