@@ -124,7 +124,7 @@ def getVimeoUrl(videoid,currentdomain=""):
         print result
         if result["status"] == 200:
             html = result["content"]
-            html = html[html.find('={')+1:]
+            html = html[html.find('={"cdn_url"')+1:]
             html = html[:html.find('}};')]+"}}"
             try:
                   collection = json.loads(html)
@@ -270,7 +270,6 @@ def Episodes(url,name):
 					vidurl=framesrc[0].replace(framesrc[0].split("/")[-1],"%s")
 				for mcontent in match1:
 					vLink,vtype,vimage,vLinkName=mcontent
-					print vidurl%vLink
 					addLink(vLinkName.encode("utf-8"),vidurl%vLink,3,vimage)
         match=re.compile('\{\s*"file":\s*"(.+?)",\s*"title":\s*"(.+?)",\s*"description":').findall(link)
         if(len(match) >= 1):
@@ -427,6 +426,7 @@ def playVideo(videoType,videoId):
 def loadVideos(url,name):
         #try:
            newlink=url
+           print newlink
            xbmc.executebuiltin("XBMC.Notification(Please Wait!,Loading selected video)")
            if (newlink.find("dailymotion") > -1):
                 match=re.compile('(dailymotion\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink)
