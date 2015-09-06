@@ -11,6 +11,9 @@ import datetime
 from resources.lib.ooyala.utils.Common import Common as CommonUtils
 from resources.lib.ooyala.MagicNaming import MagicNaming
 from resources.lib.ooyala.ooyalaCrypto import ooyalaCrypto
+from BeautifulSoup import BeautifulSoup
+from BeautifulSoup import BeautifulStoneSoup
+from BeautifulSoup import SoupStrainer
 
 addon = Addon("plugin.video.MyPinoyTv")
 ADDON = xbmcaddon.Addon(id='plugin.video.MyPinoyTv')
@@ -35,19 +38,18 @@ def HOME(cj):
     addLink('Login','/videos/categories',8,'','')
     (cj,menuContent)=postContent("http://"+strdomain,"","http://"+strdomain,cj)
     menuContent=''.join(menuContent.splitlines()).replace('\'','"')
-    tvlist = re.compile('<ul class="one-column">(.+?)</ul>').findall(menuContent)
-    if(len(tvlist)>0):
-		addLink('TV','',0,'','')
-		addDir("---PBA Games","http://mypinoy.tv/pba-games/",2,'')
-		listitem= re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>(.+?)</a>').findall(tvlist[0])
-		for vurl,vname in listitem:
-			addDir("---"+vname,vurl,2,'')
-    movielist = re.compile('<ul class="two-column">(.+?)</ul>').findall(menuContent)
-    if(len(movielist)>0):
-		addLink('Movies','',0,'','')
-		listitem= re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>(.+?)</a>').findall(movielist[0])
-		for vurl,vname in listitem:
-			addDir("---"+vname,vurl,2,'')
+    soup = BeautifulSoup(menuContent)
+    vidcontent=soup.findAll('nav')
+    if(len(vidcontent)> 0):
+		for item in vidcontent[0].findAll('div', {"class" :"nav-dropdown"}):
+			addLink(item.parent.a.contents[0],'',0,'','')
+			divitem=item.findAll('div', {"class" :"left"})
+			if(len(divitem)> 0):
+				for catitem in divitem[0].findAll('li'):
+					addDir("---"+str(catitem.a.contents[0]),catitem.a["href"],2,'')
+			if(str(item.parent.a.contents[0])=="PBA"):
+				addDir("---PBA Live","http://"+strdomain+"/pba-live/",2,'')
+				addDir("---PBA Archive","http://"+strdomain+"/pba-games/",2,'')
 
 if os.path.exists(cookiefile):
     cj = cookielib.LWPCookieJar()
@@ -62,25 +64,39 @@ def SEARCH(url,cj):
         url = 'http://'+strdomain+'/search?s='+urllib.quote_plus(searchText)
         (cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
         mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
-        tvlist = re.compile('<div class="search-result">(.+?)<div style="clear: both;">').findall(mediacontent)
-        if(len(tvlist)>0):
-			listitem= re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>(.+?)</a>').findall(tvlist[0])
-			imageitem= re.compile('<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(tvlist[0])
-			ctr=0
-			for vurl,vname in listitem:
-				if(vname.find("<") == -1):
-					vimg=imageitem[ctr]
-					addDir(vname,vurl,3,vimg)
-					ctr=ctr+1
+        soup = BeautifulSoup(mediacontent)
+        vidcontent=soup.findAll('ul',{"class":"is_pagination"})
+        if(len(vidcontent)> 0):
+			for item in vidcontent[0].findAll('a', {"class" :"thumb-shows-img table-row"}):
+				print item
+        # tvlist = re.compile('<div class="search-result">(.+?)<div style="clear: both;">').findall(mediacontent)
+        # if(len(tvlist)>0):
+			# listitem= re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>(.+?)</a>').findall(tvlist[0])
+			# imageitem= re.compile('<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(tvlist[0])
+			# ctr=0
+			# for vurl,vname in listitem:
+				# if(vname.find("<") == -1):
+					# vimg=imageitem[ctr]
+					# addDir(vname,vurl,3,vimg)
+					# ctr=ctr+1
         
 def INDEX(url,name,cj):
         (cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
         mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
-        tvlist = re.compile('<div id="category_list" class="is_pagination">(.+?)<div style="clear: both;">').findall(mediacontent)
-        if(len(tvlist)>0):
-			listitem= re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>\s*<img class="image" src="(.+?)" alt="(.+?)" />\s*</a>').findall(tvlist[0])
-			for vurl,vimg,vname in listitem:
+        soup = BeautifulSoup(mediacontent)
+        vidcontent=soup.findAll('ul',{"class":"is_pagination"})
+        if(len(vidcontent)> 0):
+			for item in vidcontent[0].findAll('li'):
+				vname=item.a["title"]
+				vurl=item.a["href"]
+				vimg=""
+				if(item.a.img!=None):
+					vimg=item.a.img["src"]
 				addDir(vname,vurl,3,vimg)
+        # if(len(tvlist)>0):
+			# listitem= re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>\s*<img class="image" src="(.+?)" alt="(.+?)" />\s*</a>').findall(tvlist[0])
+			# for vurl,vimg,vname in listitem:
+				# addDir(vname,vurl,3,vimg)
 				
 
 def streamGetter(embedCode):
@@ -99,35 +115,56 @@ def streamGetter(embedCode):
 	return playpath
 	
 def Episodes(url,name,cj):
-        (cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
-        mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
-        islogin= re.compile('<p>Free Sign Up</p>').findall(mediacontent)
-        if(len(islogin)>0):
-            cj=AutoLogin(cj,url)
-            (cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
-            mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
-        tvlist = re.compile('<div class="thumbnails is_pagination" id="videos" >(.+?)<div style="clear: both;">').findall(mediacontent)
-        if(len(tvlist)>0):
-			listitem= re.compile('<a href="(.+?)" class="images" title="(.+?)" >\s*<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>\s*</a>').findall(tvlist[0])
-			for vurl,vname,vimg in listitem:
+		(cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
+		mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
+		soup = BeautifulSoup(mediacontent)
+		islogin=soup.findAll('a',{"class":"signup-btn btn"})
+		if(len(islogin)>0):
+			cj=AutoLogin(cj,url)
+			(cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
+			mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
+			soup = BeautifulSoup(mediacontent)
+		vidcontent=soup.findAll('ul',{"class":"is_pagination"})
+		if(len(vidcontent)> 0):
+			for item in vidcontent[0].findAll('li'):
+				vname=item.a["title"]
+				vurl=item.a["href"]
+				vimg=""
+				if(item.a.img!=None):
+					vimg=item.a.img["src"]
 				addLink(vname,vurl,14,vimg,'')
-        else:
-				embedcode=GetEmbedcode(mediacontent)
-				addLink(name,embedcode,5,"",'')
+		else:
+			embedcode=GetEmbedcode(mediacontent)
+			addLink("Play " + name,embedcode,5,"",'')
+					
+        # tvlist = re.compile('<div class="thumbnails is_pagination" id="videos" >(.+?)<div style="clear: both;">').findall(mediacontent)
+			# if(len(tvlist)>0):
+				# listitem= re.compile('<a href="(.+?)" class="images" title="(.+?)" >\s*<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>\s*</a>').findall(tvlist[0])
+				# for vurl,vname,vimg in listitem:
+					# addLink(vname,vurl,14,vimg,'')
+			# else:
+					# embedcode=GetEmbedcode(mediacontent)
+					# addLink(name,embedcode,5,"",'')
 
 def GetVideoStream(name,url,cj):
-        (cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
-        mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
-        islogin= re.compile('<p>Free Sign Up</p>').findall(mediacontent)
-        if(len(islogin)>0):
-            cj=AutoLogin(cj,url)
-            (cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
-            mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
-        embedcode=GetEmbedcode(mediacontent)
-        playVideo(name,embedcode)
+		__addon__ = xbmcaddon.Addon()
+		__addonname__ = __addon__.getAddonInfo('name')
+		__icon__ = __addon__.getAddonInfo('icon')
+		line1 = "Please Wait!  Loading selected video."
+		xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1,5000,__icon__))
+		(cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
+		mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
+		soup = BeautifulSoup(mediacontent)
+		islogin=soup.findAll('a',{"class":"signup-btn btn"})
+		if(len(islogin)>0):
+			cj=AutoLogin(cj,url)
+			(cj,mediacontent)=postContent(url,"","http://"+strdomain,cj)
+			mediacontent=''.join(mediacontent.splitlines()).replace('\'','"')
+		embedcode=GetEmbedcode(mediacontent)
+		playVideo(name,embedcode)
 
 def GetEmbedcode(htmlcontent):
-    emcode= re.compile('OO.Player.create\("videoplayer",\s*"(.+?)",').findall(htmlcontent)[0]
+    emcode= re.compile('MAINPLAYER.Player.create\("videoplayer",\s*"(.+?)",').findall(htmlcontent)[0]
     return emcode
 
 def GetJSON(url,data,referr,cj):
