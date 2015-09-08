@@ -859,7 +859,7 @@
 
 <addon
   id="plugin.video.viettv24free"
-  version="1.0.1"
+  version="1.0.2"
   name="viettv24free"
   provider-name="Dknight">
   <requires>
