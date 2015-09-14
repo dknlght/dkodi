@@ -41,9 +41,8 @@ def HOME():
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        match=re.compile('<li class="child">(.+?)</ul>').findall(newlink)
         soup = BeautifulSoup(newlink)
-        navcontent = soup.findAll('ul', {"id" : "mega-menu-1"})
+        navcontent = soup.findAll('ul', {"id" : "mega-menu-1a"})
         if(len(navcontent) > 0):
 			for item in navcontent[0].findAll('li'):
 				for submenu in item.findAll('a'):
@@ -76,13 +75,13 @@ def INDEX(url):
         link = GetContent(url)
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        vidcontent = soup.findAll('ul', {"class" : "list-movie"})
+        vidcontent = soup.findAll("div", {"class" :"movie-list-index"})
         if(len(vidcontent) > 0):
 			for item in vidcontent[0].findAll('a'):
 					vname =item["title"]
 					vlink=homeLink+item["href"]
 					vimage=""
-					divimage=item.findAll('div', {"class" : "movie-thumbnail"})
+					divimage=item.findAll('div', {"class" : "thumb5 movie-thumbnail thumb6"})
 					if(len(divimage)>0):
 						stylecontent =divimage[0]["style"]
 						vimage=homeLink+re.compile('background:url\((.+?)\)').findall(stylecontent)[0]
@@ -162,7 +161,7 @@ def Mirrors(url,name):
 			link = GetContent(url)
 			newlink = ''.join(link.splitlines()).replace('\t','')
 			soup = BeautifulSoup(newlink)
-			vidcontent = soup.findAll('div', {"class" : "server clearfix server-group"})
+			vidcontent = soup.findAll('div', {"class" : "server movie clearfix server-group"})
 			for item in vidcontent:
 					vLinkName=item["data-servername"]
 					addDir(vLinkName.encode("utf-8",'ignore'),url,5,'')
@@ -197,7 +196,7 @@ def Episodes(url,name):
 			link = GetContent(url)
 			newlink = ''.join(link.splitlines()).replace('\t','')
 			soup = BeautifulSoup(newlink)
-			vidcontent = soup.findAll('div', {"class" : "server clearfix server-group"})
+			vidcontent = soup.findAll('div', {"class" : "server movie clearfix server-group"})
 			for item in vidcontent:
 					vLinkName=item["data-servername"].encode("utf-8",'ignore')
 					if(vLinkName==name):

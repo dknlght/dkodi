@@ -3,6 +3,7 @@ import urllib,urllib2,re,sys
 import cookielib,os,string,cookielib,StringIO,gzip
 import os,time,base64,logging
 from t0mm0.common.net import Net
+from t0mm0.common.addon import Addon
 import xml.dom.minidom
 import xbmcaddon,xbmcplugin,xbmcgui
 try: import simplejson as json
@@ -10,6 +11,7 @@ except ImportError: import json
 import cgi
 import datetime
 
+addon = Addon("plugin.video.KhmerAvenue")
 ADDON = xbmcaddon.Addon(id='plugin.video.KhmerAvenue')
 if ADDON.getSetting('ga_visitor')=='':
     from random import randint
@@ -19,17 +21,125 @@ PATH = "KhmerAvenue"  #<---- PLUGIN NAME MINUS THE "plugin.video"
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER
 VERSION = "1.0.16" #<---- PLUGIN VERSION
 
+datapath = addon.get_profile()
+cookie_path = os.path.join(datapath, 'cookies')
+settingfilename= os.path.join(cookie_path, "setting.txt")
+cookiefile= os.path.join(cookie_path, "cookiejar.lwp")
+cj=None
 
 strDomain ='http://www.merlkon.com/'
-def HOME():
-        addDir('Search','http://www.merlkon.net/',4,'http://www.merlkon.com/wp-contents/uploads/logo.jpg')
-        addDir('Khmer Video','http://www.merlkon.net/albumcategory/khmer-media/',2,'http://www.merlkon.com/wp-content/uploads/2013/03/snep-150x150.jpg')
-        addDir('Thai Lakorns','http://www.merlkon.net/albumcategory/thai-videos/',2,'http://www.merlkon.com/wp-content/uploads/2014/10/kew-150x150.jpg')
-        addDir('Korean Videos','http://www.khmerstream.com/albumcategory/korean-videos/',2,'http://www.merlkon.com/wp-content/uploads/2012/04/lietome.jpg')
-        addDir('Chinese KhmerAve','http://www.khmeravenue.com/albumcategory/chinese-videos/',2,'http://www.khmeravenue.com/wp-content/uploads/2014/09/a-150x150.png')
-        addDir('Chinese KhmerStream','http://www.khmerstream.com/albumcategory/chinese-videos/',2,'http://www.khmerstream.com/wp-content/uploads/2014/10/d-150x150.png')
-        addDir('Bollywood Videos','http://www.merlkon.net/albumcategory/bollywood-videos/',2,'http://www.merlkon.com/wp-content/uploads/2012/10/bol-150x150.jpg')
-        addDir('Philippines Videos','http://www.merlkon.net/albumcategory/philippines-videos/',2,'http://www.merlkon.com/wp-content/uploads/2012/09/dyesebel.jpg')
+def HOME():        
+		addDir('Search','http://www.merlkon.net/',4,'http://www.merlkon.com/wp-contents/uploads/logo.jpg')
+		addLink('Login','http://www.merlkon.net/',9,'http://www.merlkon.com/wp-contents/uploads/logo.jpg')
+		addDir('Modern Chinese','http://www.khmeravenue.com/genre/modern-series/',2,'http://www.khmeravenue.com/wp-content/uploads/2015/01/hushanxing-150x150.jpg')
+		addDir('Ancent Chinese','http://www.khmeravenue.com/genre/ancient-series/',2,'http://www.khmeravenue.com/wp-content/uploads/2014/11/f-150x150.png')
+		addDir('Korean Videos','http://www.khmerstream.com/genre/korean/',2,'http://www.khmerstream.com/wp-content/uploads/2015/08/bigman_40-150x150.jpg')
+		addDir('Modern Thai','http://www.merlkon.net/genre/modern-thai/',2,'http://www.merlkon.net/wp-content/uploads/2015/07/lidow_2015729211154504-150x150.jpg')
+		addDir('Boran Thai','http://www.merlkon.net/genre/thai-boran/',2,'http://www.merlkon.net/wp-content/uploads/2014/10/kkk-150x150.jpg')
+		addDir('Horror Thai','http://www.merlkon.net/genre/horror/',2,'http://www.merlkon.net/wp-content/uploads/2013/06/wed-150x150.jpg')
+		addDir('Philippines Videos','http://www.merlkon.net/genre/philippines-videos/',2,'http://www.merlkon.net/wp-content/uploads/2013/09/mkj-150x150.jpg')
+		addDir('Bollywood Videos','http://www.merlkon.net/genre/bollywood-videos/',2,'http://www.merlkon.net/wp-content/uploads/2013/01/santosima-150x150.jpg')
+		addDir('Modern Chinese (KS)','http://www.khmerstream.com/genre/modern-chinese/',2,'http://www.khmerstream.com/wp-content/uploads/2015/05/be-home-for-dinner-2011-s-150x150.jpg')
+		addDir('Ancent Chinese (KS)','http://www.khmerstream.com/genre/ancient-chinese/',2,'http://www.khmerstream.com/wp-content/uploads/2015/08/wulin-150x150.jpg')
+		
+def postContent(url,data,referr,cj):
+    if cj==None:
+        cj = cookielib.LWPCookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    opener.addheaders = [('Accept','text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
+                         ('Accept-Encoding','gzip, deflate'),
+                         ('Referer', referr),
+                         ('Content-Type', 'application/x-www-form-urlencoded'),
+                         ('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0'),
+                         ('Connection','keep-alive'),
+                         ('Accept-Language','en-us,en;q=0.5'),
+                         ('Pragma','no-cache')]
+    usock=opener.open(url,data)
+    if usock.info().get('Content-Encoding') == 'gzip':
+           buf = StringIO.StringIO(usock.read())
+           f = gzip.GzipFile(fileobj=buf)
+           response= f.read()
+    else:
+           response= usock.read()
+    usock.close()
+    return (cj,response)
+	
+if os.path.exists(cookiefile):
+    cj = cookielib.LWPCookieJar()
+    cj.load(cookiefile, ignore_discard=True)
+	
+def GetInput(strMessage,headtxt,ishidden):
+    keyboard = xbmc.Keyboard("",strMessage,ishidden)
+    keyboard.setHeading(headtxt) # optional
+    keyboard.doModal()
+    inputText=""
+    if (keyboard.isConfirmed()):
+        inputText = keyboard.getText()
+    del keyboard
+    return inputText
+
+def getSettings(name,isencrypted):
+    rtnvalue=None
+    if os.path.isfile(settingfilename)!=False:
+         f = open(settingfilename, "r")
+         text = f.read()
+         rtnvalue=re.compile('<'+name+'>(.+?)</'+name+'>', re.IGNORECASE).findall(text)
+         if(len(rtnvalue) >0):
+              rtnvalue=rtnvalue[0]
+         else:
+              rtnvalue=""
+         if(isencrypted==True):
+              rtnvalue=rtnvalue.decode('base-64')
+    return rtnvalue
+	
+def setSettings(username,password,isencrypted):
+    if(isencrypted==True):
+         username=username.encode('base-64')
+         password=password.encode('base-64')
+    vfilecontent="<username>"+username.strip()+"</username><password>"+password.strip()+"</password>"
+    f = open(settingfilename, 'w');f.write(vfilecontent);f.close()
+	
+def AutoLogin(cj,url):
+      if not os.path.exists(datapath): os.makedirs(datapath)
+      if not os.path.exists(cookie_path): os.makedirs(cookie_path)
+      if cj==None:
+           cj = cookielib.LWPCookieJar()
+      strUsername=getSettings('username',True)
+      strpwd=getSettings('password',True)
+      if strUsername != None and strUsername !="" and strpwd != None and strpwd !="":
+           (cj,respon)=postContent("http://www.khmerstream.com/wp-login.php","log="+strUsername+"&redirect_to="+urllib.quote_plus(url)+"&pwd="+strpwd,"http://www.khmerstream.com",cj)
+           cj.save(cookiefile, ignore_discard=True)
+      cj.load(cookiefile,ignore_discard=True)
+      return cj
+
+def GetLoginCookie(cj,cookiefile):
+      if not os.path.exists(datapath): os.makedirs(datapath)
+      if not os.path.exists(cookie_path): os.makedirs(cookie_path)
+      if cj==None:
+           cj = cookielib.LWPCookieJar()
+      strUsername=urllib.quote_plus(GetInput("Please enter your username","Username",False))
+      if strUsername != None and strUsername !="":
+           strpwd=urllib.quote_plus(GetInput("Please enter your password","Password",True))
+           (cj,respon)=postContent("http://www.khmerstream.com/wp-login.php","log="+strUsername+"&redirect_to="+urllib.quote_plus(url)+"&pwd="+strpwd,"http://www.khmerstream.com",cj)
+           setSettings(strUsername,strpwd,True)
+      cj.save(cookiefile, ignore_discard=True)
+      cj=None
+      cj = cookielib.LWPCookieJar()
+      cj.load(cookiefile,ignore_discard=True)
+
+tmpUser=getSettings('username',False)
+tmpPwd=getSettings('password',False)
+
+if(cj==None):
+      cj = cookielib.LWPCookieJar()
+if((tmpUser != None and tmpUser !="") and (tmpPwd != None and tmpPwd !="") and os.path.exists(cookiefile)==False):
+      print "in autologin"
+      AutoLogin(cj,"http://www.khmerstream.com/")
+
+if os.path.exists(cookiefile):
+    cj = cookielib.LWPCookieJar()
+    cj.load(cookiefile, ignore_discard=True)
+
 def INDEX(url):
     #try:
         link = GetContent(url)
@@ -159,19 +269,16 @@ def fetchPage(params={}):
         return ret_obj
 		
 def getVimeoUrl(videoid,currentdomain=""):
-        #currentdomain="http://www.khmeravenue.com"
         result = fetchPage({"link": "http://player.vimeo.com/video/%s?title=0&byline=0&portrait=0" % videoid,"refering": currentdomain})
         collection = {}
+        print result
         if result["status"] == 200:
             html = result["content"]
-            html = html[html.find(',a={'):]
-            html = html[:html.find('}};') + 2]
-            html = html.replace(",a={", '{')
+            html = html[html.find('={"cdn_url"')+1:]
+            html = html[:html.find('}};')]+"}}"
             try:
                   collection = json.loads(html)
-                  codec=collection["request"]["files"]["codecs"][0]
-                  filecol = collection["request"]["files"][codec]
-                  return filecol["sd"]["url"]
+                  return collection["request"]["files"]["h264"]["sd"]["url"]
             except:
                   return getVimeoVideourl(videoid,currentdomain)
 
@@ -268,31 +375,11 @@ def Episodes(url,name):
 
     #except: pass
 
-def postContent(url,data,referr):
-    opener = urllib2.build_opener()
-    opener.addheaders = [('Accept','text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
-                         ('Accept-Encoding','gzip, deflate'),
-                         ('Referer', referr),
-                         ('Content-Type', 'application/x-www-form-urlencoded'),
-                         ('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0'),
-                         ('Connection','keep-alive'),
-                         ('Accept-Language','en-us,en;q=0.5'),
-                         ('Pragma','no-cache'),
-                         ('Host','www.phim.li')]
-    usock=opener.open(url,data)
-    print usock
-    if usock.info().get('Content-Encoding') == 'gzip':
-        buf = StringIO.StringIO(usock.read())
-        f = gzip.GzipFile(fileobj=buf)
-        response = f.read()
-    else:
-        response = usock.read()
-    usock.close()
-    return response
+
 
 def GetContent(url):
     try:
-       net = Net()
+       net = Net(cookie_file=cookiefile)
        second_response = net.http_GET(url)
        return second_response.content
     except:
@@ -387,14 +474,26 @@ def loadPlaylist(url,name):
                 print match
                 vidlink=getDailyMotionUrl(match[0])
                 CreateList('dailymontion',vidlink)
-           elif (newlink.find("docs.google.com") > -1):
-                vidcontent =postContent("http://javaplugin.org/WL/grp2/plugins/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%3B%20U%3B%20Windows%20NT%206%2E1%3B%20en%2DUS%3B%20rv%3A1%2E9%2E2%2E8%29%20Gecko%2F20100722%20Firefox%2F3%2E6%2E8&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true",strDomain)
-                vidmatch=re.compile('"url_encoded_fmt_stream_map":"(.+?)",').findall(vidcontent)
-
-                if(len(vidmatch) > 0):
-                        vidparam=urllib.unquote_plus(vidmatch[0]).replace("\u003d","=")
-                        vidlink=re.compile('url=(.+?)\u00').findall(vidparam)
-                        CreateList('googledocs',vidlink[0])
+           elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
+                vidcontent = GetContent(newlink)
+                html = vidcontent.encode("utf-8","ignore")
+                stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)
+                if(len(stream_map) > 0):
+					formatArray = stream_map[0].replace("\/", "/").split(',')
+					for formatContent in formatArray:
+						 formatContentInfo = formatContent.split('|')
+						 qual = formatContentInfo[0]
+						 vidlink = (formatContentInfo[1]).decode('unicode-escape')
+                else:
+						docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
+						cj = cookielib.LWPCookieJar()
+						newlink1="https://docs.google.com/uc?export=download&id="+docid  
+						(cj,vidcontent) = GetContent2(newlink1,newlink, cj)
+						soup = BeautifulSoup(vidcontent)
+						downloadlink=soup.findAll('a', {"id" : "uc-download-link"})[0]
+						newlink2 ="https://docs.google.com" + downloadlink["href"]
+						vidlink=GetDirVideoUrl(newlink2,cj) 
+                CreateList('googledocs',vidlink)
            elif (newlink.find("video.google.com") > -1):
                 match=re.compile('http://video.google.com/videoplay.+?docid=(.+?)&.+?').findall(newlink)
                 glink=""
@@ -474,15 +573,26 @@ def loadVideos(url,name):
                 	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink.replace("$","?"))
                 vidlink=getDailyMotionUrl(match[0])
                 playVideo('dailymontion',vidlink)
-           elif (newlink.find("docs.google.com") > -1):
-                vidcontent = postContent("http://javaplugin.org/WL/grp2/plugins/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%3B%20U%3B%20Windows%20NT%206%2E1%3B%20en%2DUS%3B%20rv%3A1%2E9%2E2%2E8%29%20Gecko%2F20100722%20Firefox%2F3%2E6%2E8&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true","http://www.superphim.com")
-                if(len(vidcontent.strip())==0):
-                     vidcontent = GetContent(newlink)
-                vidmatch=re.compile('"url_encoded_fmt_stream_map":"(.+?)",').findall(vidcontent)
-                if(len(vidmatch) > 0):
-                        vidparam=urllib.unquote_plus(vidmatch[0]).replace("\u003d","=")
-                        vidlink=re.compile('url=(.+?)\u00').findall(vidparam)
-                        playVideo('google',vidlink[0])
+           elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
+                vidcontent = GetContent(newlink)
+                html = vidcontent.encode("utf-8","ignore")
+                stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)
+                if(len(stream_map) > 0):
+					formatArray = stream_map[0].replace("\/", "/").split(',')
+					for formatContent in formatArray:
+						 formatContentInfo = formatContent.split('|')
+						 qual = formatContentInfo[0]
+						 vidlink = (formatContentInfo[1]).decode('unicode-escape')
+                else:
+						docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
+						cj = cookielib.LWPCookieJar()
+						newlink1="https://docs.google.com/uc?export=download&id="+docid  
+						(cj,vidcontent) = GetContent2(newlink1,newlink, cj)
+						soup = BeautifulSoup(vidcontent)
+						downloadlink=soup.findAll('a', {"id" : "uc-download-link"})[0]
+						newlink2 ="https://docs.google.com" + downloadlink["href"]
+						vidlink=GetDirVideoUrl(newlink2,cj) 
+                playVideo('google',vidlink)
            elif (newlink.find("vimeo") > -1):
                 #
                 print "newlink|" + newlink
@@ -528,29 +638,32 @@ def loadVideos(url,name):
         #except: pass
 
 def getDailyMotionUrl(id):
-    maxVideoQuality="720p"
     content = GetContent("http://www.dailymotion.com/embed/video/"+id)
     if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
-        xbmc.executebuiltin('XBMC.Notification(Info:, (DailyMotion)!,5000)')
+        xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
         return ""
+    
     else:
-        matchFullHD = re.compile('"stream_h264_hd1080_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHD = re.compile('"stream_h264_hd_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHQ = re.compile('"stream_h264_hq_url":"(.+?)"', re.DOTALL).findall(content)
-        matchSD = re.compile('"stream_h264_url":"(.+?)"', re.DOTALL).findall(content)
-        matchLD = re.compile('"stream_h264_ld_url":"(.+?)"', re.DOTALL).findall(content)
-        url = ""
-        if matchFullHD and maxVideoQuality == "1080p":
-            url = urllib.unquote_plus(matchFullHD[0]).replace("\\", "")
-        elif matchHD and (maxVideoQuality == "720p" or maxVideoQuality == "1080p"):
-            url = urllib.unquote_plus(matchHD[0]).replace("\\", "")
-        elif matchHQ:
-            url = urllib.unquote_plus(matchHQ[0]).replace("\\", "")
-        elif matchSD:
-            url = urllib.unquote_plus(matchSD[0]).replace("\\", "")
-        elif matchLD:
-            url = urllib.unquote_plus(matchLD[0]).replace("\\", "")
-        return url
+        get_json_code = re.compile(r'dmp\.create\(document\.getElementById\(\'player\'\),\s*(.+?)}}\)').findall(content)[0]
+        #print len(get_json_code)
+        print get_json_code
+        cc= json.loads(get_json_code+"}}")['metadata']['qualities']  #['380'][0]['url']
+        #print cc
+        if '1080' in cc.keys():
+            #print 'found hd'
+            return cc['1080'][0]['url']
+        elif '720' in cc.keys():
+            return cc['720'][0]['url']
+        elif '480' in cc.keys():
+            return cc['480'][0]['url']
+        elif '380' in cc.keys():
+            return cc['380'][0]['url']
+        elif '240' in cc.keys():
+            return cc['240'][0]['url']
+        elif 'auto' in cc.keys():
+            return cc['auto'][0]['url']
+        else:
+            xbmc.executebuiltin('XBMC.Notification(Info:, No playable Link found (DailyMotion)!,5000)')
 
 def extractFlashVars(data):
     for line in data.split("\n"):
@@ -957,5 +1070,7 @@ elif mode==6:
        SearchResults(url)
 elif mode==8:
        PLAYLIST_VIDEOLINKS(url,name)
+elif mode==9:
+		GetLoginCookie(cj,cookiefile)
 
 xbmcplugin.endOfDirectory(int(sysarg))

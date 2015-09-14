@@ -84,9 +84,15 @@ def ListArtist(url,arttype):
     db.close()
     if(totalartist==0):
         artistlist=GetArtist(url,arttype)
-        for vurl,vimg,aname in artistlist:
-                        cursql=""
-                        addDir(TAG_RE.sub('', aname),vurl,6,vimg)
+
+        for item in artistlist:
+				if(item.has_key("class") ==False or item["class"]!="quickedit"):
+					vurl=item["href"]
+					vimg=""
+					if(item.img!=None):
+						vimg=item.img["src"]
+					aname=item["href"].split("/")[-1].replace("mp3-playlist","").replace("completed","").replace("playlist","").replace(".html","").replace("-"," ")
+					addDir(TAG_RE.sub('', aname),vurl,6,vimg)
 def ListAlbum(url):
     sql = 'SELECT distinct artist_url,album,img FROM songs where artist_url=? order by album'
 
@@ -133,9 +139,19 @@ def ListSongs(artist_url,album):
         totalsong=totalsong+1
         arturl = row[0]
         album=row[1]
+        try:
+			album = album.encode("UTF-8")
+        except: pass
+		
         songImg=row[2]
         songname   = row[3]
+        try:
+			songname = songname.encode("UTF-8")
+        except: pass
         songurl   = row[4].replace(" ","%20")
+        try:
+			songurl = songurl.encode("UTF-8")
+        except: pass
         addPlaylist(songname,songurl,songImg,"")
         songitem(songname,songurl,songImg,album,artist, totalsong)
 
@@ -143,14 +159,12 @@ def ListSongs(artist_url,album):
     db.close()
 	
 def songitem(songname,songurl,songImg,album,artist, totalsong):
-        remfavstring = 'RunScript(plugin.video.1channel,%s,?mode=DeleteFav&section=%s&title=%s&year=%s&url=%s)' %(sys.argv[1],songImg,songname,"",songurl)
         cm = []
-        cm.append(('Remove from Favorites', remfavstring))
-		
         trackLabel = artist + " - " + album + " - " + songname
+
         item = xbmcgui.ListItem(label = trackLabel, thumbnailImage=songImg, iconImage=songImg)
         item.setPath(songurl)
-        item.setInfo( type="Video", infoLabels={ "title": name, "album": album, "artist": artist} )
+        item.setInfo( type="Video", infoLabels={ "title": name, "album": album} )
         item.setProperty('mimetype', 'audio/mpeg')
         item.setProperty("IsPlayable", "true")
         item.setProperty('title', songname)
@@ -230,25 +244,37 @@ def GetArtist(url,name):
         dialog.update(0)
         link = GetContent(url)
         link = ''.join(link.splitlines()).replace('\'','"')
-        vidcontent=re.compile('<h2 class="title">'+name+'</h2>(.+?)</table>').findall(link)
-        artlist1=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>\s*<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*><!-- End(.+?)-->').findall(vidcontent[0])
-        artlist2=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>\s*<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*></a><!-- End(.+?)-->').findall(vidcontent[0])
-        artlist = list(set(artlist1 + artlist2))
-        for vurl,vimg,aname in artlist:
-                        cursql=""
-                        cursql = "REPLACE INTO artist( name,artist_url,img,art_type) VALUES('%s','%s','%s','%s'); " %(TAG_RE.sub('', aname),vurl.replace("'",""),vimg,name)
-                        if DB == 'sqlite':
-                                cursql = 'INSERT OR ' + cursql.replace('%s','?')
-                        SaveData(cursql)
+        soup = BeautifulSoup(link)
+        listcontent=soup.findAll('h2', {"class" : "title"})
+        alllisting=None
+        for artist in listcontent:
+			if(artist.contents[0]==name):
+				maindiv=artist.parent
+				alllisting=maindiv.findAll('a')
+				for item in alllisting:
+					if(item.has_key("class") ==False or item["class"]!="quickedit"):
+						vurl=item["href"]
+						vimg=""
+						if(item.img!=None):
+							vimg=item.img["src"]
+						aname=item["href"].split("/")[-1].replace("mp3-playlist","").replace("completed","").replace("playlist","").replace(".html","").replace("-"," ")
+						cursql=""
+						cursql = "REPLACE INTO artist( name,artist_url,img,art_type) VALUES('%s','%s','%s','%s'); " %(TAG_RE.sub('', aname),vurl.replace("'",""),vimg,name)
+						if DB == 'sqlite':
+								cursql = 'INSERT OR ' + cursql.replace('%s','?')
+						SaveData(cursql)
+
         dialog.close()
-        return artlist
+        return alllisting
 						
 def GetSongs(url):
         dialog = xbmcgui.DialogProgress()
         dialog.create('Refreshing Data', 'Refreshing Database...')       
         dialog.update(0)
         link = GetContent(url)
-        link = link.encode("UTF-8")
+        try:
+			link = link.encode("UTF-8")
+        except: pass
         link = ''.join(link.splitlines()).replace('\t','')
         embsrc=re.compile('<embed [^>]*flashvars=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)
         xmlsrc = embsrc[0].split("&amp;")

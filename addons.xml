@@ -262,7 +262,7 @@
 
 <addon
   id="plugin.video.dramago"
-  version="1.0.6"
+  version="1.0.7"
   name="DramaGo"
   provider-name="Dknight">
   <requires>
@@ -445,7 +445,7 @@
 
 <addon
   id="plugin.video.KhmerAvenue"
-  version="1.0.32"
+  version="1.0.33"
   name="KhmerAvenue"
   provider-name="Dknight">
   <requires>
@@ -532,7 +532,7 @@
 
 <addon
   id="plugin.video.KhmerTv"
-  version="1.0.24"
+  version="1.0.25"
   name="KhmerTv"
   provider-name="Dknight">
   <requires>
@@ -902,7 +902,7 @@
 
 <addon
   id="plugin.video.yeuphim"
-  version="1.0.13"
+  version="1.0.14"
   name="yeuphim.net"
   provider-name="Dknight">
   <requires>

@@ -136,6 +136,7 @@ def Parts(url,name):
         try:
             link =link.encode("UTF-8")
         except: pass
+        print link
         partlist=re.compile('<ul class="listew">(.+?)</ul>').findall(link)
         partlist=re.compile('<li>(.+?)<\/li>').findall(partlist[0])
         totalpart=0
@@ -158,6 +159,7 @@ def Parts(url,name):
 
                               mirrortitle = mirrorname+" "+partname
                               if(len(partlist) > 1 and totalpart>0):
+                                     print vlink
                                      if DISPLAY_MIRRORS:
                                          addDir(name +"@"+mirrortitle,vlink,3,"")
                                      else:
@@ -271,30 +273,50 @@ def postContent(url,data,referr):
     usock.close()
     return response
 	
+def getDailyMotionUrl(id):
+    content = GetContent("http://www.dailymotion.com/embed/video/"+id)
+    if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
+        xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
+        return ""
+    
+    else:
+        get_json_code = re.compile(r'dmp\.create\(document\.getElementById\(\'player\'\),\s*(.+?)}}\)').findall(content)[0]
+        #print len(get_json_code)
+        print get_json_code
+        cc= json.loads(get_json_code+"}}")['metadata']['qualities']  #['380'][0]['url']
+        #print cc
+        if '1080' in cc.keys():
+            #print 'found hd'
+            return cc['1080'][0]['url']
+        elif '720' in cc.keys():
+            return cc['720'][0]['url']
+        elif '480' in cc.keys():
+            return cc['480'][0]['url']
+        elif '380' in cc.keys():
+            return cc['380'][0]['url']
+        elif '240' in cc.keys():
+            return cc['240'][0]['url']
+        elif 'auto' in cc.keys():
+            return cc['auto'][0]['url']
+        else:
+            xbmc.executebuiltin('XBMC.Notification(Info:, No playable Link found (DailyMotion)!,5000)')
+			
 def Videosresolve(url,name):
         #try:
            newlink=url
+           print "Videosresolve|" +url
            if (newlink.find("dailymotion") > -1):
-                match=re.compile('http://www.dailymotion.com/embed/video/(.+?)\?').findall(url)
+                match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink)
                 if(len(match) == 0):
-                        match=re.compile('http://www.dailymotion.com/video/(.+?)&dk;').findall(url+"&dk;")
+                        match=re.compile('http://www.dailymotion.com/video/(.+?)&dk;').findall(newlink+"&dk;")
+                else:
+						match=re.compile('www.dailymotion.com/video/(.+?)&dk;').findall(match[0]+"&dk;")
                 if(len(match) == 0):
-                        match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(url)
-                link = 'http://www.dailymotion.com/video/'+str(match[0])
-                req = urllib2.Request(link)
-                req.add_header('User-Agent', UASTR)
-                response = urllib2.urlopen(req)
-                link=response.read()
-                response.close()
-                sequence=re.compile('<param name="flashvars" [^>]*value=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)
-                newseqeunce = urllib.unquote(sequence[0]).decode('utf8').replace('\\/','/')
-                #print 'in dailymontion:' + str(newseqeunce)
-                imgSrc=re.compile('"videoPreviewURL":"(.+?)"').findall(newseqeunce)
-                if(len(imgSrc[0]) == 0):
-                	imgSrc=re.compile('/jpeg" href="(.+?)"').findall(link)
-                dm_low=re.compile('"video_url":"(.+?)",').findall(newseqeunce)
-                dm_high=re.compile('"hqURL":"(.+?)"').findall(newseqeunce)
-                vidlink=urllib2.unquote(dm_low[0]).decode("utf8")
+                        match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(newlink)
+                if(len(match) == 0):
+                	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink.replace("$","?"))
+                print match
+                vidlink=getDailyMotionUrl(match[0])
            elif (newlink.find("cloudy") > -1):
                 pcontent=GetContent(newlink)
                 pcontent=''.join(pcontent.splitlines()).replace('\'','"')
@@ -325,7 +347,9 @@ def Videosresolve(url,name):
                 link=urllib.unquote_plus(GetContent(newlink))
                 link=''.join(link.splitlines()).replace('\'','"')
                 media_url= ""
-                media_url = re.compile('playlist:\s*\[\s*\{\s*url:\s*"(.+?)",').findall(link)
+                media_url = re.compile('load.{file:\s*"(.+?)"').findall(link)
+                if(len(media_url)==0):
+                    media_url = re.compile('playlist:\s*\[\s*\{\s*url:\s*"(.+?)",').findall(link)
                 if(len(media_url)==0):
                     media_url = re.compile('{file:\s*"(.+?)"').findall(link)
                 if(len(media_url)==0):
@@ -649,6 +673,7 @@ def getYoutube(videoid):
 def loadVideos(url,name):
 		GA("LoadVideo",name)
 		episode_name = ""
+		print "loading from video " + url
 		if DISPLAY_MIRRORS == False:
 			episode_name = name
 		link=GetContent(url)
@@ -657,6 +682,7 @@ def loadVideos(url,name):
 			newlink =newlink.encode("UTF-8")
 		except: pass
 		match=re.compile('<div id="player" align="center"><iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(newlink)
+		print decodeurl("b05069c89f5eddc494343b4ee78597be4a74046bf6b5bfd6d5be69fa66cd83348ce03ecba24c94378dde1d5fb096d27dd60404d98cca2e76c50fbdfa2cc529e07db9dfdbb249c8133f48b515849d50c36f8dbe073174faefb407ce0a440ef7a88aab1406c6ba96cde67a998032543186")
 		if(len(match) > 0):
 				try:
 					if(match[0].find("dldrama.com")>-1):

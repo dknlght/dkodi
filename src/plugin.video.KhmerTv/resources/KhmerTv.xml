@@ -15,16 +15,6 @@
       <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/khmer-mytv-standardHD.jpg</thumbnail>
       <resolve>true</resolve>
     </item>
-	<item>
-      <title>KhipTV</title>
-      <link>http://securemcp.com:1935/8138/8138/playlist.m3u8</link>
-      <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/khmertvchannelHD.jpg</thumbnail>
-    </item>
-    <item>
-      <title>Khmer TV</title>
-      <link>http://vodplay.malimarserver.com/Movie14/_definst_/mp4:WhoIsMyFather.mp4/chunklist_w535581516.m3u8?token=mp4%3AWhoIsMyFather.mp4-1428450832000-kcb9ji94ggj5b5f4-dbabf4c891d7ba7f865dafc0f5808b03</link>
-      <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/khmertvchannelHD.jpg</thumbnail>
-    </item>
     <item>
       <title>MediaBiz</title>
       <link>http://live.wmncdn.net/medibiztv/d0dbe915091d400bd8ee7f27f0791303.sdp/playlist.m3u8</link>
@@ -58,11 +48,6 @@
       <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/tv3HD.jpg</thumbnail>
     </item>
 	<item>
-      <title>DMusic</title>
-      <link>rtmp://laxlive02.malimarcdn.com:1935/khorigin00/_definst_/dmusic.sdp</link>
-      <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/dmusicHD.jpg</thumbnail>
-    </item>
-	<item>
       <title>ETV</title>
       <link>http://mobile.interface.stmg.net.kh/nn_cms/nn_cms_view/jpz/n3_a_a.php?nns_version=2.3.7.0.2.SC-JPZ-IPAD.0.0_Release&amp;nns_output_type=json&amp;nns_user_agent=nn_pad/ipad/1.0.0&amp;nns_language=en_US&amp;nns_tag=28&amp;nns_user_id=IPADB123456789089756745634523456&amp;nns_device_id=&amp;nns_buss_id=2000002&amp;nns_category_id=1000001&amp;nns_func=apply_play_video&amp;nns_mac_id=112233445566&amp;nns_media_assets_id=pad_live_v1&amp;nns_media_id=19446ec121a1fac407ecd1459467ba5c&amp;nns_video_id=f7d0d8935e3b8483e5b315fc2f54c4be&amp;nns_video_index=0&amp;nns_video_type=1</link>
       <thumbnail>https://aseaniptv2.s3.amazonaws.com/images/channel/428/image/etvHD.jpg</thumbnail>
@@ -80,25 +65,17 @@
       <thumbnail>http://khmer.be/images/tv/hangmeas-100x70.jpg</thumbnail>
       <resolve>true</resolve>
     </item>
+	<item>
+      <title>PNN</title>
+      <link>http://mobile.interface.stmg.net.kh/nn_cms/nn_cms_view/jpz/n3_a_a.php?nns_version=2.3.7.0.2.SC-JPZ-IPAD.0.0_Release&amp;nns_output_type=json&amp;nns_user_agent=nn_pad/ipad/1.0.0&amp;nns_language=en_US&amp;nns_tag=28&amp;nns_user_id=IPADB123456789089756745634523456CA&amp;nns_device_id=&amp;nns_buss_id=2000002&amp;nns_category_id=1000001&amp;nns_func=apply_play_video&amp;nns_mac_id=112233445566&amp;nns_media_assets_id=pad_live_v1&amp;nns_media_id=6908f16664289ae2da7be827a888dff0&amp;nns_video_id=72027a6e149f60e6055481b8bba5f3fa&amp;nns_video_index=0&amp;nns_video_type=1</link>
+      <thumbnail>http://www.phnompenhpost.com/sites/default/files/pnn.jpg</thumbnail>
+      <resolve>true</resolve>
+    </item>
     <item>
       <title>Sea TV</title>
-      <link>rtmp://live.khmer.be:1935/live/SEATV playpath=SEATV swfUrl=http://khmer.be/KhmerTV/player.swf pageUrl=http://khmer.be/Live-TV/default.aspx?ch=seatv live=1</link>
+      <link>http://mobile.interface.stmg.net.kh/nn_cms/nn_cms_view/jpz/n3_a_a.php?nns_version=2.3.7.0.2.SC-JPZ-IPAD.0.0_Release&amp;nns_output_type=json&amp;nns_user_agent=nn_pad/ipad/1.0.0&amp;nns_language=en_US&amp;nns_tag=28&amp;nns_user_id=IPADB123456789089756745634523456CA&amp;nns_device_id=&amp;nns_buss_id=2000002&amp;nns_category_id=1000001&amp;nns_func=apply_play_video&amp;nns_mac_id=112233445566&amp;nns_media_assets_id=pad_live_v1&amp;nns_media_id=6696f204db449bbe3da368cb85840dbf&amp;nns_video_id=9d4799352a1eca5952f2b3bbc3f0f6d8&amp;nns_video_index=0&amp;nns_video_type=1</link>
       <thumbnail>http://khmer.be/images/tv/seatv.gif</thumbnail>
-    </item>
-    <item>
-      <title>Sea TV News</title>
-      <link>rtsp://203.176.137.164:1935/liveinfo/myStream</link>
-      <thumbnail>http://khmer.be/images/tv/seatv.gif</thumbnail>
-    </item>
-    <item>
-      <title>Sea TV Education</title>
-      <link>rtsp://203.176.137.164:1935/liveedu/myStream</link>
-      <thumbnail>http://khmer.be/images/tv/seatv.gif</thumbnail>
-    </item>
-    <item>
-      <title>Sea TV culture</title>
-      <link>rtsp://203.176.137.164:1935/livecult/myStream</link>
-      <thumbnail>http://khmer.be/images/tv/seatv.gif</thumbnail>
+      <resolve>true</resolve>
     </item>
     <item>
       <title>TVK</title>
@@ -106,8 +83,14 @@
       <thumbnail>http://khiptv.com/images_tv/TVK.PNG</thumbnail>
     </item>
     <item>
+      <title>Apsara</title>
+      <link>http://mobile.interface.stmg.net.kh/nn_cms/nn_cms_view/jpz/n3_a_a.php?nns_version=2.3.7.0.2.SC-JPZ-IPAD.0.0_Release&amp;nns_output_type=json&amp;nns_user_agent=nn_pad/ipad/1.0.0&amp;nns_language=en_US&amp;nns_tag=28&amp;nns_user_id=IPADB123456789089756745634523456&amp;nns_device_id=&amp;nns_buss_id=2000002&amp;nns_category_id=1000001&amp;nns_func=apply_play_video&amp;nns_mac_id=112233445566&amp;nns_media_assets_id=pad_live_v1&amp;nns_media_id=5c6a5dc8dc903af99b7eb41b020b40e6&amp;nns_video_id=07b506429e01034350f1f7508043ba17&amp;nns_video_index=0&amp;nns_video_type=1</link>
+      <thumbnail>http://khiptv.com/images_tv/APSARA.JPG</thumbnail>
+	  <resolve>true</resolve>
+    </item>
+    <item>
       <title>Bayon</title>
-      <link>rtmp://live.khmer.be:1935/live/BayonTV</link>
+      <link>http://mobile.interface.stmg.net.kh/nn_cms/nn_cms_view/jpz/n3_a_a.php?nns_version=2.3.7.0.2.SC-JPZ-IPAD.0.0_Release&amp;nns_output_type=json&amp;nns_user_agent=nn_pad/ipad/1.0.0&amp;nns_language=en_US&amp;nns_tag=28&amp;nns_user_id=IPADB123456789089756745634523456CA&amp;nns_device_id=&amp;nns_buss_id=2000002&amp;nns_category_id=1000001&amp;nns_func=apply_play_video&amp;nns_mac_id=112233445566&amp;nns_media_assets_id=pad_live_v1&amp;nns_media_id=3fab1344412c07302c3710e9f474ef72&amp;nns_video_id=8bbf89d7eb9e8230be83780d9bf6e7f2&amp;nns_video_index=0&amp;nns_video_type=1</link>
       <thumbnail>
       http://khiptv.com/images_tv/bayon-tv.png</thumbnail>
     </item>
@@ -117,62 +100,9 @@
       <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/btvHD.jpg</thumbnail>
     </item>
     <item>
-      <title>bayon_NEWS</title>
-      <link>http://svr-live.khmerlive.tv/bayonnews?ovpsv=2.3.1.0</link>
-      <thumbnail>
-      http://khiptv.com/images_tv/BayonTV1.png</thumbnail>
-    </item>
-    <item>
       <title>NCT</title>
       <link>rtmp://123.30.134.108/live/nctlive</link>
       <thumbnail>http://khiptv.com/images_tv/TV9.png</thumbnail>
-    </item>
-    <item>
-      <title>Apsara</title>
-      <link>http://mobile.interface.stmg.net.kh/nn_cms/nn_cms_view/jpz/n3_a_a.php?nns_version=2.3.7.0.2.SC-JPZ-IPAD.0.0_Release&amp;nns_output_type=json&amp;nns_user_agent=nn_pad/ipad/1.0.0&amp;nns_language=en_US&amp;nns_tag=28&amp;nns_user_id=IPADB123456789089756745634523456&amp;nns_device_id=&amp;nns_buss_id=2000002&amp;nns_category_id=1000001&amp;nns_func=apply_play_video&amp;nns_mac_id=112233445566&amp;nns_media_assets_id=pad_live_v1&amp;nns_media_id=5c6a5dc8dc903af99b7eb41b020b40e6&amp;nns_video_id=07b506429e01034350f1f7508043ba17&amp;nns_video_index=0&amp;nns_video_type=1</link>
-      <thumbnail>http://khiptv.com/images_tv/APSARA.JPG</thumbnail>
-	  <resolve>true</resolve>
-    </item>
-    <item>
-      <title>2KPTV</title>
-      <link>http://khiptv.org/abc/playlist.m3u8</link>
-      <thumbnail>DefaultVideo.png</thumbnail>
-    </item>
-    <item>
-      <title>DMusic</title>
-      <link>http://liveplay3.malimarcdn.com/khliveedge00/dmusic.stream/playlist.m3u8?token=dmusic.stream-1415504898000-14ehcf3ie26bacj8358-3b203d6f53bce733319fdf3ffdab3584</link>
-      <thumbnail>https://aseaniptv2.s3.amazonaws.com/images/channel/407/image/sd_dmcHD.jpg</thumbnail>
-    </item>
-    <item>
-      <title>B_TV</title>
-      <link>mmsh://199.189.105.148:80/bayonnews?MSWMExt=.asf</link>
-      <thumbnail> </thumbnail>
-    </item>
-    <item>
-      <title>MeKong_TV</title>
-      <link>http://e-magic.info:44412/MeKong_TV</link>
-      <thumbnail>http://khiptv.com/images_TV/MK.png</thumbnail>
-    </item>
-    <item>
-      <title>Good_Idea</title>
-      <link>http://e-magic.info:44412/Good_Idea</link>
-      <thumbnail>
-      http://khiptv.com/images_tv/goodidea.png</thumbnail>
-    </item>
-    <item>
-      <title>knn_TV</title>
-      <link>mmsh://e-magic.info:44412/KGN_HK?MSWMExt=.asf</link>
-      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
-    </item>
-    <item>
-      <title>nlakorn</title>
-      <link>http://184.105.192.5:44412/nlakorn</link>
-      <thumbnail>http://khiptv.com/images_TV/lakorn.jpg</thumbnail>
-    </item>
-	    <item>
-      <title>MK TV</title>
-      <link>mms://72.52.104.25/mktv</link>
-      <thumbnail>http://khiptv.com/images_TV/lakorn.jpg</thumbnail>
     </item>
   </channel>
   <channel>
