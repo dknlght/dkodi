@@ -474,10 +474,10 @@ def ParseVideoLink(url,name,movieinfo):
                 media_url= ""
                 media_url = re.compile('_url\s*=\s*"(.+?)";').findall(link)[0]
                 vidlink = urllib.unquote_plus(media_url) #GetDirVideoUrl(media_url)
-        elif (redirlink.find("yourupload") > -1 or redirlink.find("oose.io") > -1):
+        elif (redirlink.find("yourupload") > -1 or redirlink.find("oose.io") > -1 or redirlink.find("yucache.net") > -1):
                 media_url= ""
                 media_url = re.compile('<meta property="og:video" [^>]*content=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)[0]
-                vidlink = media_url
+                vidlink = media_url+"|referer=http://www.yourupload.com/jwplayer/jwplayer.flash.swf"
         elif (redirlink.find("video44") > -1):
                 media_url= ""
                 media_url = re.compile('file:\s*"(.+?)"').findall(link)
