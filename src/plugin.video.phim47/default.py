@@ -37,7 +37,7 @@ def RemoveHTML(inputstring):
 	
 def HOME():
         addDir('Search','http://film.vnzoomin.com/',4,'')
-        link = GetContent(homeLink+"phim-ts-q6p1/")
+        link = GetContent(homeLink)
         try:
             link =link.encode("UTF-8")
         except: pass

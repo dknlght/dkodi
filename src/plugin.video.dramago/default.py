@@ -44,6 +44,19 @@ class InputWindow(xbmcgui.WindowDialog):# Cheers to Bastardsmkr code already don
 		
 def GetContent(url):
     try:
+		net = Net()
+		second_response = net.http_GET(url)
+		rcontent=second_response.content
+		try:
+				rcontent =rcontent.encode("UTF-8")
+		except: pass
+		return rcontent
+    except:	
+       d = xbmcgui.Dialog()
+       d.ok(url,"Can't Connect to site",'Try again in a moment')
+	   
+def GetContent2(url):
+    try:
 		headers = {}
 		headers['Accept-Encoding'] = 'gzip'
 		headers['User-Agent'] = 'okhttp/2.3.0'
@@ -280,13 +293,13 @@ def SensenGetVideo(url):
 			else:
 				vname="mirror " + str(ctr)
 			vlink=item["src"]
-			addLink(vname,vlink,3,"","direct")
+			addLink(vname,vlink,34,"","direct")
         ctr=0
         for item in soup.findAll('iframe'):
 			ctr=ctr+1
 			vlink=item["src"]
 			vname=vlink.split("/")[2] 
-			addLink(vname+" part " +str(ctr),vlink,3,"")
+			addLink(vname+" part " +str(ctr),vlink,34,"")
 
 def GetJSON(url,data,referr):
     #opener = urllib2.build_opener()
@@ -299,7 +312,7 @@ def GetJSON(url,data,referr):
     #                     ('Accept-Language','en-us,en;q=0.5'),
     #                     ('Pragma','no-cache')]
     #usock=opener.open(url,data)
-    resp=GetContent(url)
+    resp=GetContent2(url)
     data = json.loads(resp)
     #usock.close()
     return data
@@ -2027,8 +2040,10 @@ if os.path.isfile(db_dir)==False:
      initDatabase()
 	 
 def playVideo(url,name,movieinfo):
-        #vidurl=ParseVideoLink(url,name,movieinfo);
-        vidurl=url;
+        if(movieinfo!="direct"):
+			vidurl=ParseVideoLink(url,name,movieinfo);
+        else:
+			vidurl=url;
         xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(vidurl)
 		
@@ -2141,6 +2156,8 @@ print "currentmode" + str(mode)
 if mode==None or url==None or len(url)<1:
         HOME()
 elif mode==3:
+        playVideo(url,name,"direct")
+elif mode==34:
         playVideo(url,name,movieinfo)
 elif mode==4:
         Mirrors(url,name) 

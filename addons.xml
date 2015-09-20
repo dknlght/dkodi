@@ -262,7 +262,7 @@
 
 <addon
   id="plugin.video.dramago"
-  version="1.0.8"
+  version="1.0.9"
   name="DramaGo"
   provider-name="Dknight">
   <requires>
@@ -686,7 +686,6 @@
   name="phim47"
   provider-name="Dknight">
   <requires>
-        <import addon="xbmc.python" version="2.1.0" optional="true" />
 		<import addon="script.module.simplejson" />
 		<import addon="script.module.urlresolver"  version="0.0.1"/>
         <import addon="script.module.t0mm0.common" version="1.1.0"/>
