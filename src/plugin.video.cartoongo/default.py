@@ -41,13 +41,21 @@ class InputWindow(xbmcgui.WindowDialog):# Cheers to Bastardsmkr code already don
 		
 def GetContent(url):
     try:
-       net = Net()
-       second_response = net.http_GET(url)
-       rcontent=second_response.content
-       try:
-            rcontent =rcontent.encode("UTF-8")
-       except: pass
-       return rcontent
+		headers = {}
+		headers['Accept-Encoding'] = 'gzip'
+		headers['User-Agent'] = 'okhttp/2.3.0'
+		headers['Connection'] = 'keep-alive'
+		headers['Host']='api.animetoon.tv'
+		headers['App-LandingPage']='http://www.mobi24.net/toon.html'
+		headers['App-Name']='#Toonmania'
+		headers['App-Version']='7.5'
+		net = Net()
+		second_response = net.http_GET(url,headers=headers)
+		rcontent=second_response.content
+		try:
+				rcontent =rcontent.encode("UTF-8")
+		except: pass
+		return rcontent
     except:	
        d = xbmcgui.Dialog()
        d.ok(url,"Can't Connect to site",'Try again in a moment')
@@ -227,7 +235,7 @@ def PLAYLIST_VIDEOLINKS(vidlist,name):
         playList = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
         playList.clear()
         #time.sleep(2)
-        links = vidlist.split(',')
+        links = vidlist.split('|')
         pDialog = xbmcgui.DialogProgress()
         ret = pDialog.create('Loading playlist...')
         totalLinks = len(links)-1
@@ -236,7 +244,8 @@ def PLAYLIST_VIDEOLINKS(vidlist,name):
         pDialog.update(0,'Please wait for the process to retrieve video link.',remaining_display)
         
         for videoLink in links:
-                CreateList(ParseVideoLink(videoLink,name,name+str(loadedLinks + 1)))
+                #CreateList(ParseVideoLink(videoLink,name,name+str(loadedLinks + 1)))
+                CreateList(videoLink)
                 loadedLinks = loadedLinks + 1
                 percent = (loadedLinks * 100)/totalLinks
                 #print percent
@@ -252,19 +261,28 @@ def PLAYLIST_VIDEOLINKS(vidlist,name):
         return ok
 		
 def Mirrors(EpisodeID,name):
-	MirrorList=GetJSON("http://api.animetoon.tv/GetVideos/"+EpisodeID,"","")
+	MirrorList=GetJSON("http://api.animetoon.tv/GetVideos/"+EpisodeID+"?direct","","")
 	mctr=1
+	playurl={}
 	for vidgroup in MirrorList:
-		ctr=1
-		mirrorname=vidgroup[0].split("/")[2]
-		for vidurl in vidgroup:
+		#
+		for i in range(len(vidgroup)):
+		#for viditem in vidgroup:
+			if(vidgroup[i]["source"]=="storage"):
+				mirrorname=vidgroup[i]["link"].split("/")[2]
+			else:
+				mirrorname=vidgroup[i]["source"]
+			addLink(mirrorname + " part " + str(mctr) + " Mirror " +str(i+1) ,vidgroup[i]["link"],3,"",name) 
 			
-			addLink(mirrorname + " Mirror " +str(mctr) + " part " + str(ctr),vidurl,3,"",name) 
-			ctr=ctr+1
-		if(ctr>2):
-			vurllist=",".join(vidgroup)
-			addLink("-----Play all "+ str(ctr-1)+ " "+ mirrorname + " parts ------",vurllist,28,"",name) 
+			#vurllist=",".join(vidgroup[i]["link"])
+			if(playurl.has_key(i)):
+				playurl[i]=playurl[i]+"|"+vidgroup[i]["link"]
+			else:
+				playurl[i]=vidgroup[i]["link"] 
 		mctr=mctr+1
+	for key in playurl:
+		if(playurl[key].find("|")>-1):
+			addLink("-----Play all mirror "+ str(key+1)+ " parts ------",playurl[key],28,"",name) 
 		
 
 
@@ -1888,7 +1906,8 @@ if os.path.isfile(db_dir)==False:
      initDatabase()
 	 
 def playVideo(url,name,movieinfo):
-        vidurl=ParseVideoLink(url,name,movieinfo);
+        #vidurl=ParseVideoLink(url,name,movieinfo);
+        vidurl=url;
         xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(vidurl)
 		

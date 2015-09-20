@@ -43,7 +43,7 @@
 
 <addon
   id="plugin.video.animego"
-  version="1.0.4"
+  version="1.0.5"
   name="animego"
   provider-name="Dknight">
   <requires>
@@ -156,7 +156,7 @@
 
 <addon
   id="plugin.video.cartoongo"
-  version="1.0.2"
+  version="1.0.3"
   name="cartoongo"
   provider-name="Dknight">
   <requires>
@@ -262,7 +262,7 @@
 
 <addon
   id="plugin.video.dramago"
-  version="1.0.7"
+  version="1.0.8"
   name="DramaGo"
   provider-name="Dknight">
   <requires>
