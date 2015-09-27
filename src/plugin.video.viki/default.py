@@ -43,10 +43,10 @@ strdomain ="https://www.viki.com"
 enableProxy= ADDON.getSetting('enableProxy')
 enableTrans= (ADDON.getSetting('enableTrans')=="true")
 translanguage=ADDON.getSetting('translang')
-reg_list = ["https://us-free-proxy.cyberghostvpn.com/go/browse.php?uu=*url*&b=7", 
-            "https://ro-free-proxy.cyberghostvpn.com/go/browse.php?u=*url*&b=7",
-            "https://de-free-proxy.cyberghostvpn.com/go/browse.php?u=*url*&b=7", 
-            "https://gb-free-proxy.cyberghostvpn.com/go/browse.php?u=*url*&b=7"]
+reg_list = ["https://losangeles-s02-i01.cg-dialup.net/go/browse.php?u=*url*&b=7", 
+            "https://bucharest-s05-i01.cg-dialup.net/go/browse.php?u=*url*&b=7",
+            "https://frankfurt-s02-i01.cg-dialup.net/go/browse.php?u=*url*&b=7", 
+            "https://frankfurt-s02-i01.cg-dialup.net/go/browse.php?u=*url*&b=7"]
 proxyurl = reg_list[int(ADDON.getSetting('region'))]
 
 class Translator:
@@ -362,7 +362,7 @@ def UpdatedVideos(url,name):
 				vid=divcotent.a["data-resource-id"]
 				if(vtype=="episode"):
 					mode=7
-					vlink= "http://api.viki.io/v4/containers/"+vidcon+"/episodes.json?per_page=1000&with_paging=true&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"
+					vlink= "http://api.viki.io/v4/containers/"+vidcon+"/episodes.json?per_page=1000&with_paging=true&page=1&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"
 				elif(vtype=="clip"):
 					vlink=vid
 					mode=4
@@ -386,7 +386,7 @@ def getContainerID(url):
         link = ''.join(link.splitlines()).replace('\t','')
         vidid,vtype=re.compile('"container":\{"id":"(.+?)","type":"(.+?)",').findall(link)[0]
         if(vtype=="series"):
-			newurl="http://api.viki.io/v4/containers/"+vidid+"/episodes.json?per_page=1000&with_paging=true&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"
+			newurl="http://api.viki.io/v4/containers/"+vidid+"/episodes.json?per_page=1000&with_paging=true&page=1&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"
         else:
 		
 			#vidid=re.compile('video_json\s*=\s*\{"id":"(.+?)",').findall(link)[0]
@@ -409,12 +409,14 @@ def getVidPage(url,page):
 		transtext=""
 		namelist=[]
 		ctr=0
+		vimg=""
 		if(enableTrans):
 			for episode in data["response"]:
 				vname = "Episode " + str(episode["number"]) +": "+ episode["container"]["titles"]["en"]
 				transtext=transtext+vname+"|"
 			transtext=translator.translate(transtext.encode("UTF-8","ignore")).replace(" | ","|")
 			namelist=transtext.split("|")
+		totalpage=round((int(data["count"])/50)+ .5)
 		for episode in data["response"]:
 			vname = "Episode " + str(episode["number"]) +": "+ episode["container"]["titles"]["en"]
 			vimg= episode["container"]["images"]["poster"]["url"]
@@ -423,7 +425,14 @@ def getVidPage(url,page):
 				vname=namelist[ctr]
 			addDir(vname.encode("UTF-8","ignore"),vid,4,vimg)
 			ctr=ctr+1
-			
+		if(url.find("page=") > -1):
+			nextpagenum=re.compile('&page=(.+?)&').findall(url)
+			nextnum=int(nextpagenum[0])+1
+			prevnum=int(nextpagenum[0])-1
+			if(nextnum <= totalpage):
+				addDir("Next page>>",url.replace("page="+nextpagenum[0],"page="+str(nextnum)),7,vimg)
+			if(prevnum >= 1):
+				addDir("<<Previous page",url.replace("page="+nextpagenum[0],"page="+str(prevnum)),7,vimg)
 def getVidPage2(url,page):
   url1=url
   if(url.find("related_videos") == -1):
@@ -549,6 +558,17 @@ def getVideoUrl(url,name):
                         match=re.compile('/video/(.+?)&dk;').findall(dailylink)
                 link = 'http://www.dailymotion.com/video/'+str(match[0])
                 vidlink=getDailyMotionUrl(str(match[0]))
+        elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
+                vidcontent = GetContent(newlink)
+                html = vidcontent.encode("utf-8","ignore")
+                stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)
+                vidlink=""
+                if(len(stream_map) > 0):
+					formatArray = stream_map[0].replace("\/", "/").split(',')
+					for formatContent in formatArray:
+						 formatContentInfo = formatContent.split('|')
+						 qual = formatContentInfo[0]
+						 vidlink = (formatContentInfo[1]).decode('unicode-escape')
         elif(url.find("google") > -1):
             vidcontent=GetContent(url)
             vidmatch=re.compile('"application/x-shockwave-flash"\},\{"url":"(.+?)",(.+?),(.+?),"type":"video/mpeg4"\}').findall(vidcontent)
@@ -571,29 +591,32 @@ def getVideoUrl(url,name):
         return vidlink
 		
 def getDailyMotionUrl(id):
-    maxVideoQuality="720p"
     content = GetContent("http://www.dailymotion.com/embed/video/"+id)
     if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
         xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
         return ""
+    
     else:
-        matchFullHD = re.compile('"stream_h264_hd1080_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHD = re.compile('"stream_h264_hd_url":"(.+?)"', re.DOTALL).findall(content)
-        matchHQ = re.compile('"stream_h264_hq_url":"(.+?)"', re.DOTALL).findall(content)
-        matchSD = re.compile('"stream_h264_url":"(.+?)"', re.DOTALL).findall(content)
-        matchLD = re.compile('"stream_h264_ld_url":"(.+?)"', re.DOTALL).findall(content)
-        url = ""
-        if matchFullHD and maxVideoQuality == "1080p":
-            url = urllib.unquote_plus(matchFullHD[0]).replace("\\", "")
-        elif matchHD and (maxVideoQuality == "720p" or maxVideoQuality == "1080p"):
-            url = urllib.unquote_plus(matchHD[0]).replace("\\", "")
-        elif matchHQ:
-            url = urllib.unquote_plus(matchHQ[0]).replace("\\", "")
-        elif matchSD:
-            url = urllib.unquote_plus(matchSD[0]).replace("\\", "")
-        elif matchLD:
-            url = urllib.unquote_plus(matchLD[0]).replace("\\", "")
-        return url
+        get_json_code = re.compile(r'dmp\.create\(document\.getElementById\(\'player\'\),\s*(.+?)}}\)').findall(content)[0]
+        #print len(get_json_code)
+        print get_json_code
+        cc= json.loads(get_json_code+"}}")['metadata']['qualities']  #['380'][0]['url']
+        #print cc
+        if '1080' in cc.keys():
+            #print 'found hd'
+            return cc['1080'][0]['url']
+        elif '720' in cc.keys():
+            return cc['720'][0]['url']
+        elif '480' in cc.keys():
+            return cc['480'][0]['url']
+        elif '380' in cc.keys():
+            return cc['380'][0]['url']
+        elif '240' in cc.keys():
+            return cc['240'][0]['url']
+        elif 'auto' in cc.keys():
+            return cc['auto'][0]['url']
+        else:
+            xbmc.executebuiltin('XBMC.Notification(Info:, No playable Link found (DailyMotion)!,5000)')
 		
 def SearchVideoresults(url,searchtext=""):
         link = GetContent(url)
@@ -617,7 +640,7 @@ def SearchVideoresults(url,searchtext=""):
 					mode=4
 				else:
 					mode=7
-					vlink= "http://api.viki.io/v4/containers/"+containerid+"/episodes.json?per_page=1000&with_paging=true&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"
+					vlink= "http://api.viki.io/v4/containers/"+containerid+"/episodes.json?per_page=1000&with_paging=true&page=1&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"
 				addDir(vname.lower().replace("<em>"+searchtext+"</em>",searchtext),vlink,mode,vimg)
         pagelist=soup.findAll('div', {"class" : "pagination"})
         if(len(pagelist) > 0):
