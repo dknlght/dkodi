@@ -107,7 +107,7 @@ def AutoLogin(cj,url):
       strUsername=getSettings('username',True)
       strpwd=getSettings('password',True)
       if strUsername != None and strUsername !="" and strpwd != None and strpwd !="":
-           (cj,respon)=postContent("http://www.khmerstream.com/wp-login.php","log="+strUsername+"&redirect_to="+urllib.quote_plus(url)+"&pwd="+strpwd,"http://www.khmerstream.com",cj)
+           (cj,respon)=postContent("http://www.khmerstream.com/wp-login.php","log="+"&pwd="+strpwd,"http://www.khmerstream.com",cj)
            cj.save(cookiefile, ignore_discard=True)
       cj.load(cookiefile,ignore_discard=True)
       return cj
@@ -120,7 +120,7 @@ def GetLoginCookie(cj,cookiefile):
       strUsername=urllib.quote_plus(GetInput("Please enter your username","Username",False))
       if strUsername != None and strUsername !="":
            strpwd=urllib.quote_plus(GetInput("Please enter your password","Password",True))
-           (cj,respon)=postContent("http://www.khmerstream.com/wp-login.php","log="+strUsername+"&redirect_to="+urllib.quote_plus(url)+"&pwd="+strpwd,"http://www.khmerstream.com",cj)
+           (cj,respon)=postContent("http://www.khmerstream.com/wp-login.php","log="+strUsername+"&pwd="+strpwd,"http://www.khmerstream.com",cj)
            setSettings(strUsername,strpwd,True)
       cj.save(cookiefile, ignore_discard=True)
       cj=None
@@ -455,7 +455,7 @@ def loadPlaylist(url,name):
            link=GetContent(url)
            newlink = ''.join(link.encode("utf-8").splitlines()).replace('\t','')
            vidurl=""
-           match=re.compile("'file': '(.+?)',").findall(newlink)
+           match=re.compile("'file':\s*'(.+?)',").findall(newlink)
            if(len(match) == 0):
                    match=re.compile('<div class="video_main">\s*<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(newlink)
                    if(len(match)==0):
@@ -553,13 +553,15 @@ def loadVideos(url,name):
            link=GetContent(url)
            newlink = ''.join(link.encode("utf-8").splitlines()).replace('\t','')
            vidurl=""
-           match=re.compile("'file': '(.+?)',").findall(newlink)
+           match=re.compile("'file':\s*'(.+?)',").findall(newlink)
            if(len(match) == 0):
                    match=re.compile('<div class="video_main">\s*<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(newlink)
                    if(len(match)==0):
                            match=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(newlink)
                            if(len(match)==0):
                                    match=re.compile("<param name='flashvars' value='file=(.+?)&").findall(newlink)
+                                   if(len(match)==0):
+										match=re.compile('file:\s*"(.+?)",').findall(newlink)
            newlink=match[0]
            print newlink
            #xbmc.executebuiltin("XBMC.Notification(Please Wait!,Loading selected video)")
