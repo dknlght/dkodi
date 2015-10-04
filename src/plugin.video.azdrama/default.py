@@ -9,6 +9,7 @@ import base64
 import xbmc
 import datetime
 import time
+import json
 
 ADDON = xbmcaddon.Addon(id='plugin.video.azdrama')
 if ADDON.getSetting('ga_visitor')=='':
@@ -136,12 +137,10 @@ def Parts(url,name):
         try:
             link =link.encode("UTF-8")
         except: pass
-        print link
         partlist=re.compile('<ul class="listew">(.+?)</ul>').findall(link)
         partlist=re.compile('<li>(.+?)<\/li>').findall(partlist[0])
         totalpart=0
         for partconent in partlist:
-               print "partconent", partconent
                totalpart=totalpart+1
                partctr=0
                partlink=re.compile('<a href="(.+?html)">').findall(partconent)
@@ -262,7 +261,7 @@ def postContent(url,data,referr):
                          ('Connection','keep-alive'),
                          ('Accept-Language','en-us,en;q=0.5'),
                          ('Pragma','no-cache'),
-                         ('Host','www.phim.li')]
+                         ('Host','videobug.se')]
     usock=opener.open(url,data)
     if usock.info().get('Content-Encoding') == 'gzip':
         buf = StringIO.StringIO(usock.read())
@@ -272,6 +271,13 @@ def postContent(url,data,referr):
         response = usock.read()
     usock.close()
     return response
+	
+def vidbugresolver(inputstring):
+	newstring = urllib.unquote_plus(inputstring[:-1])
+	t=""
+	for i in range(len(newstring)):
+		t=t+chr(ord(newstring[i])-int(inputstring[-1:]))
+	return t
 	
 def getDailyMotionUrl(id):
     content = GetContent("http://www.dailymotion.com/embed/video/"+id)
@@ -315,7 +321,6 @@ def Videosresolve(url,name):
                         match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(newlink)
                 if(len(match) == 0):
                 	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink.replace("$","?"))
-                print match
                 vidlink=getDailyMotionUrl(match[0])
            elif (newlink.find("cloudy") > -1):
                 pcontent=GetContent(newlink)
@@ -344,25 +349,23 @@ def Videosresolve(url,name):
                      media_url = re.compile('url:\s*"(.+?)"').findall(link)
                 vidlink = media_url[0]
            elif (newlink.find("videobug") > -1):
-                link=urllib.unquote_plus(GetContent(newlink))
+                link=GetContent(newlink)
+                try:
+					link=link.encode("utf-8")
+                except: pass
+                encstring = re.compile("dF\('(.+?)'\)").findall(link)
+                link= vidbugresolver(encstring[0])
                 link=''.join(link.splitlines()).replace('\'','"')
-                media_url= ""
-                media_url = re.compile('load.{file:\s*"(.+?)"').findall(link)
-                if(len(media_url)==0):
-                    media_url = re.compile('playlist:\s*\[\s*\{\s*url:\s*"(.+?)",').findall(link)
-                if(len(media_url)==0):
-                    media_url = re.compile('{file:\s*"(.+?)"').findall(link)
-                if(len(media_url)==0):
-                    media_url = re.compile('file:\s*"(.+?)"').findall(link)
-                if(len(media_url)==0):
-                    media_url = re.compile('dll:\s*"(.+?)"').findall(link)
-                    if len(media_url) > 0 and "http" not in media_url[0]:
-                        media_url[0] = "http://videobug.se" + media_url[0]
-                if(len(media_url)==0):
-                    media_url = re.compile('link:\s*"([^"]+?//[^"]+?/[^"]+?)"').findall(link)
-                    if("http://" in Geturl(media_url[0])):
-                       media_url[0] = Geturl(media_url[0])
-                vidlink = urllib.unquote(media_url[0].replace(' ', '+'))
+                (vidid,vidkey)= re.compile('json_allupload.php",{vidID:\s*"(.+?)",vidKey:\s*"(.+?)",').findall(link)[0]
+                newcontent=postContent("http://videobug.se/json_allupload.php","vidID="+vidid+"&vidKey="+vidkey+"&vidCap=",newlink)
+                viddata=json.loads(newcontent)
+                for item in viddata:
+					if(item["s"]!="Subtitles" and item["s"]!="image" and item["s"]!="JS" and item["s"]!="ADV"):
+						#List only the direct video links for now. 
+						if(item["s"].find("Picasaweb") > -1 or  item["s"].find("VideoBug") > -1):
+							vidlink=urllib.unquote_plus(item["u"])
+							vidlink=vidlink[::-1]
+							addLink(item["s"],vidlink.decode("base64"),8,"","")
            elif (newlink.find("play44") > -1):
                 link=GetContent(newlink)
                 link=''.join(link.splitlines()).replace('\'','"')
@@ -682,9 +685,8 @@ def loadVideos(url,name):
 			newlink =newlink.encode("UTF-8")
 		except: pass
 		match=re.compile('<div id="player" align="center"><iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(newlink)
-		print decodeurl("b05069c89f5eddc494343b4ee78597be4a74046bf6b5bfd6d5be69fa66cd83348ce03ecba24c94378dde1d5fb096d27dd60404d98cca2e76c50fbdfa2cc529e07db9dfdbb249c8133f48b515849d50c36f8dbe073174faefb407ce0a440ef7a88aab1406c6ba96cde67a998032543186")
 		if(len(match) > 0):
-				try:
+				#try:
 					if(match[0].find("dldrama.com")>-1):
 						framecontent = GetContent(match[0])
 						encyptedurl=re.compile('dl.link=dll\*(.+?)&').findall(framecontent)
@@ -717,7 +719,7 @@ def loadVideos(url,name):
 								if(len(vlink) > 0):
 									addLink(qualityval[qctr] +episode_name,urllib.unquote(vlink[0]),8,"","")
 								qctr=qctr+1
-				except: pass
+				#except: pass
 		else:
 				encyptedurl=re.compile('dl.link=dll\*(.+?)&').findall(newlink)[0]
 				vidlink=Videosresolve(decodeurl(encyptedurl),name)
