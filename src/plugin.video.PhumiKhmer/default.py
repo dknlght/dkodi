@@ -234,10 +234,9 @@ def INDEX(url):
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        match=re.compile("<!-- google_ad_section_start\(name=default\) -->(.+?)<!-- google_ad_section_end -->").findall(newlink)
-        soup = BeautifulSoup(match[0])
-        listcontent=soup.findAll('div', {"class" : "cutter"})
-        for item in listcontent:
+        soup = BeautifulSoup(newlink)
+        listcontent=soup.findAll('div', {"id" : "main"})
+        for item in listcontent[0].findAll('div', {"class" : "cutter"}):
 			vname=item.a["title"]
 			vurl=item.a["href"]
 			vimg=item.a.img["src"]

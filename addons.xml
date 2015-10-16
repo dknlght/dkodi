@@ -400,7 +400,7 @@
 
 <addon
   id="plugin.video.kenh88"
-  version="1.0.10"
+  version="1.0.11"
   name="kenh88.com"
   provider-name="Dknight">
   <requires>
@@ -703,7 +703,7 @@
 
 <addon
   id="plugin.video.PhumiKhmer"
-  version="1.0.29"
+  version="1.0.30"
   name="PhumiKhmer"
   provider-name="Dknight">
   <requires>
@@ -901,7 +901,7 @@
 
 <addon
   id="plugin.video.yeuphim"
-  version="1.0.14"
+  version="1.0.15"
   name="yeuphim.net"
   provider-name="Dknight">
   <requires>

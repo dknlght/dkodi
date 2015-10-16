@@ -34,7 +34,7 @@ def __init__(self):
 homeLink="http://phimstar.com"
 
 def HOME():
-        addDir('Search','http://www.khmeravenue.com/',4,'http://yeuphim.net/images/logo.png')
+        addDir('Search','http://www.thegioiphim.eu/',4,'http://yeuphim.net/images/logo.png')
         addDir('Hong Kong Series','http://www.thegioiphim.eu/',9,'http://www.thegioiphim.eu/images/logo.png')
         link = GetContent(homeLink)
         try:
@@ -42,7 +42,7 @@ def HOME():
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        navcontent = soup.findAll('ul', {"id" : "mega-menu-1a"})
+        navcontent = soup.findAll('ul', {"id" :re.compile("mega-menu-1*")})
         if(len(navcontent) > 0):
 			for item in navcontent[0].findAll('li'):
 				for submenu in item.findAll('a'):
@@ -204,6 +204,7 @@ def Episodes(url,name):
 						for episodeitem in episodelist:
 							vLinkName=episodeitem["title"]
 							vurl=homeLink+episodeitem["href"]
+							print vurl
 							addLink(vLinkName.strip().encode("utf-8",'ignore'),vurl,3,'',name)
                     
 
@@ -242,11 +243,11 @@ def PostContent(url):
                 headers['Accept']='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
                 headers['Accept-Encoding'] = 'gzip, deflate'
                 headers['Accept-Charset']='ISO-8859-1,utf-8;q=0.7,*;q=0.7'
-                headers['Referer'] = 'http://yeuphim.net/'
+                headers['Referer'] = 'http://phimstar.com'
                 headers['Content-Type'] = 'application/x-www-form-urlencoded'
                 headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0.1) Gecko/20100101 Firefox/5.0.1'
                 headers['Connection'] = 'keep-alive'
-                headers['Host']='yeuphim.net'
+                headers['Host']='www.phim10.com'
                 headers['Accept-Language']='en-us,en;q=0.5'
                 headers['Pragma']='no-cache'
                 formdata={}
@@ -364,17 +365,17 @@ def loadVideos(url,name):
                 print match
                 vidlink=getDailyMotionUrl(match[0])
                 playVideo('dailymontion',vidlink)
-           elif (newlink.find("docs.google.com") > -1):
-                vidcontent = postContent("http://javaplugin.org/WL/grp2/plugins/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%3B%20U%3B%20Windows%20NT%206%2E1%3B%20en%2DUS%3B%20rv%3A1%2E9%2E2%2E8%29%20Gecko%2F20100722%20Firefox%2F3%2E6%2E8&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true",strDomain)
+           elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):   
+                vidcontent = postContent("http://www.phim10.com/player4new/plugins5/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%20NT%206%2E3%3B%20rv%3A36%2E0%29%20Gecko%2F20100101%20Firefox%2F36%2E0&isslverify=true&ihttpheader=true&url="+urllib.quote_plus(newlink)+"%3Fpli%3D1",homeLink)
                 if(len(vidcontent.strip())==0):
                      vidcontent = GetContent(newlink)
-                vidmatch=re.compile('"url_encoded_fmt_stream_map":"(.+?)",').findall(vidcontent)
+                vidmatch=re.compile('"fmt_stream_map","(.+?)"').findall(vidcontent)
                 if(len(vidmatch) > 0):
-                        vidparam=urllib.unquote_plus(vidmatch[0]).replace("\u003d","=")
-                        vidlink=re.compile('url=(.+?)\u00').findall(vidparam)
-                        playVideo("direct",vidlink[0])
+                        formatContentInfo = vidmatch[0].split('|')
+                        vidlink=formatContentInfo[-1]
+                        playVideo("direct",vidlink)
            elif(newlink.find("picasaweb.google") > 0):
-                 vidcontent=postContent("http://www.phim10.com/player4new/plugins4/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%3B%20U%3B%20Windows%20NT%206%2E1%3B%20en%2DUS%3B%20rv%3A1%2E9%2E2%2E8%29%20Gecko%2F20100722%20Firefox%2F3%2E6%2E8&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true",homeLink)
+                 vidcontent=postContent("http://www.phim10.com/player4new/plugins5/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%3B%20U%3B%20Windows%20NT%206%2E1%3B%20en%2DUS%3B%20rv%3A1%2E9%2E2%2E8%29%20Gecko%2F20100722%20Firefox%2F3%2E6%2E8&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true",homeLink)
                  vidid=vidlink=re.compile('#(.+?)&').findall(newlink+"&")
                  if(len(vidid)>0):
 					vidmatch=re.compile('feedPreload:(.+?)}}},').findall(vidcontent)[0]+"}}"

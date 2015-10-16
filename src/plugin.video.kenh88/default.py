@@ -22,7 +22,7 @@ if ADDON.getSetting('ga_visitor')=='':
 PATH = "kenh88"  #<---- PLUGIN NAME MINUS THE "plugin.video"          
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.1" #<---- PLUGIN VERSION
-homeLink="http://www.superphim.com"
+homeLink="http://www.kenh88.com"
 viddomain="http://www.phimmobile.com"
 Rcon = [1,2,4,8,16,32,64,128,27,54,108,216,171,77,154,47,94,188,99,198,151,53,106,212,179,125,250,239,197,145];
 SBox = [99,124,119,123,242,107,111,197,48,1,103,43,254,215,171,118,202,130,201,125,250,89,71,240,173,212,162,175,156,164,114,192,183,253,147,38,54,63,247,204,52,165,229,241,113,216,49,21,4,199,35,195,24,150,5,154,7,18,128,226,235,39,178,117,9,131,44,26,27,110,90,160,82,59,214,179,41,227,47,132,83,209,0,237,32,252,177,91,106,203,190,57,74,76,88,207,208,239,170,251,67,77,51,133,69,249,2,127,80,60,159,168,81,163,64,143,146,157,56,245,188,182,218,33,16,255,243,210,205,12,19,236,95,151,68,23,196,167,126,61,100,93,25,115,96,129,79,220,34,42,144,136,70,238,184,20,222,94,11,219,224,50,58,10,73,6,36,92,194,211,172,98,145,149,228,121,231,200,55,109,141,213,78,169,108,86,244,234,101,122,174,8,186,120,37,46,28,166,180,198,232,221,116,31,75,189,139,138,112,62,181,102,72,3,246,14,97,53,87,185,134,193,29,158,225,248,152,17,105,217,142,148,155,30,135,233,206,85,40,223,140,161,137,13,191,230,66,104,65,153,45,15,176,84,187,22];
@@ -34,54 +34,53 @@ Nr = 12;
 def __init__(self):
     playlist=sys.modules["__main__"].playlist
 def HOME():
-        addDir('Search',homeLink,4,'http://www.superphim.com/image/logo4.jpg')
-        link = GetContentMob("http://www.phimmobile.com/")
+        addDir('Search',homeLink,4,'http://www.kenh88.com/image/logo4.jpg')
+        link = GetContent(homeLink)
         try:
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        match=re.compile('<li class="child">(.+?)</ul>').findall(newlink)
         soup = BeautifulSoup(newlink)
-        for item in soup.findAll('div', {"class" : "glist"}):
-			for submenu in item.findAll('a'):
-				if(len(submenu.contents) == 1 and submenu.has_key("class")!=True ):
-					vname=RemoveHTML(str(submenu.contents[0])).strip()
-					try:
-						vname =vname.encode("UTF-8")
-					except: pass
-					vlink=viddomain+submenu["href"]
-					addDir(vname,vlink,2,'')
-			
+        mainnav=soup.findAll('div', {"class" : "menu"})
+        for item in mainnav[0].findAll('li'):
+			link = homeLink+item.a['href'].encode('utf-8', 'ignore')
+			if(item.ul==None):
+				if(item.a.i==None):
+					vname="--"+str(item.a.contents[0]).strip()
+				else:
+					vname=item.a.i["class"].replace("icon-","")
+				
+			else:
+				vname=str(item.a.contents[0]).strip()
+			if(vname.strip() != "home"):
+				if(link.find("javascript:")==-1):
+					addDir(vname.strip(),link,2,'')
+				else:
+					addLink(vname.strip(),"",2,'','')
+				
+                          
 def INDEX(url):
     #try:
-        link = GetContentMob(url)
+        link = GetContent(url)
         try:
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        for item in soup.findAll('a', {"class" : "content-items"}):
-			vlink=viddomain+item["href"].replace("./","/")
+        mainnav=soup.findAll('div', {"id" : "list-1"})
+        for item in mainnav[0].findAll('a'):
+			vlink=homeLink+item["href"]
 			vimg=""
 			vname=""
 			if(item.img!=None):
-				vimg=viddomain+item.img["src"].strip().replace(" ","%20")
+				vimg=homeLink+item.img["src"].strip().replace(" ","%20")
 				vname=item.img["alt"]
-				try:
-						vname =vname.encode("UTF-8")
-				except: pass
-				addDir(vname,vlink,7,vimg)
-        navcontent = soup.findAll('ul', {"class" : "pagination"})
-        if(len(navcontent) > 0):
-			for item in navcontent[0].findAll('li'):
-				if(item.a!=None):
-					vname=item.a.contents[0]
-					print item.a
-					try:
-						vname =vname.encode("UTF-8")
-					except: pass
-					vlink=viddomain+'/'+item.a["href"]+'&sa=Search'
-				addDir("Page "+vname.strip(),vlink,2,'')
+				addDir(vname.encode('utf-8', 'ignore'),vlink,7,vimg)
+        pagenav= mainnav[0].findAll('ul', {"class" : "pagination"})
+        for item in pagenav[0].findAll('a'):
+			vlink=homeLink+item["href"]
+			vname=item.contents[0].encode('utf-8', 'ignore')
+			addDir("Page "+vname.strip(),vlink,2,'')
     #except: pass
 
 	
@@ -96,36 +95,43 @@ def SEARCH():
         #searchText = '01'
         if (keyb.isConfirmed()):
                 searchText = urllib.quote_plus(keyb.getText())
-        url = 'http://www.phimmobile.com/search.php?q='+searchText+'&sort=id&thutu=DESC&sa=Search'
+        url = 'http://www.kenh88.com/search.php?q='+searchText+'&btnSort=Search'
         INDEX(url)
     except: pass
 
 def getVidPage(url,name):
-  contentlink = GetContentMob(url)
-  print url
+  contentlink = GetContent(url)
   contentlink = ''.join(contentlink.splitlines()).replace('\'','"')
   try:
             contentlink =contentlink.encode("UTF-8")
   except: pass
   soup = BeautifulSoup(contentlink)
-  serverlist=soup.findAll('a', {"class" : "fnDesktopSwitch button desktop-btn"})
-  return   viddomain+serverlist[0]["href"]
+  spantag=soup.findAll('span', {"class" : "h1-span"})
+  mlink=homeLink+spantag[0].findAll('a')[0]["href"]
+  return mlink
   
-def Mirrors(url,name):
-        link = GetContentMob(getVidPage(url,name))
+def Mirrors(vidid,name):
+        #MirrorsMob(vidid,name)
+        url=vidid
+        url=getVidPage(url,name)
+        link = GetContent(url)
         try:
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        print newlink
         soup = BeautifulSoup(newlink)
-        serverlist=soup.findAll('select', {"id" : "film_link"})
-        print serverlist
-        for epserver in serverlist[0].findAll('option'):
-			vlink=viddomain+epserver["value"]
-			vname=epserver.contents[0]
-			addLink(vname,vlink,3,"","")
-
+        epicontent=soup.findAll('div', {"class" : "serverlist"})
+        serverlist=epicontent[0].findAll('div', {"class" : "server"})
+        for epserver in serverlist:
+			if(len(serverlist)==1):
+				for item in epserver.findAll('a'):
+					vlink=homeLink+item["href"]
+					vname=item.contents[0]
+					addLink(vname,vlink,3,"","")
+			else:
+				serveritem=epserver.findAll('div', {"class" : "label"})[0]
+				servername=serveritem.contents[1]
+				addDir(servername,url,5,"")
         
 			
 def MirrorsMob(vidid,name):
@@ -150,14 +156,20 @@ def Episodes(url,name):
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        serverlist=soup.findAll('td', {"class" : "movieepisode"})
+        epicontent=soup.findAll('div', {"class" : "serverlist"})
+        serverlist=epicontent[0].findAll('div', {"class" : "server"})
         for epserver in serverlist:
-			servername=epserver.strong.contents[0]
+			serveritem=epserver.findAll('div', {"class" : "label"})[0]
+			servername=serveritem.contents[1]
 			if(servername==name):
 				for item in epserver.findAll('a'):
 					vlink=homeLink+item["href"]
-					vname=item.b.contents[0]
+					vname=item.contents[0]
 					addLink(vname,vlink,3,"","")
+
+			#addLink("part - "+ RemoveHTML(vLinkName).strip(),homeLink+vLink,3,'',"")
+
+                    
 					
 def EpisodesMob(url,name):
     #try:
@@ -209,19 +221,13 @@ def GetContent(url):
        d = xbmcgui.Dialog()
        d.ok(url,"Can't Connect to site",'Try again in a moment')
 	   
-
-	
-def GetContentMob(url,cj=None):
-    if cj==None:
-        cj = cookielib.LWPCookieJar()
-    #newcookie=cookielib.Cookie(version=0,name="location.href", value="1",port=None,port_specified=False,domain="m.phim14.net", domain_specified=True,domain_initial_dot=False,path="/", path_specified=True,secure=False,expires=None,discard=False,comment=None,comment_url=None,rest=None)
-		
-    #cj.set_cookie(newcookie)
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+def GetContentMob(url):
+    opener = urllib2.build_opener()
     opener.addheaders = [(
         'Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
         ('Accept-Encoding', 'gzip, deflate'),
         ('Referer',"http://www.phimmobile.com/index.php"),
+        #('Content-Type', 'application/x-www-form-urlencoded'),
         ('User-Agent', 'Mozilla/5.0 (iPad; U; CPU OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5'),
         ('Connection', 'keep-alive'),
         ('Accept-Language', 'en-us,en;q=0.5'),
@@ -274,22 +280,8 @@ def playVideo(videoType,videoId):
         url = 'plugin://plugin.video.tudou/?mode=3&url=' + videoId
     else:
         xbmcPlayer = xbmc.Player()
-        xbmcPlayer.play(videoId+'|User-Agent="Mozilla/5.0 (iPad; U; CPU OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"')
+        xbmcPlayer.play(videoId)
 
-def loadvideosMOB(url):
-		link=GetContentMob(url)
-		try:
-			link =link.encode("UTF-8")
-		except: pass
-		newlink = ''.join(link.splitlines()).replace('\t','')
-		soup = BeautifulSoup(newlink)
-		mobivid=soup.findAll('source')
-		if(len(mobivid)> 0):
-			vidlink=viddomain+mobivid[0]["src"]
-			playVideo("direct",vidlink) 
-		else:
-			xbmc.executebuiltin("XBMC.Notification(Please Wait!,Can't find video)")
-			
 def loadVideos(url,name):
         #try:
            GA("LoadVideo",name)
@@ -298,9 +290,12 @@ def loadVideos(url,name):
                    link =link.encode("UTF-8")
            except: pass
            newlink = ''.join(link.splitlines()).replace('\t','')
-           match=re.compile('proxy.link=kenh88\*(.+?)&').findall(newlink)
-           newlink=decrypt(match[0])
            print newlink
+           match=re.compile('proxy.link=(.+?)&').findall(newlink)
+           if(match[0].find("kenh88*") >-1):
+				newlink=decrypt(match[0].replace("kenh88*",""))
+           else:
+				newlink=match[0]
            if (newlink.find("dailymotion") > -1):
                 match=re.compile('http://www.dailymotion.com/embed/video/(.+?)\?').findall(newlink)
                 if(len(match) == 0):
@@ -319,7 +314,7 @@ def loadVideos(url,name):
                         vidlink=re.compile('url=(.+?)\u00').findall(vidparam)
                         playVideo("direct",vidlink[0])
            elif(newlink.find("picasaweb.google") > 0):
-                 vidcontent=postContent("http://s1.kenh88.com/plugins8/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%3B%20U%3B%20Windows%20NT%206%2E1%3B%20en%2DUS%3B%20rv%3A1%2E9%2E2%2E8%29%20Gecko%2F20100722%20Firefox%2F3%2E6%2E8&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true",homeLink)
+                 vidcontent=postContent("http://www.kenh88.com/media/plugins/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%3B%20U%3B%20Windows%20NT%206%2E1%3B%20en%2DUS%3B%20rv%3A1%2E9%2E2%2E8%29%20Gecko%2F20100722%20Firefox%2F3%2E6%2E8&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true",homeLink)
                  vidid=vidlink=re.compile('#(.+?)&').findall(newlink+"&")
                  if(len(vidid)>0):
 					vidmatch=re.compile('feedPreload:(.+?)}}},').findall(vidcontent)[0]+"}}"
@@ -335,11 +330,11 @@ def loadVideos(url,name):
 									vidlink=currententry["media"]["content"][0]["url"]
 									break
                  else:
-						vidmatch=re.compile('"application/x-shockwave-flash"\},\{"url":"(.+?)",(.+?),(.+?),"type":"video/mpeg4"\}').findall(vidcontent)
-						hdmatch=re.compile('"application/x-shockwave-flash"\},\{"url":"(.+?)",(.+?),(.+?)').findall(vidmatch[-1][2])
-						if(len(hdmatch) > 0):
-							vidmatch=hdmatch
-						vidlink=vidmatch[-1][0]
+						vidmatch=re.compile('content":\[(.+?)\]').findall(vidcontent)[0]
+						data = json.loads("[" + vidmatch +"]")
+						for contentitem in data:
+							if(contentitem["type"]=="video/mpeg4"):
+								vidlink=contentitem["url"]
                  playVideo("direct",vidlink) 
            elif (newlink.find("video.google.com") > -1):
                 match=re.compile('http://video.google.com/videoplay.+?docid=(.+?)&.+?').findall(newlink)
@@ -360,7 +355,7 @@ def loadVideos(url,name):
                 if (newlink.find("linksend.net") > -1):
                      d = xbmcgui.Dialog()
                      d.ok('Not Implemented','Sorry videos on linksend.net does not work','Site seem to not exist')
-                newlink1 = urllib2.unquote(newlink).decode("utf8")+'&dk;'
+                newlink1 = urllib2.unquote(newlink).decode('utf-8', 'ignore')+'&dk;'
                 match=re.compile('(youtu\.be\/|youtube-nocookie\.com\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink1)
                 if(len(match) == 0):
                     match=re.compile('http://www.youtube.com/watch\?v=(.+?)&dk;').findall(newlink1)
@@ -368,12 +363,13 @@ def loadVideos(url,name):
                     lastmatch = match[0][len(match[0])-1].replace('v/','')
                     playVideo('youtube',lastmatch)
                 else:
-                    playVideo('yeuphim.net',urllib2.unquote(newlink).decode("utf8"))
+                    playVideo('yeuphim.net',urllib2.unquote(newlink).decode('utf-8', 'ignore'))
         #except: pass
 		
 def getDailyMotionUrl(id):
     maxVideoQuality="720p"
     content = GetContent("http://www.dailymotion.com/embed/video/"+id)
+    print content
     if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
         xbmc.executebuiltin('XBMC.Notification(Info:,(DailyMotion)!,5000)')
         return ""
@@ -757,7 +753,6 @@ def APP_LAUNCH():
                 send_request_to_google_analytics(utm_track)
             except:
                 print "============================  CANNOT POST APP LAUNCH TRACK EVENT ============================" 
-				
 checkGA()
 #-----------------------------------------------------Decode Methods------------------------------------------------------------------------------------
 
@@ -1123,16 +1118,15 @@ except:
         pass
 
 sysarg=str(sys.argv[1])
-
+print "mode is |" + str(mode)
 if mode==None or url==None or len(url)<1:
         GA("HOME","home")
         HOME()
-        print decrypt("a84b8e35342948100f3a59528696d557a6b1bfd4cb0d83b9c0357bbbb15ecc469294f428d52ab07d93da1f8feb95d686c41ea9f5f211aa7df6833b0fdcbb9ed7547c8570c14f0e5952d019c5407a7e495097e9fb9e4bce4902cd296ce419f54d9c518ac00a4513b7e545ff2778ad49096ace9d372df787c44488926d5b75a289")
 elif mode==2:
         GA("INDEX",name)
         INDEX(url)
 elif mode==3:
-        loadvideosMOB(url)
+        loadVideos(url,mirrorname)
 elif mode==4:
         SEARCH()
 elif mode==5:
