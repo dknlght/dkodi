@@ -10,6 +10,7 @@ import xbmc
 import datetime
 import time
 import json
+import jsunpack
 
 ADDON = xbmcaddon.Addon(id='plugin.video.azdrama')
 if ADDON.getSetting('ga_visitor')=='':
@@ -353,19 +354,44 @@ def Videosresolve(url,name):
                 try:
 					link=link.encode("utf-8")
                 except: pass
-                encstring = re.compile("dF\('(.+?)'\)").findall(link)
-                link= vidbugresolver(encstring[0])
-                link=''.join(link.splitlines()).replace('\'','"')
-                (vidid,vidkey)= re.compile('json_allupload.php",{vidID:\s*"(.+?)",vidKey:\s*"(.+?)",').findall(link)[0]
-                newcontent=postContent("http://videobug.se/json_allupload.php","vidID="+vidid+"&vidKey="+vidkey+"&vidCap=",newlink)
-                viddata=json.loads(newcontent)
-                for item in viddata:
-					if(item["s"]!="Subtitles" and item["s"]!="image" and item["s"]!="JS" and item["s"]!="ADV"):
-						#List only the direct video links for now. 
-						if(item["s"].find("Picasaweb") > -1 or  item["s"].find("VideoBug") > -1):
-							vidlink=urllib.unquote_plus(item["u"])
-							vidlink=vidlink[::-1]
-							addLink(item["s"],vidlink.decode("base64"),8,"","")
+                link=''.join(link.splitlines())
+                paccked= re.compile('<script type=(?:"|\')text/javascript(?:"|\')>(eval\(function\(p,a,c,k,e,d\).*?)</script>').findall(link)
+                if(len(paccked) > 0):
+						link=jsunpack.unpack(paccked[0].replace('"','\''))
+                encstring= re.compile("dF\('(.+?)'\)").findall(link.replace("\\'","'"))
+                if(len(encstring)>0):
+					link= vidbugresolver(encstring[0])
+					link=''.join(link.splitlines()).replace('\'','"')
+					(vidid,vidkey)= re.compile('json_allupload.php",{vidID:\s*"(.+?)",vidKey:\s*"(.+?)",').findall(link)[0]
+					newcontent=postContent("http://videobug.se/json_allupload.php","vidID="+vidid+"&vidKey="+vidkey+"&vidCap=",newlink)
+					viddata=json.loads(newcontent)
+					for item in viddata:
+						if(item["s"]!="Subtitles" and item["s"]!="image" and item["s"]!="JS" and item["s"]!="ADV"):
+							#List only the direct video links for now. 
+							if(item["s"].find("Picasaweb") > -1 or  item["s"].find("VideoBug") > -1):
+								vidlink=urllib.unquote_plus(item["u"])
+								vidlink=vidlink[::-1]
+								addLink(item["s"],vidlink.decode("base64"),8,"","")
+                else:
+					link=urllib.unquote_plus(GetContent(newlink))
+					link=''.join(link.splitlines()).replace('\'','"')
+					media_url= ""
+					media_url = re.compile('load.{file:\s*"(.+?)"').findall(link)
+					if(len(media_url)==0):
+						media_url = re.compile('playlist:\s*\[\s*\{\s*url:\s*"(.+?)",').findall(link)
+					if(len(media_url)==0):
+						media_url = re.compile('{file:\s*"(.+?)"').findall(link)
+					if(len(media_url)==0):
+						media_url = re.compile('file:\s*"(.+?)"').findall(link)
+					if(len(media_url)==0):
+						media_url = re.compile('dll:\s*"(.+?)"').findall(link)
+						if len(media_url) > 0 and "http" not in media_url[0]:
+							media_url[0] = "http://videobug.se" + media_url[0]
+					if(len(media_url)==0):
+						media_url = re.compile('link:\s*"([^"]+?//[^"]+?/[^"]+?)"').findall(link)
+						if("http://" in Geturl(media_url[0])):
+						   media_url[0] = Geturl(media_url[0])
+					vidlink = urllib.unquote(media_url[0].replace(' ', '+'))
            elif (newlink.find("play44") > -1):
                 link=GetContent(newlink)
                 link=''.join(link.splitlines()).replace('\'','"')

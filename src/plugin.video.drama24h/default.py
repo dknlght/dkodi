@@ -223,7 +223,7 @@ def GetMenu():
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup  = BeautifulSoup(newlink)
-        vidcontent=soup.findAll('ul', {"id" : "menu-top"})
+        vidcontent=soup.findAll('ul', {"id" : "nav"})
         for item in vidcontent[0].findAll('li'):
 			link = item.a['href'].encode('utf-8', 'ignore')
 			vname=str(item.a.contents[0]).strip()
@@ -351,7 +351,7 @@ def SensenGetVideo(url):
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        vidcontent=soup.findAll('div', {"class" : "post-entry"})
+        vidcontent=soup.findAll('div', {"id" :re.compile("post-*")})
         for item in vidcontent[0].findAll('source'):
 			vname=item["data-res"]
 			vlink=item["src"]
@@ -1216,15 +1216,18 @@ def ListShows(url):
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
         vidcontent=soup.findAll('div', {"id" : "main"})
-        for item in vidcontent[0].findAll('div', {"class" :re.compile('post-*')}):
-			vlink = item.div.a['href'].encode('utf-8', 'ignore')
-			vname=item.div.a["title"].encode('utf-8', 'ignore')
-			vimg=item.div.a.img["src"]
-			vplot=""
-			if(len(item.p.contents)>0):
-				vplot=item.p.contents[0].encode('utf-8', 'ignore')
-			addDirContext(vname,vlink,8,vimg,vplot,"tvshow")
-        navcontent=soup.findAll('div', {"class" : "pagination"})
+        for item in vidcontent[0].findAll('li'):
+
+			if(item.has_key("class")==False or item["class"]!="cleaner"):
+				if(item.div.a!=None):
+					vlink = item.div.a['href'].encode('utf-8', 'ignore')
+					vname=item.div.a["title"].encode('utf-8', 'ignore')
+					vimg=item.div.a.img["src"]
+					vplot=""
+					if(len(item.p.contents)>0):
+						vplot=item.contents[0].encode('utf-8', 'ignore')
+					addDirContext(vname,vlink,8,vimg,vplot,"tvshow")
+        navcontent=soup.findAll('div', {"class" : "navigation"})
         if(len(navcontent)>0):
 			for item in navcontent[0].findAll('a'):
 				vlink=item["href"]
@@ -1283,7 +1286,7 @@ def Episodes(url):
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        vidcontent=soup.findAll('div', {"class" :"post-entry"})
+        vidcontent=soup.findAll('div', {"id" :re.compile('post-*')})
         for item in vidcontent[0].findAll('h5'):
 			if(item.span==None):
 				currentitem=item.a

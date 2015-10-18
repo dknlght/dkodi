@@ -111,7 +111,7 @@
 
 <addon
   id="plugin.video.azdrama"
-  version="1.0.21"
+  version="1.0.22"
   name="azdrama.net"
   provider-name="Dknight">
   <requires>
@@ -220,7 +220,7 @@
 
 <addon
   id="plugin.video.drama24h"
-  version="1.0.3"
+  version="1.0.4"
   name="drama24h"
   provider-name="Dknight">
   <requires>
@@ -858,7 +858,7 @@
 
 <addon
   id="plugin.video.viettv24free"
-  version="1.0.2"
+  version="1.0.3"
   name="viettv24free"
   provider-name="Dknight">
   <requires>
