@@ -6,7 +6,7 @@ from operator import itemgetter
 import xmltodict
 import random
 if 64 - 64: i11iIiiIii
-OO0o = 'plugin.video.viettv24'
+OO0o = 'plugin.video.viettv24free'
 Oo0Ooo = xbmcaddon . Addon ( OO0o )
 O0O0OO0O0O0 = xbmc . translatePath ( Oo0Ooo . getAddonInfo ( 'profile' ) )
 iiiii = int ( sys . argv [ 1 ] )
