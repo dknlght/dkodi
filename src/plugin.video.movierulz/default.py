@@ -146,8 +146,10 @@ def ListMirrors(url):
         for item in soup.findAll('p'):
 			divcontent=str(item)
 			if(item.a != None):
+				#print item.a["href"].encode('utf-8', 'ignore')
 				addLink(item.strong.contents[0].encode('utf-8', 'ignore').replace("&#8211;","-"),item.a["href"].encode('utf-8', 'ignore'),3,"")
 			if(item.embed != None):
+				#print item.embed["src"].encode('utf-8', 'ignore')
 				addLink(item.strong.contents[0].encode('utf-8', 'ignore').replace("&#8211;","-"),item.embed["src"].encode('utf-8', 'ignore'),3,"")
 def GetMenu(url):
         link = GetContent(url)
@@ -699,10 +701,12 @@ def ParseVideoLink(url):
                 media_url= ""
                 media_url = re.compile('<meta property="og:video" content="(.+?)"/>').findall(link)[0]
                 vidlink = media_url
-        elif (redirlink.find("embedzone") > -1):
-                media_url= ""
-                media_url = re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower())[0]
-                vidlink = ParseVideoLink(media_url)
+        elif (redirlink.find("embedzone") > -1 or redirlink.find("embedrip") > -1):
+					media_url= ""
+					media_url = re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower())
+					if(len(media_url)==0):
+					  media_url = re.compile('<a class="main-button dlbutton" [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower())
+					vidlink = ParseVideoLink(media_url[0])
         elif (redirlink.find("hqq.tv") > -1):
                 #print resolve(redirlink)
                 encContent= re.compile('<script src="data:text/javascript;charset=utf-8;base64,(.+?)">').findall(link)[0]
@@ -1434,6 +1438,7 @@ def ParseVideoLink(url):
                 sources.append(hosted_media)
                 source = urlresolver.choose_source(sources)
                 print "inresolver=" + redirlink
+                print source
                 if source:
                         vidlink = source.resolve()
     except:
