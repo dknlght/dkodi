@@ -9,7 +9,7 @@ try: import simplejson as json
 except ImportError: import json
 import cgi
 import datetime
-strDomain ='http://www.video4khmer8.com/'
+strDomain ='http://www.video4khmer5.com/'
 
 
 ADDON = xbmcaddon.Addon(id='plugin.video.video4Khmer')

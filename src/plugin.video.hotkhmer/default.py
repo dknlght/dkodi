@@ -280,11 +280,12 @@ def Episodes(url,name):
 		
         vidcontent=soup.findAll('div', {"class" : "thumbnail"})
         for item in vidcontent:
-			vname=item.center.a["title"]
-			vurl=item.center.a["href"]
+
 			vimgcontent=item.findAll('img')
 			vimg=""
 			if(len(vimgcontent)>0):
+				vname=vimgcontent[0]["alt"]
+				vurl=vimgcontent[0].parent["href"]
 				vimg=vimgcontent[0]["src"]
 			addLink(vname.encode('utf-8', 'ignore'),vurl,3,vimg)
         navcontent=soup.findAll('ul', {"class" : "pagination"})

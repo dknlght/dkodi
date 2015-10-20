@@ -337,7 +337,7 @@
 
 <addon
   id="plugin.video.hotkhmer"
-  version="1.0.9"
+  version="1.0.10"
   name="hotkhmer"
   provider-name="Dknight">
   <requires>
@@ -814,7 +814,7 @@
 
 <addon
   id="plugin.video.video4Khmer"
-  version="1.0.31"
+  version="1.0.32"
   name="video4Khmer"
   provider-name="Dknight">
   <requires>
