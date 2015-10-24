@@ -111,7 +111,7 @@
 
 <addon
   id="plugin.video.azdrama"
-  version="1.0.22"
+  version="1.0.23"
   name="azdrama.net"
   provider-name="Dknight">
   <requires>

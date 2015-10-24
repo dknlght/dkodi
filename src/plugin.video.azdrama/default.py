@@ -273,11 +273,21 @@ def postContent(url,data,referr):
     usock.close()
     return response
 	
-def vidbugresolver(inputstring):
+def vidbugresolver2(inputstring):
 	newstring = urllib.unquote_plus(inputstring[:-1])
 	t=""
 	for i in range(len(newstring)):
 		t=t+chr(ord(newstring[i])-int(inputstring[-1:]))
+	return t
+	
+def vidbugresolver(inputstring):
+	try:
+		newstring = urllib.unquote_plus(inputstring[1:len(inputstring)-1])
+		t=""
+		for i in range(len(newstring)):
+			t=t+chr(ord(newstring[i])-int(inputstring[0:1]))
+	except:
+		t=vidbugresolver2(inputstring)
 	return t
 	
 def getDailyMotionUrl(id):
