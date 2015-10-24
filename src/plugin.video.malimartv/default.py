@@ -24,6 +24,7 @@ strdomain ="https://www.malimar.tv/"
 AZ_DIRECTORIES = ['0','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y', 'Z']
 net = Net()
 authtoken=__settings__.getSetting('authcode') 
+strCreds=__settings__.getSetting('login') 
 strLoginurl = "https://www.malimar.tv/sessions.json"
 
 def GetInput(strMessage, headtxt, ishidden):
@@ -36,7 +37,20 @@ def GetInput(strMessage, headtxt, ishidden):
     del keyboard
     return inputText
 	
-
+def getSettings(name,isencrypted):
+    rtnvalue=None
+    if os.path.isfile(settingfilename)!=False:
+         f = open(settingfilename, "r")
+         text = f.read()
+         rtnvalue=re.compile('<'+name+'>(.+?)</'+name+'>', re.IGNORECASE).findall(text)
+         if(len(rtnvalue) >0):
+              rtnvalue=rtnvalue[0]
+         else:
+              rtnvalue=""
+         if(isencrypted==True):
+              rtnvalue=rtnvalue.decode('base-64')
+    return rtnvalue
+	
 def postContent(url,data,authvalue):
     opener = urllib2.build_opener()
     if authvalue != None:
@@ -66,10 +80,43 @@ def postContent(url,data,authvalue):
 			response = usock.read()
 		usock.close()
     except urllib2.HTTPError, error_code:
+			print error_code
+			print "get error"
 			if error_code.code == 401: 
 				d = xbmcgui.Dialog()
 				d.ok("Expired Session","Your session has expired",'Please Login again')
 				GetLoginToken()
+    return response
+	
+def GetContentNoHandler(url, authvalue=None):
+    opener = urllib2.build_opener()
+    if authvalue != None:
+		authval='Bearer ' + authvalue
+    else:
+		authval='Bearer ' + __settings__.getSetting('authcode') 
+    print url
+    print "inside secondcontent"
+    headerdic= [('Accept','application/json, text/plain, */*'),
+                         ('Accept-Encoding','gzip, deflate'),
+                         ('Referer', url),
+                         ('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0.1'),
+                         ('Connection','keep-alive'),
+                         ('Accept-Language','en-us,en;q=0.5'),
+                         ('Host','malimar.tv'),
+						 ('API-VERSION','v1'),
+						 ('Authorization',authval)]
+    opener.addheaders=headerdic
+    response=""
+    if True:
+		usock=opener.open(url)
+		print usock.info().get('Content-Encoding')
+		if usock.info().get('Content-Encoding') == 'gzip':
+			buf = StringIO.StringIO(usock.read())
+			f = gzip.GzipFile(fileobj=buf)
+			response = f.read()
+		else:
+			response = usock.read()
+		usock.close()
     return response
 	
 def GetContent(url, authvalue=None):
@@ -89,7 +136,9 @@ def GetContent(url, authvalue=None):
 						 ('API-VERSION','v1'),
 						 ('Authorization',authval)]
     opener.addheaders=headerdic
+    response=""
     try:
+    #if True:
 		usock=opener.open(url)
 		print usock.info().get('Content-Encoding')
 		if usock.info().get('Content-Encoding') == 'gzip':
@@ -99,23 +148,35 @@ def GetContent(url, authvalue=None):
 		else:
 			response = usock.read()
 		usock.close()
-    except urllib2.HTTPError, error_code:
-			if error_code.code == 401: 
+    except:
 				d = xbmcgui.Dialog()
-				d.ok("Expired Session","Your session has expired",'Please Login again')
-				GetLoginToken()
+				response=AutoLogin(url)
     return response
-	
+
+def AutoLogin(url=""):
+    strcredential=__settings__.getSetting('login')
+    print "inside Autologin"
+    strResult=""
+    if strcredential is not None and strcredential != "":
+        respon = postContent(strLoginurl,"",strcredential)
+        data = json.loads(respon)
+        __settings__.setSetting('authcode',data["sessions"]["id"])
+        if(url!=""):
+			strResult=GetContentNoHandler(url, authvalue=data["sessions"]["id"])
+        return strResult
+		
 def GetLoginToken():
     strUsername = GetInput("Please enter your username", "Username", False)
     if strUsername is not None and strUsername != "":
         strpwd = urllib.quote_plus(GetInput("Please enter your password", "Password", True))
-        respon = postContent(strLoginurl,"",(strUsername+":"+strpwd).encode('base-64'))
+        strcredential=base64.b64encode(strUsername+":"+strpwd)
+        __settings__.setSetting('login',strcredential)
+        respon = postContent(strLoginurl,"",strcredential)
         data = json.loads(respon)
         __settings__.setSetting('authcode',data["sessions"]["id"])
         return data["sessions"]["id"]
 
-if authtoken=="":
+if authtoken=="" and strCreds=="":
 	authtoken=GetLoginToken()
 	
 try:
