@@ -211,7 +211,7 @@ def HOME():
         addDir('Search Dramas',strdomain,10,'')
         addDir('Search Movies',strdomain,9,'')
         addDir('Your Favorites',strdomain,24,'')
-        addDir('Movies','http://movies.hkdrama4u.com/',19,'')
+        addDir('Movies','http://movies.hkdrama24h.se/',19,'')
         GetMenu()
 		
 
@@ -231,7 +231,7 @@ def GetMenu():
 				addDir(vname,link,18,"")
 				
 def GetMovieMenu():
-        link = GetContent("http://movies.hkdrama4u.com/")
+        link = GetContent("http://movies.hkdrama24h.se/")
         try:
             link =link.encode("UTF-8")
         except: pass
@@ -378,6 +378,15 @@ def SensenGetVideo(url):
 			vidlist = re.compile('proxy.link=(.+?)&').findall(item)
 			vname=vidlist[0].split("/")[2] 
 			addLink(vname,vidlist[0],3,"")
+        vidlist1 = re.compile('sources:\s*\[(.+?)\]').findall(link)
+        if(len(vidlist1)>0):
+			vidlist1="["+vidlist1[0]+"]"
+			vidlist1=vidlist1.replace('file:','"file":').replace('type:','"type":').replace('label:','"label":')
+			viddatalist=json.loads(vidlist1)
+			for item in viddatalist:
+				vidlink = item["file"]
+				vname=item["label"]
+				addLink(vname,vidlink,3,"","direct")
 
 def GetJSON(url,data,referr):
     #opener = urllib2.build_opener()
