@@ -358,7 +358,11 @@ def Mirrors(EpisodeID,name):
 	playurl={}
 	for vidgroup in MirrorList:
 		#
-		for i in range(len(vidgroup)):
+		if (vidgroup is None) or (len(vidgroup) == 0):
+			rangeVidGroup = 0
+		else:
+			rangeVidGroup = len(vidgroup)
+		for i in range(rangeVidGroup):
 		#for viditem in vidgroup:
 			if(vidgroup[i]["source"]=="storage"):
 				mirrorname=vidgroup[i]["link"].split("/")[2]
