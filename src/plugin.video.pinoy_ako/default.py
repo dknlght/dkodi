@@ -213,31 +213,39 @@ def GetVideoLinkslamb(url):
         try:
             link=link.encode("UTF-8")
         except: pass
-        vidcontent=re.compile('<span class="st_sharethis_vcount" displaytext="ShareThis">(.+?)<div id="sidebar">').findall(link)
+        vidcontent=re.compile('<input type="text" name="s" id="searchbar"(.+?)<div id="sidebar">').findall(link)
         frmsrc1=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(vidcontent[0])
         lnksrc1=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(vidcontent[0])
         mirrorcnt = 0
         partcnt=0
+        alist=['facebook', 'lambingan', 'tumblr','twitter','linkedin','reddit','delicious','mail','digg','stumbleupon']
         for frmvid in frmsrc1:
-			if(frmvid.find("//") >-1 and frmvid.find("lambingantv")==-1 ):
-				vname = frmvid.replace("http://","").replace("https://","").split(".")
+			vname = frmvid.replace("http://","").replace("https://","").split(".")
+			if(len(vname) > 1 and vname[1].find("/") > -1):
+				vname=vname[0]
+			elif (len(vname) > 1 ):
+				vname=vname[1]
+			else:
+				  vname=vname[0]
+			if(frmvid.find("//") >-1 and (str(vname).split('.')[0].lower() in alist)==False):
 				mirrorcnt=mirrorcnt+1
-				if(vname[1].find("/") > -1):
-					  vname=vname[0]
-				else:
-					  vname=vname[1]
+
 				#partcnt=partcnt+1
 				vname="mirror "+str(mirrorcnt)+" "+ vname + " full "
 				addLink(vname,frmvid,3,"")
         for frmvid2 in lnksrc1:
-			if(frmvid2.find("http") >-1 and frmvid2.find("lambingantv")==-1 ):
-				vname = frmvid2.replace("http://","").replace("https://","").split(".")
+			vname = frmvid2.replace("http://","").replace("https://","").split(".")
+			if(len(vname) > 1 and vname[1].find("/") > -1):
+				vname=vname[0]
+			elif (len(vname) > 1 ):
+				vname=vname[1]
+			else:
+				  vname=vname[0]
+			if(frmvid2.find("http") >-1 and (str(vname).split('.')[0].lower() in alist)==False):
 				mirrorcnt=mirrorcnt+1
-				if(vname[1].find("/") > -1):
-					  vname=vname[0]
-				else:
-					  vname=vname[1]
+
 				#partcnt=partcnt+1
+				print frmvid2
 				vname="mirror "+str(mirrorcnt)+" "+ vname + " full "
 				addLink(vname,frmvid2,3,"")
 def GetVideoLinks(url):

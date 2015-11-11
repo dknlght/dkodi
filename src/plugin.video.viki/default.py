@@ -180,7 +180,7 @@ def json2srt(url, fname):
 
 def HOME(translator):
         #addDir('Search channel','search',5,'')
-        staticmenu="Choose Translation Language|Search Videos|Find Video By Viki ID|Genres|Updated Tv shows|Updated Movies|Updated clips|Select Subtitle Language"
+        staticmenu="Choose Translation Language|Search Videos|Find Video By Viki ID|Country|Updated Tv shows|Updated Movies|Updated clips|Select Subtitle Language"
         
         if(enableTrans):
                transtext=translator.translate(staticmenu).replace(" | ","|")
@@ -194,7 +194,7 @@ def HOME(translator):
 
         addDir(staticlist[1],'search',12,'')
         addDir(staticlist[2],'search',16,'')
-        addDir(staticlist[3],'https://www.viki.com/explore?sort=latest&country=indonesia',2,'')
+        addDir(staticlist[3],'https://www.viki.com/explore?sort=latest&country=china',2,'')
         addDir(staticlist[4],'https://www.viki.com/explore?sort=latest&type=series',8,'')
         addDir(staticlist[5],'https://www.viki.com/explore?sort=latest&type=movie',8,'')
         addDir(staticlist[6],'https://www.viki.com/explore?sort=latest&type=clip',8,'')
@@ -238,13 +238,14 @@ def Translate_lrge_str(string):
     return totaltext
 	
 def ListGenres(url,name):
+        print ("ListGenres url = " + url)
         link = GetContent(url)
         link = ''.join(link.splitlines()).replace('\'','"')
         try:
             link =link.encode("UTF-8")
         except: pass
         soup = BeautifulSoup(link)
-        vidlist=soup.findAll('select', {"id" : "genre"})
+        vidlist=soup.findAll('select', {"data-explore-type" : "country"})
         transtext=""
         namelist=[]
         ctr=0
@@ -256,7 +257,7 @@ def ListGenres(url,name):
 				transtext=translator.translate(transtext).replace(" | ","|")
 				namelist=transtext.split("|")
 			for vlist2 in vidlist[0].findAll('option'):
-				vurl="https://www.viki.com/explore?sort=latest&genre="+vlist2["value"]
+				vurl="https://www.viki.com/explore?sort=latest&country="+vlist2["value"]
 				vname=vlist2.contents[0]
 				if(len(namelist)>0):
 					vname=namelist[ctr]
@@ -270,6 +271,7 @@ def SaveLang(langcode, name):
     HOME(translator)
 
 def Genre(url,name):
+        print("Genre url = " + url + " name = " + name)
         link = GetContent(url,False)
         link = ''.join(link.splitlines()).replace('\'','"')
         try:
@@ -319,6 +321,7 @@ def Genre(url,name):
                     addDir("page " + pname.replace("&rarr;",">").decode("utf-8"),strdomain+purl,6,"")
 
 def UpdatedVideos(url,name):
+        print("Updated Videos url = " + url + " name = " + name)
         useProxy=(enableProxy=="true")
         link = GetContent(url,useProxy)
         link = ''.join(link.splitlines()).replace('\'','"').replace("/go/browse.php?u=","").replace("http%3A%2F%2Fwww.viki.com","").replace("%2F","/").replace("&amp;b=1","")
@@ -330,22 +333,25 @@ def UpdatedVideos(url,name):
         transtext=""
         namelist=[]
         ctr=0
-        listcontent=soup.findAll('ul', {"class" : "thumb-grid vkal-explore-videos"})
+        listcontent=soup.findAll('div', {"class" : "thumbnail col-inline s6 m6 l3 js-follow-status js-express-player"})
         if(len(listcontent) >0):
-			items=listcontent[0].findAll('li')
+			
+
 			if(enableTrans):
-				for licontent in items:
-					divcotent = licontent.findAll('div', {"class" : "thumbnail-tooltip"})[0]
+				for divcotent in listcontent:
+
+
 					if(divcotent.a.img!=None):
 						vimg=divcotent.a.img["src"]
 						vname=divcotent.a.img["alt"]
 						transtext=transtext+vname+"|"
 				transtext=translator.translate(transtext.encode("UTF-8","ignore")).replace(" | ","|")
 				namelist=transtext.split("|")
-			for item in items:
+			for divcotent in listcontent:
+
 				vname=""
 				vimg=""
-				divcotent = item.findAll('div', {"class" : "thumbnail-tooltip"})[0]
+
 				if(divcotent.a.img!=None):
 					vimg=divcotent.a.img["src"]
 					vname=divcotent.a.img["alt"]
@@ -355,11 +361,14 @@ def UpdatedVideos(url,name):
 				vlink=divcotent.a["href"]
 				if(divcotent.a.has_key("data-watch-now-type")):
 					vtype=divcotent.a["data-watch-now-type"]
+					vid=divcotent.a["data-watch-now-episode"]
 				else:
-					spandata = item.findAll('span', {"class" : "moonshine"})[0]
-					vtype=spandata["data-watch-now-type"]
-				vidcon=divcotent["data-tooltip-id"]
-				vid=divcotent.a["data-resource-id"]
+					spandata = divcotent.findAll('span', {"class" : "moonshine uppercase"})[0]
+					vtype=spandata["data-watch-now-type"]          
+					vid=spandata["data-watch-now-episode"]
+          
+
+				vidcon=divcotent["data-container-id"]
 				if(vtype=="episode"):
 					mode=7
 					vlink= "http://api.viki.io/v4/containers/"+vidcon+"/episodes.json?per_page=1000&with_paging=true&page=1&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"
@@ -402,6 +411,7 @@ def getRelatedVID(url):
 		
 		
 def getVidPage(url,page):
+		print ("getVidPage = " + url)
 		if(url.find("/video_esi/") > -1):
 			url=getContainerID(url)
 		link = GetContent(url)
@@ -410,6 +420,7 @@ def getVidPage(url,page):
 		namelist=[]
 		ctr=0
 		vimg=""
+
 		if(enableTrans):
 			for episode in data["response"]:
 				vname = "Episode " + str(episode["number"]) +": "+ episode["container"]["titles"]["en"]
@@ -433,6 +444,7 @@ def getVidPage(url,page):
 				addDir("Next page>>",url.replace("page="+nextpagenum[0],"page="+str(nextnum)),7,vimg)
 			if(prevnum >= 1):
 				addDir("<<Previous page",url.replace("page="+nextpagenum[0],"page="+str(prevnum)),7,vimg)
+				
 def getVidPage2(url,page):
   url1=url
   if(url.find("related_videos") == -1):
@@ -622,32 +634,56 @@ def SearchVideoresults(url,searchtext=""):
         link = GetContent(url)
         link = ''.join(link.splitlines()).replace('\'','"')
         soup = BeautifulSoup(link)
-        listcontent=soup.findAll('ul', {"id" : "searchResults"})
+        listcontent=soup.findAll('li', {"class" : "media row"})
+        mode=7
         if(len(listcontent)>0):
-			for item in listcontent[0].findAll('li'):
-				vname=""
-				vimg=""
-				divcotent = item
-				if(divcotent.a.img!=None):
-					vimg=divcotent.a.img["src"]
-					vname=divcotent.a.img["alt"].encode("UTF-8","ignore")
-				vid=divcotent.a["href"].split("/videos/")[-1]
-				vid=vid.split("-")[0]
-				containerid=item["data-resource-id"]
-				typeitem =item.findAll('p')[0]
-				if(typeitem.a == None  or typeitem.a["href"].find("/tv/") == -1):
-					vlink=vid
-					mode=4
-				else:
-					mode=7
-					vlink= "http://api.viki.io/v4/containers/"+containerid+"/episodes.json?per_page=1000&with_paging=true&page=1&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"
-				addDir(vname.lower().replace("<em>"+searchtext+"</em>",searchtext),vlink,mode,vimg)
-        pagelist=soup.findAll('div', {"class" : "pagination"})
-        if(len(pagelist) > 0):
-                for navitem in pagelist[0].findAll('a'):
-					pname=navitem.contents[0]
-					purl=navitem["href"]
-					addDir("page " + pname.decode("utf-8"),strdomain+purl,14,"")
+          for item in listcontent:
+            vname=""
+            vimg=""
+            
+            divcotent = item.findAll('div', {"class" : "media-left col s6 m5 l4"})[0]
+
+            if(divcotent.a.img!=None):
+              vimg=divcotent.a.img["src"]
+              vname=divcotent.a.img["alt"].encode("UTF-8","ignore")
+              
+            typeitem =item.findAll('p')[0]            
+                        
+            if (typeitem.a["href"].find("/tv/") > -1):
+               mode=7
+               vid=typeitem.a["href"].split("/tv/")[-1]
+               vid=vid.split("-")[0]
+               vlink= "http://api.viki.io/v4/containers/"+vid+"/episodes.json?per_page=1000&with_paging=true&page=1&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"          
+               
+               #print(vname + " -- " + vlink)          
+               addDir(vname.lower().replace("<em>"+searchtext+"</em>",searchtext),vlink,mode,vimg)
+
+
+            elif (typeitem.a["href"].find("/movies/") > -1):
+               mode=4
+               vid=typeitem.a["href"].split("/movies/")[-1]
+               vid=vid.split("-")[0]
+
+
+
+
+               vlink= "http://api.viki.io/v4/videos/"+vid+".json?per_page=1000&with_paging=true&page=1&blocked=true&sort=number&direction=desc&with_paywall=false&app=100000a"
+               link = GetContent(vlink)  
+               data = json.loads(link)
+               vlink = data["watch_now"]["id"]     
+               
+               #print(vname + " -- " + vlink)          
+               addDir(vname.lower().replace("<em>"+searchtext+"</em>",searchtext),vlink,mode,vimg)
+               
+          
+          pagelist=soup.findAll('div', {"class" : "pagination"})
+          if(len(pagelist) > 0):
+            for navitem in pagelist[0].findAll('a'):
+              pname=navitem.contents[0]
+              purl=navitem["href"]
+              addDir("page " + pname.decode("utf-8"),strdomain+purl,14,"")
+
+
 def SEARCHVideos():
         keyb = xbmc.Keyboard('', 'Enter search text')
         keyb.doModal()
@@ -693,6 +729,7 @@ def sign_request(vidid,vtype):
 	
 def getVidQuality(vidid,name,filename,checkvideo):
   GA("Playing",name)
+  print ("getVidQuality name = " + name)  
   useProxy=(enableProxy=="true")
   if(checkvideo):
           pardata=GetVideoInfo(vidid)
@@ -707,37 +744,44 @@ def getVidQuality(vidid,name,filename,checkvideo):
           vidurl=proxyurl.replace("*url*",urllib.quote_plus(sign_request(vidid,"/streams.json")))
   else:
           vidurl = sign_request(vidid,"/streams.json")
-  print vidurl
+
+  #print vidurl
   data = json.loads(GetContent(vidurl))
   if(len(data) == 0):
           if(useProxy):
                 vidurl=proxyurl.replace("*url*",urllib.quote_plus(sign_request(vidid+"v","/streams")))
           else:
-                vidurl = sign_request(vidid+"v","/streams")
+                #vidurl = sign_request(vidid+"v","/streams")
+                vidurl = sign_request(vidid,".json")
           data = json.loads(GetContent(vidurl))
   langcode=checkLanguage(vidid)
   strQual=""
   strprot=""
-  print vidurl
+  print ("vidid = " + vidurl)
   try:
           if(enableTrans):
                 suburl=sign_request(vidid,"/subtitles/en.srt")
           else:
                 suburl=sign_request(vidid,"/subtitles/" + langcode + ".srt")
-          print suburl
+          print ("suburl = " + suburl)
+
           write2srt(suburl, filename) 
   except:
           suburl=sign_request(vidid,"/subtitles/en.srt")
           write2srt(suburl, filename) 
-		  
+          
+  #movies = data["movies"]["url"]["api"]
+    
+
   for i, item in enumerate(data):
           strQual=str(item)
-          print data
+          #print data
           mydata = data[item]
           if(item!="external"):
               for seas in mydata:
                   strprot=str(seas)
                   vlink=mydata[seas]["url"]
+                  print("Video Link = " + vlink)
                   if(strprot=="http"):
                         addLink(strQual +"("+strprot+")",vlink,3,"")
           else:

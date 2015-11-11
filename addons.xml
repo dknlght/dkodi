@@ -111,7 +111,7 @@
 
 <addon
   id="plugin.video.azdrama"
-  version="1.0.23"
+  version="1.0.24"
   name="azdrama.net"
   provider-name="Dknight">
   <requires>
@@ -725,7 +725,7 @@
 
 <addon
   id="plugin.video.pinoy_ako"
-  version="1.0.27"
+  version="1.0.28"
   name="pinoy_ako"
   provider-name="Dknight">
   <requires>
@@ -879,7 +879,7 @@
 
 <addon
   id="plugin.video.viki"
-  version="1.1.34"
+  version="1.1.35"
   name="Viki"
   provider-name="Dknight">
   <requires>

@@ -282,6 +282,7 @@ def vidbugresolver2(inputstring):
 	
 def vidbugresolver(inputstring):
 	try:
+		inputstring=inputstring+'3'
 		newstring = urllib.unquote_plus(inputstring[1:len(inputstring)-1])
 		t=""
 		for i in range(len(newstring)):
@@ -365,6 +366,7 @@ def Videosresolve(url,name):
 					link=link.encode("utf-8")
                 except: pass
                 link=''.join(link.splitlines())
+				
                 paccked= re.compile('<script type=(?:"|\')text/javascript(?:"|\')>(eval\(function\(p,a,c,k,e,d\).*?)</script>').findall(link)
                 if(len(paccked) > 0):
 						link=jsunpack.unpack(paccked[0].replace('"','\''))
