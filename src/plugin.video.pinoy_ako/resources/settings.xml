@@ -1,6 +1,11 @@
 <settings>
+<category label="Website">
+    <setting id="mydomain" label="Domain" type="labelenum" values="ru|su|ws" default="ru" />
+	<setting id="enableDomain" 	type="bool" label="Enable Custom Domain" default="false" visible="true"/>
+	<setting id="customDomain" 	type="text" label="Custom Domain" default="su" enable="!eq(-1,false)" />
+</category>
 <category label="Auto-View">
-  <setting id="ga_time" type="text" label="GA Called" default="2000-01-01 00:00:00" visible="false"/>
-  <setting id="ga_visitor" type="text" label="GA visitor" default="" visible="false"/>
+    <setting id="ga_time" type="text" label="GA Called" default="2000-01-01 00:00:00" visible="false"/>
+    <setting id="ga_visitor" type="text" label="GA visitor" default="" visible="false"/>
 </category>
 </settings>

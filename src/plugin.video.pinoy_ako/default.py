@@ -19,7 +19,14 @@ from BeautifulSoup import SoupStrainer
 ADDON = xbmcaddon.Addon(id='plugin.video.pinoy_ako')
 addon = Addon('plugin.video.pinoy_ako')
 datapath = xbmc.translatePath(ADDON.getAddonInfo('profile'))  
+mydomain = ADDON.getSetting('mydomain')
+enableDomain = ADDON.getSetting('enableDomain')
+customDomain = ADDON.getSetting('customDomain')
 
+if enableDomain=='true':
+	mydomain=customDomain
+print mydomain
+	
 cookie_path = os.path.join(datapath, 'cookies')
 cookiefile = os.path.join(cookie_path, "cookiejar.lwp")
 
@@ -27,14 +34,12 @@ if ADDON.getSetting('ga_visitor')=='':
     from random import randint
     ADDON.setSetting('ga_visitor',str(randint(0, 0x7fffffff)))
     
-PATH = "pinoy_ako"  #<---- PLUGIN NAME MINUS THE "plugin.video"          
+PATH = "pinoy_ako"  #<---- PLUGIN NAME MINUS THE "plugin.video"
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.9" #<---- PLUGIN VERSION
 
-
-
 strdomain ='http://www.pinoy-ako.ws/'
-strdomain2="http://www.lambingan.ws"
+strdomain2="http://www.lambingan."+mydomain
 
 if not os.path.exists(datapath):
         os.makedirs(datapath)
@@ -506,7 +511,7 @@ name=namestring,
 value=valstring,
 port=None,
 port_specified=False,
-domain="www.lambingan.ru",
+domain="www.lambingan."+mydomain,
 domain_specified=True,
 domain_initial_dot=False,
 path="/",
@@ -532,7 +537,7 @@ def GetContent2(url):
     return content
 	
 
-def GetContent(url,html='',strReferer="http://www.lambingan.ru/"):
+def GetContent(url,html='',strReferer="http://www.lambingan."+mydomain+"/"):
     cj = cookielib.LWPCookieJar()
     cloudcookie=re.compile("S='(.+?)';").findall(html)
     if(len(cloudcookie)>0):
@@ -569,10 +574,10 @@ def GetContent12(url):
 		headers = {
 	'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
 	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-	'Referer': "http://www.lambingan.ru/",
+	'Referer': "http://www.lambingan."+mydomain,
 	'Accept-Encoding': 'gzip, deflate',
 	'Connection': 'keep-alive',
-	'Host': 'www.lambingan.ru',
+	'Host': 'www.lambingan.'+mydomain,
 	'Cache-Control': 'max-age=0',
 	'Accept-Language': 'en-us,en;q=0.5'
 }
@@ -583,7 +588,7 @@ name="sucuri_cloudproxy_uuid_a85b0705f",
 value="0aec86571ff08993f339e6726d91adfa",
 port=None,
 port_specified=False,
-domain="www.lambingan.ru",
+domain="www.lambingan."+mydomain,
 domain_specified=True,
 domain_initial_dot=False,
 path="/",
