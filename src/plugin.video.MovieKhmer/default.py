@@ -126,11 +126,15 @@ def getVimeoUrl(videoid,currentdomain=""):
             html = result["content"]
             html = html[html.find('={"cdn_url"')+1:]
             html = html[:html.find('}};')]+"}}"
-            try:
+            if True:
+            #try:
                   collection = json.loads(html)
-                  return collection["request"]["files"]["h264"]["sd"]["url"]
-            except:
-                  return getVimeoVideourl(videoid,currentdomain)
+                  if(collection["request"]["files"]["progressive"]!=None):
+					return collection["request"]["files"]["progressive"][0]["url"]
+                  else:
+					return collection["request"]["files"]["hls"]["url"]
+            #except:
+            #      return getVimeoVideourl(videoid,currentdomain)
 
 def scrapeVideoInfo(videoid,currentdomain):
         result = fetchPage({"link": "http://player.vimeo.com/video/%s?title=0&byline=0&portrait=0" % videoid,"refering": currentdomain})

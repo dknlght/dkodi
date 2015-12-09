@@ -9,6 +9,10 @@ try: import simplejson as json
 except ImportError: import json
 import cgi
 import datetime
+from BeautifulSoup import BeautifulSoup
+from BeautifulSoup import BeautifulStoneSoup
+from BeautifulSoup import SoupStrainer
+
 strDomain ='http://www.video4khmer5.com/'
 
 
@@ -52,28 +56,19 @@ def INDEX(url):
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        match=re.compile('<div class="blog-content">(.+?)<div class="sidebar blue-ads">').findall(newlink)
-        listcontent=re.compile('<a href="(.+?)">(.+?)</a>').findall(match[0])
-        vimage=""
-        for vcontent in listcontent:
-            (vurl,imgcontent)=vcontent
-            titlecontent = re.compile('<img [^>]*title=["\']?([^>^"^\']+)["\']?[^>]*>').findall(imgcontent)
-            vimage = re.compile('<img [^>]*pagespeed_high_res_src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(imgcontent) 
-            if(len(vimage)==0):
-                    vimage = re.compile('<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(imgcontent)
-            if(len(vimage)==0):
-                    vimage=re.compile('<img [^>]*pagespeed_lazy_src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(imgcontent)
-                    if(len(vimage)==0):
-                           vimage=[""]
-            if(len(titlecontent)):
-                    (vname)=titlecontent[0]
-                    addDir(vname.encode("utf-8"),vurl,5,vimage[0].replace(" title=",""))
-        match5=re.compile('<div class="pagination">(.+?)</div></div>').findall(newlink)
-        if(len(match5)):
-                pages=re.compile('<a href="(.+?)">(.+?)</a>').findall(match5[0])
-                for pcontent in pages:
-                        (pageurl,pagenum)=pcontent
-                        addDir("Page " + pagenum,pageurl.replace('" ',"?").replace(" ","+"),2,"")
+        soup = BeautifulSoup(newlink)
+        listcontent=soup.findAll('div', {"id" : "content-center"})
+        for item in listcontent[0].findAll('div', {"class" : "cat-thumb"}):
+			vname=item.a.img["alt"]
+			vurl=item.a["href"]
+			vimg=item.a.img["src"]
+			addDir(vname.encode('utf-8', 'ignore'),vurl,5,vimg)
+
+        for item in listcontent[0].findAll('li'):
+             if(item.a!=None):
+				pageurl=item.a["href"]
+				pagenum=item.a.contents[0].replace("&gt;",">").replace("&lt;","<")
+				addDir("Page " + pagenum,pageurl,2,"")
     #except: pass
 def KhmerRadio():
         addDir('RADIO FRANCE INTERNATIONALE','http://www.video4khmers.com/khmerradio.php?rname=rfi',10,'http://www.video4khmers.com/images/radio/small/rfi.gif')
@@ -100,27 +95,26 @@ def SEARCH():
         if (keyb.isConfirmed()):
                 searchText = urllib.quote_plus(keyb.getText())
         url = 'http://www.video4khmers.com/search.php?keywords='+ searchText +'&btn=Search'
-        SearchResults(url)
+        INDEX(url)
         
 def SearchResults(url):
         link = GetContent(url)
+        try:
+            link =link.encode("UTF-8")
+        except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        match=re.compile('<div id="browse_results"><ul>(.+?)</ul></div>').findall(newlink)
-        if(len(match) > 0):
-                linkmatch=re.compile('<li class="video">(.+?)</li>').findall(match[0])
-                for vcontent in linkmatch:
-                    vLink=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(vcontent)[0]  
-                    vpic=re.compile('<img [^>]*pagespeed_high_res_src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(vcontent)
-                    if(len(vpic)==0):
-                         vpic=re.compile('<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(vcontent)
-                    vLinkName=re.compile('<span class="song_name">(.+?)</span>').findall(vcontent)[0]  
-                    addLink(vLinkName,vLink,3,vpic[0])
-        match5=re.compile('<div class="pagination">(.+?)</div></div>').findall(newlink)
-        if(len(match5)):
-                pages=re.compile('<a href="(.+?)">(.+?)</a>').findall(match5[0])
-                for pcontent in pages:
-                        (pageurl,pagenum)=pcontent
-                        addDir("Page " + pagenum,"http://www.video4khmers.com/"+pageurl,6,"")			
+        soup = BeautifulSoup(newlink)
+        listcontent=soup.findAll('div', {"id" : "content-center"})
+        for item in listcontent[0].findAll('div', {"class" : "cat-thumb"}):
+			vname=item.a.img["alt"]
+			vurl=item.a["href"]
+			vimg=item.a.img["src"]
+			addDir(vname.encode('utf-8', 'ignore'),vurl,5,vimg)
+        for item in listcontent[0].findAll('li'):
+             if(item.a!=None):
+				pageurl=item.a["href"]
+				pagenum=item.a.contents[0].replace("&gt;",">").replace("&lt;","<")
+				addDir("Page " + pagenum,pageurl,2,"")
 			
 def Episodes_old(url,name):
     #try:
@@ -245,7 +239,10 @@ def getVimeoUrl(videoid,currentdomain=""):
             html = html[:html.find('}};')]+"}}"
             try:
                   collection = json.loads(html)
-                  return collection["request"]["files"]["h264"]["sd"]["url"]
+                  if(collection["request"]["files"]["progressive"]!=None):
+					return collection["request"]["files"]["progressive"][0]["url"]
+                  else:
+					return collection["request"]["files"]["hls"]["url"]
             except:
                   return getVimeoVideourl(videoid,currentdomain)
 
@@ -325,50 +322,21 @@ def Episodes(url,name):
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        match=re.compile('<div class="blog-content">(.+?)<div class="sidebar blue-ads">').findall(newlink)
-        if(len(match) >= 1):
-                linkmatch=re.compile('<a href="(.+?)">(.+?)</a>').findall(match[0]) 
-                counter = 0
-                videolist =""
-                vidPerGroup = 5
-                for (vurl,vpic) in linkmatch:
-                    vimg= re.compile('<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall("<img"+vpic)
-                    if(len(vimg)==0):
-                         vimg=""
-                    else:
-                         vimg=vimg[0]
-                    vname=re.compile('<img [^>]*title=["\']?([^>^"^\']+)["\']?[^>]*>').findall("<img"+vpic)
-                    if(len(vname)==0):
-                         vname=""
-                    else:
-                         vname=vname[0]
+        soup = BeautifulSoup(newlink)
+        listcontent=soup.findAll('div', {"id" : "content-center"})
+        for item in listcontent[0].findAll('div', {"class" : "movie-thumb"}):
+			vname=item.a.img["alt"]
+			vurl=item.a["href"]
+			vimg=item.a.img["src"]
+			addLink(vname,vurl,3,vimg)
 
-                    youtubeid = re.compile('/vi/(.+?)/').findall(vimg)
-                    try:
-                         vname=vname.encode('utf-8')
-                    except: pass
-                    if(len(vname) > 0):
-						counter += 1
-						if(len(youtubeid)):
-								addLink(vname,"http://www.youtube.com/watch?v="+youtubeid[0],3,vimg)
-								videolist=videolist+"http://www.youtube.com/watch?v="+youtubeid[0]+";#"
-						else:
+        for item in listcontent[0].findAll('li'):
+             if(item.a!=None):
+				pageurl=item.a["href"]
+				pagenum=item.a.contents[0].replace("&gt;",">").replace("&lt;","<")
+				addDir("Page " + pagenum,pageurl,5,"")
+				
 
-								try:
-									 addLink(vname.encode('utf-8'),vurl,3,vimg)
-								except: 
-									 addLink(vname,vurl,3,vimg)
-								videolist=videolist+vurl+";#"
-                    if((counter%vidPerGroup==0 or counter==len(linkmatch)) and (len(videolist.split(';#'))-1) > 1):
-                            addLink("-------Play the "+ str(len(videolist.split(';#'))-1)+" videos above--------",videolist,8,vimg)
-                            videolist =""
-                            
-        match5=re.compile('<div class="pagination">(.+?)</div></div>').findall(newlink)
-        if(len(match5)):
-                pages=re.compile('<a href="(.+?)">(.+?)</a>').findall(match5[0])
-                for pcontent in pages:
-                        (pageurl,pagenum)=pcontent
-                        addDir("Page " + pagenum,pageurl,5,"")
     #except: pass    
 
 def ParseXml(url):
@@ -609,6 +577,23 @@ def getDailyMotionUrl(id):
         elif matchLD:
             url = urllib.unquote_plus(matchLD[0]).replace("\\", "")
 			
+def parseVideos(url,name):
+        link = GetContent(url)
+        try:
+            link =link.encode("UTF-8")
+        except: pass
+        url = ''.join(link.splitlines()).replace('\t','')
+        soup = BeautifulSoup(url)
+        playercontent=soup.findAll('div', {"id" : "Playerholder"})
+        if(len(playercontent)>0):
+			viditem=playercontent[0].findAll('iframe')
+			newlink=viditem[0]["src"]
+			print newlink
+			loadVideos(newlink,name)
+        else:
+			match=re.compile("'file':\s*'(.+?)'").findall(url)
+			loadVideos(match[0],name)
+		
 def loadVideos(newlink,name):
         try:
            GA("LoadVideo",name)
@@ -1122,7 +1107,7 @@ elif mode==2:
 elif mode==3:
         #sysarg="-1"
         print url
-        loadVideos(url,name)
+        parseVideos(url,name)
 elif mode==4:
         #sysarg="-1"
         SEARCH()

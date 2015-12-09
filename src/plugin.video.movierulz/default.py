@@ -701,11 +701,11 @@ def ParseVideoLink(url):
                 media_url= ""
                 media_url = re.compile('<meta property="og:video" content="(.+?)"/>').findall(link)[0]
                 vidlink = media_url
-        elif (redirlink.find("embedzone") > -1 or redirlink.find("embedrip") > -1):
+        elif (redirlink.find("embedzone") > -1 or redirlink.find("embedrip") > -1 or redirlink.find("embeds") > -1):
 					media_url= ""
 					media_url = re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower())
 					if(len(media_url)==0):
-					  media_url = re.compile('<a class="main-button dlbutton" [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower())
+					  media_url = re.compile('<a\s*class="main-button dlbutton" [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower().replace('target=""',""))
 					vidlink = ParseVideoLink(media_url[0])
         elif (redirlink.find("hqq.tv") > -1):
                 #print resolve(redirlink)
