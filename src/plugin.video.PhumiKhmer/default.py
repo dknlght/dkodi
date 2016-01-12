@@ -26,6 +26,7 @@ VERSION = "1.0.4" #<---- PLUGIN VERSION
 strdomain ='http://www.phumikhmer8.com/'
 def HOME():
         addDir('Search',strdomain+'search/label/Khmer%20Movies?&max-results=18',4,'')
+        addDir('Thai Lakorn',strdomain+"search?max-results=16&PageNo=1",2,'')
         GetMenu(strdomain)
 
 			
@@ -35,10 +36,10 @@ def GetMenu(url):
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        menuhead = SoupStrainer('nav', {"class" : "nav"})
+        menuhead = SoupStrainer('ul', {"class" : "dropdown-menu"})
         soup = BeautifulStoneSoup(newlink, parseOnlyThese=menuhead,convertEntities=BeautifulSoup.XML_ENTITIES)
         for item in soup.findAll('li'):
-			if(item.a.has_key("href")):
+			if(item.a!=None and item.a.has_key("href")):
 				link = item.a['href'].encode('utf-8', 'ignore')
 				if(item.ul==None):
 					vname="---"+str(item.a.contents[0]).strip()
@@ -241,7 +242,7 @@ def INDEX(url):
 			vurl=item.a["href"]
 			vimg=item.a.img["src"]
 			addDir(vname.encode('utf-8', 'ignore'),vurl,5,vimg)
-        label=re.compile("/label/(.+?)\?").findall(url)[0]
+        label=""#re.compile("/label/(.+?)\?").findall(url)[0]
         pagenum=re.compile("PageNo=(.+?)").findall(url)
         prev="0"
         if(len(pagenum)>0):
@@ -263,7 +264,7 @@ def INDEX(url):
 
 def buildNextPage(pagenum,label):
 	pagecount=str((int(pagenum) - 1) * 18)
-	url=strdomain+"feeds/posts/summary/-/"+label+"?start-index="+pagecount+"&max-results=1&alt=json-in-script&callback=finddatepost"
+	url=strdomain+"feeds/posts/summary/?start-index="+pagecount+"&max-results=1&alt=json-in-script&callback=finddatepost"
 	link = GetContent(url)
 	try:
 		link =link.encode("UTF-8")

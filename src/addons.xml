@@ -703,7 +703,7 @@
 
 <addon
   id="plugin.video.PhumiKhmer"
-  version="1.0.30"
+  version="1.0.31"
   name="PhumiKhmer"
   provider-name="Dknight">
   <requires>
