@@ -11,8 +11,13 @@ import datetime
 import time
 import json
 import jsunpack
+from bs4 import BeautifulSoup as BS
+from urlparse import urljoin
 
-ADDON = xbmcaddon.Addon(id='plugin.video.azdrama')
+def BeautifulSoup(markup):
+    return BS(markup, 'html5lib')
+
+ADDON = xbmcaddon.Addon(id='plugin.video.azdrama-forked')
 if ADDON.getSetting('ga_visitor')=='':
     from random import randint
     ADDON.setSetting('ga_visitor',str(randint(0, 0x7fffffff)))
@@ -20,8 +25,8 @@ GA_PRIVACY = ADDON.getSetting('ga_privacy') == "true"
 DISPLAY_MIRRORS = ADDON.getSetting('display_mirrors') == "true"
 
 UASTR = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0"
-PATH = "AzDrama"  #<---- PLUGIN NAME MINUS THE "plugin.video"          
-UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
+PATH = "AzDrama"  #<---- PLUGIN NAME MINUS THE "plugin.video"
+UATRACK = "UA-76815405-1"
 VERSION = "1.0.18.1" #<---- PLUGIN VERSION
 domainlist = ["azdrama.net", "www.azdrama.info", "www1.azdrama.net", "icdrama.se", "azdrama.se"]
 domain = domainlist[int(ADDON.getSetting('domainurl'))]
@@ -30,43 +35,50 @@ def __init__(self):
 def HOME():
         #addDir('Search','http://www.khmeravenue.com/',4,'http://yeuphim.net/images/logo.png')
         if ADDON.getSetting('list_recent_updates') == "true":
-            addDir('Recent Updates','http://'+domain+'/recently-updated/',2,'')
-        if ADDON.getSetting('list_english_subtitles') == "true":
-            addDir('English Subtitles','http://'+domain+'/english/&sort=date',7,'')
+            addDir(ADDON.getLocalizedString(30202),'http://'+domain+'/recently-updated/',5,'')
         if ADDON.getSetting('list_hk_dramas') == "true":
-            addDir('HK Dramas','http://'+domain+'/hk-drama/',2,'')
+            addDir(ADDON.getLocalizedString(30204),'http://'+domain+'/hk-drama/',2,'')
         if ADDON.getSetting('list_hk_movies') == "true":
-            addDir('HK Movies','http://'+domain+'/hk-movie/',2,'')
+            addDir(ADDON.getLocalizedString(30205),'http://'+domain+'/hk-movie/',2,'')
         if ADDON.getSetting('list_hk_shows') == "true":
-            addDir('HK Shows','http://'+domain+'/hk-show/',2,'')
+            addDir(ADDON.getLocalizedString(30206),'http://'+domain+'/hk-show/',2,'')
         if ADDON.getSetting('list_korean_dramas') == "true":
-            addDir('Korean Dramas','http://'+domain+'/korean-drama/',2,'')
+            addDir(ADDON.getLocalizedString(30207),'http://'+domain+'/korean-drama/',2,'')
         if ADDON.getSetting('list_mainlan_dramas') == "true":
-            addDir('Mainland Chinese Dramas','http://'+domain+'/chinese-drama/',2,'')
+            addDir(ADDON.getLocalizedString(30208),'http://'+domain+'/chinese-drama/',2,'')
         if ADDON.getSetting('list_taiwanese_dramas') == "true":
-            addDir('Taiwanese Dramas','http://'+domain+'/taiwanese-drama/',2,'')
+            addDir(ADDON.getLocalizedString(30209),'http://'+domain+'/taiwanese-drama/',2,'')
+        if ADDON.getSetting('list_korean_shows') == "true":
+            addDir(ADDON.getLocalizedString(30210),'http://'+domain+'/korean-show/',2,'')
+        if ADDON.getSetting('list_japanese_dramas') == "true":
+            addDir(ADDON.getLocalizedString(30211),'http://'+domain+'/japanese-drama/',2,'')
+        if ADDON.getSetting('list_movies') == "true":
+            addDir(ADDON.getLocalizedString(30212),'http://'+domain+'/movies/',2,'')
 
 def INDEX(url):
-    #try:
-        link = GetContent(url)
-        try:
-            link =link.encode("UTF-8")
-        except: pass
-        newlink = ''.join(link.splitlines()).replace('\t','')
-        listcontent=re.compile('<div class="content">(.+?)<div id="r">').findall(newlink)
-        match=re.compile('<img [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*></a><h1 class="normal"><a href="(.+?)" title="(.+?)">(.+?)</a><span class="download">').findall(listcontent[0])
-        for (vimg,vurl,vname,vtmp) in match:
-            try:
-                  addDir(vname,vurl+"list-episode/",5,vimg)
-            except:
-                  addDir(vname.decode("utf-8"),vurl+"list-episode/",5,vimg)
-        pagecontent=re.compile('<div class="wp-pagenavi" align=center>(.+?)</div>').findall(newlink)
-        if(len(pagecontent)>0):
-                match5=re.compile('<a href="(.+?)" class="(.+?)" title="(.+?)">(.+?)</a>').findall(pagecontent[0])
-                for vurl,vtmp,vname,vtmp2 in match5:
-                    addDir(cleanPage(vname),vurl,2,"")
-    #except: pass
+    content = GetContent(url)
+    soup = BeautifulSoup(content)
 
+    tiles = soup.select('a.movie-image')
+    for t in tiles:
+        imageurl = re.search(r'url\((.+?)\)', t['style']).group(1)
+        vidurl = urljoin(url, t['href'])
+        displayname = t['title']
+        names = displayname.split(' - ')
+
+        title_lang_option = ADDON.getSetting('title_language')
+        if title_lang_option == '1':
+            displayname = names[0]
+        elif title_lang_option == '2':
+            displayname = names[-1]
+
+        addDir(displayname, vidurl, 5, imageurl)
+
+    pages = soup.select('ul.pager > li > span > a')
+    for p in pages:
+        pagename = p['title']
+        pageurl = urljoin(url, p['href'])
+        addDir(pagename, pageurl, 2, '')
 
 def SEARCH():
     try:
@@ -78,7 +90,7 @@ def SEARCH():
         url = 'http://yeuphim.net/movie-list.php?str='+ searchText
         INDEX(url)
     except: pass
-	
+
 def decodeurl(encodedurl):
     tempp9 =""
     tempp4="100108100114971099749574853495756564852485749575656"
@@ -100,7 +112,7 @@ def decodeurl(encodedurl):
         temp6=temp6+temp9
         temp8=temp8+4
     return temp6
-	
+
 def SearchResults(url):
         link = GetContent(url)
         newlink = ''.join(link.splitlines()).replace('\t','')
@@ -126,48 +138,38 @@ def Mirrors(url,name):
                 if(len(mirrors) >= 1):
                         for vLinkName in mirrors:
                             if DISPLAY_MIRRORS:
-                                addDir(vLinkName.encode("utf-8"),url,5,'')
+                                addDir(vLinkName,url,5,'')
                             else:
-                               loadVideos(url, vLinkName.encode("utf-8")) 
+                               loadVideos(url, vLinkName.encode("utf-8"))
 
     except: pass
-	
+
 def Parts(url,name):
-        link = GetContent(url)
-        link = ''.join(link.splitlines()).replace('\'','"')
-        try:
-            link =link.encode("UTF-8")
-        except: pass
-        partlist=re.compile('<ul class="listew">(.+?)</ul>').findall(link)
-        partlist=re.compile('<li>(.+?)<\/li>').findall(partlist[0])
-        totalpart=0
-        for partconent in partlist:
-               totalpart=totalpart+1
-               partctr=0
-               partlink=re.compile('<a href="(.+?html)">').findall(partconent)
-               mirror=re.compile('^(.+?): .*').findall(partconent)
-               full=re.compile('<b.+?(Full).+?/b>').findall(partconent) 
-               if(len(partlink) > 0):
-                          mirrorname="Unknown"
-                          partname = ""
-                          if(len(mirror)>0):
-                              mirrorname=mirror[0]
-                          for vlink in partlink:
-                              partctr=partctr+1
-                              if len(full)<1:
-                                     partname = " Part " + str(partctr) +"/" + str(len(partlink))
+        content = GetContent(url)
+        soup = BeautifulSoup(content)
 
-                              mirrortitle = mirrorname+" "+partname
-                              if(len(partlist) > 1 and totalpart>0):
-                                     print vlink
-                                     if DISPLAY_MIRRORS:
-                                         addDir(name +"@"+mirrortitle,vlink,3,"")
-                                     else:
-                                         loadVideos(vlink,"@" + mirrortitle + " " + name)
+        tites = soup.select('span.tite')
+        uldefs = soup.select('ul.tn-uldef')
 
+        zipped = zip(tites, uldefs)
 
-        return totalpart
-		
+        total = 0
+        for t, u in zipped:
+            mirror = t.string
+            parts = u.find_all('a', recursive=False)
+
+            numparts = len(parts)
+            for index, part in enumerate(parts):
+                link = part['href']
+                name = 'Full' if part.string.strip().lower() == 'full' else ' Part %s/%s' % (index+1, numparts)
+                if DISPLAY_MIRRORS:
+                    addDir('%s@%s' % (name, mirror), link, 3, '')
+                else:
+                    loadVideos(link, '@%s %s' % (mirror, name))
+                total += 1
+
+        return total
+
 def CheckParts(url,name):
 	if(Parts(url,name) < 2):
 		loadVideos(url,name)
@@ -178,22 +180,26 @@ def Episodes(url,name,newmode):
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        listcontent=re.compile('<ul class="listep">(.+?)</ul>').findall(newlink)
         if(newmode==5):
                 vidmode=11
         else:
                 vidmode=9
-        match=re.compile('<li><a href="(.+?)" title="(.+?)">').findall(listcontent[0])
-        for (vurl,vname) in match:
-            try:
-                  addDir(vname,vurl,vidmode,"")
-            except:
-                  addDir(vname.decode("utf-8"),vurl,vidmode,"")
-        pagecontent=re.compile('<div class="wp-pagenavi" align=center>(.+?)</div>').findall(newlink)
-        if(len(pagecontent)>0):
-                match5=re.compile('<a href="(.+?)" class="(.+?)" title="(.+?)">(.+?)</a>').findall(pagecontent[0])
-                for vurl,vtmp,vname,vtmp2 in match5:
-                    addDir(cleanPage(vname),vurl,newmode,"")
+        soup = BeautifulSoup(newlink)
+        match = [(n['href'], n['title']) for n in soup.select('ul.listep > li > a')]
+        if match:
+            for (vurl,vname) in match:
+                vname = vname.lstrip('Watch ')
+                if not url.endswith('/recently-updated/'):
+                    vname = vname.split('-')[-1].strip()
+                addDir(vname,vurl,vidmode,"")
+            pagecontent=re.compile('<div class="wp-pagenavi" align=center>(.+?)</div>').findall(newlink)
+            if(len(pagecontent)>0):
+                    match5=re.compile('<a href="(.+?)" class="(.+?)" title="(.+?)">(.+?)</a>').findall(pagecontent[0])
+                    for vurl,vtmp,vname,vtmp2 in match5:
+                        addDir(cleanPage(vname),vurl,newmode,"")
+        else:
+            node = soup.select('a.btnWatch')[0]
+            CheckParts(node['href'], node['title'])
 
     #except: pass
 
@@ -208,10 +214,7 @@ def GetEpisodeFromVideo(url,name):
             match=re.compile('<a href="(.+?)"><b>(.+?)</b>').findall(listcontent[0])
             if match:
                 for (vurl,vname) in match:
-                    try:
-                        addDir("Episode: " + vname,vurl,11,"")
-                    except:
-                        addDir("Episode: " + vname.decode("utf-8"),vurl,11,"")
+                    addDir("Episode: " + vname,vurl,11,"")
             else:
                 listcontent=re.compile('<center><a href="(.+?)"><font style="(.+?)">(.+?)</font></a></center>').findall(newlink)
                 Episodes(listcontent[0][0]+"list-episode/",name,5)
@@ -228,7 +231,7 @@ def Geturl(strToken):
                 if strToken.find("http") != -1:
                         return strToken
 
-	   
+
 def GetContent(url):
     try:
        net = Net()
@@ -251,7 +254,7 @@ def playVideo(videoType,videoId):
     else:
         xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(videoId)
-		
+
 def postContent(url,data,referr):
     opener = urllib2.build_opener()
     opener.addheaders = [('Accept','text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
@@ -272,7 +275,7 @@ def postContent(url,data,referr):
         response = usock.read()
     usock.close()
     return response
-	
+
 def vidbugresolver2(inputstring):
 	newstring = urllib.unquote_plus(inputstring[:-1])
 	t=""
@@ -293,13 +296,13 @@ def vidbugresolver(inputstringorig):
 				t=vidbugresolver1(inputstringorig,str(attempts))
 			else:
 				t=vidbugresolver1(inputstringorig,"")
-			result= re.compile('json_allupload.php",{vidID:\s*"(.+?)",vidKey:\s*"(.+?)",').findall(t)[0]
+			result= re.compile('json_allupload\d?.php",{vidID:\s*"(.+?)",vidKey:\s*"(.+?)",').findall(t)[0]
 			break
 		except:
 			attempts += 1
-		
+
 	return result
-	
+
 def vidbugresolver1(inputstring,strcat):
 
 	try:
@@ -311,35 +314,25 @@ def vidbugresolver1(inputstring,strcat):
 	except:
 		t=vidbugresolver2(inputstring)
 	return t
-	
-def getDailyMotionUrl(id):
+
+def getDailyMotionUrls(id):
     content = GetContent("http://www.dailymotion.com/embed/video/"+id)
     if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
         xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
         return ""
-    
+
     else:
         get_json_code = re.compile(r'dmp\.create\(document\.getElementById\(\'player\'\),\s*(.+?)}}\)').findall(content)[0]
         #print len(get_json_code)
         print get_json_code
         cc= json.loads(get_json_code+"}}")['metadata']['qualities']  #['380'][0]['url']
         #print cc
-        if '1080' in cc.keys():
-            #print 'found hd'
-            return cc['1080'][0]['url']
-        elif '720' in cc.keys():
-            return cc['720'][0]['url']
-        elif '480' in cc.keys():
-            return cc['480'][0]['url']
-        elif '380' in cc.keys():
-            return cc['380'][0]['url']
-        elif '240' in cc.keys():
-            return cc['240'][0]['url']
-        elif 'auto' in cc.keys():
-            return cc['auto'][0]['url']
-        else:
+        keys = cc.keys()
+        possible_keys = ['1080', '720', '480', '380', '240', 'auto']
+        urls = [(cc[q][0]['url'], q.capitalize()) for q in possible_keys if q in keys]
+        if not urls:
             xbmc.executebuiltin('XBMC.Notification(Info:, No playable Link found (DailyMotion)!,5000)')
-			
+
 def Videosresolve(url,name):
         #try:
            newlink=url
@@ -354,7 +347,7 @@ def Videosresolve(url,name):
                         match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(newlink)
                 if(len(match) == 0):
                 	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink.replace("$","?"))
-                vidlink=getDailyMotionUrl(match[0])
+                vidlink=getDailyMotionUrls(match[0])
            elif (newlink.find("cloudy") > -1):
                 pcontent=GetContent(newlink)
                 pcontent=''.join(pcontent.splitlines()).replace('\'','"')
@@ -364,7 +357,7 @@ def Videosresolve(url,name):
                 pcontent=GetContent(vidcontent)
                 pcontent=''.join(pcontent.splitlines()).replace('\'','"')
                 urlcode = re.compile('url=(.+?)&').findall(pcontent)[0]
-                vidlink=urllib.unquote_plus(urlcode)
+                vidlink=[(urllib.unquote_plus(urlcode), 'Unknown Quality')]
            elif (newlink.find("videomega") > -1):
                 refkey= re.compile('\?ref=(.+?)&dk').findall(newlink+"&dk")[0]
                 vidcontent="http://videomega.tv/iframe.php?ref="+refkey
@@ -372,7 +365,7 @@ def Videosresolve(url,name):
                 pcontent=''.join(pcontent.splitlines()).replace('\'','"')
                 urlcode = re.compile('if\s*\(!validstr\){\s*document.write\(unescape\("(.+?)"\)\);\s*}').findall(pcontent)[0]
                 vidcontent=urllib.unquote_plus(urlcode)
-                vidlink = re.compile('file:\s*"(.+?)",').findall(vidcontent)[0]
+                vidlink = [(re.compile('file:\s*"(.+?)",').findall(vidcontent)[0], 'Unknown Quality')]
            elif (newlink.find("video44") > -1):
                 link=GetContent(newlink)
                 link=''.join(link.splitlines()).replace('\'','"')
@@ -380,60 +373,72 @@ def Videosresolve(url,name):
                 media_url = re.compile('file:\s*"(.+?)"').findall(link)
                 if(len(media_url)==0):
                      media_url = re.compile('url:\s*"(.+?)"').findall(link)
-                vidlink = media_url[0]
+                vidlink = [(media_url[0], 'Unknown Quality')]
            elif (newlink.find("videobug") > -1):
-                link=GetContent(newlink)
-                try:
-					link=link.encode("utf-8")
-                except: pass
-                link=''.join(link.splitlines())
-                paccked= re.compile('<script type=(?:"|\')text/javascript(?:"|\')>(eval\(function\(p,a,c,k,e,d\).*?)</script>').findall(link)
-                if(len(paccked) > 0):
-						link=jsunpack.unpack(paccked[0].replace('"','\''))
-                encstring= re.compile("dF\('(.+?)'\)").findall(link.replace("\\'","'"))
-                if(len(encstring)>0):
-					(vidid,vidkey)= vidbugresolver(encstring[0])
-					newcontent=postContent("http://videobug.se/json_allupload.php","vidID="+vidid+"&vidKey="+vidkey+"&vidCap=",newlink)
-					viddata=json.loads(newcontent)
-					for item in viddata:
-						if(item["s"]!="Subtitles" and item["s"]!="image" and item["s"]!="JS" and item["s"]!="ADV"):
-							#List only the direct video links for now. 
-							if(item["s"].find("Picasaweb") > -1 or  item["s"].find("VideoBug") > -1):
-								vidlink=urllib.unquote_plus(item["u"])
-								vidlink=vidlink[::-1]
-								addLink(item["s"],vidlink.decode("base64"),8,"","")
-                else:
-					link=urllib.unquote_plus(GetContent(newlink))
-					link=''.join(link.splitlines()).replace('\'','"')
-					media_url= ""
-					media_url = re.compile('load.{file:\s*"(.+?)"').findall(link)
-					if(len(media_url)==0):
-						media_url = re.compile('playlist:\s*\[\s*\{\s*url:\s*"(.+?)",').findall(link)
-					if(len(media_url)==0):
-						media_url = re.compile('{file:\s*"(.+?)"').findall(link)
-					if(len(media_url)==0):
-						media_url = re.compile('file:\s*"(.+?)"').findall(link)
-					if(len(media_url)==0):
-						media_url = re.compile('dll:\s*"(.+?)"').findall(link)
-						if len(media_url) > 0 and "http" not in media_url[0]:
-							media_url[0] = "http://videobug.se" + media_url[0]
-					if(len(media_url)==0):
-						media_url = re.compile('link:\s*"([^"]+?//[^"]+?/[^"]+?)"').findall(link)
-						if("http://" in Geturl(media_url[0])):
-						   media_url[0] = Geturl(media_url[0])
-					vidlink = urllib.unquote(media_url[0].replace(' ', '+'))
+               content = GetContent(newlink)
+               vidlink = []
+
+               # unobscurify
+               key = 5
+               unobscurify = lambda s: urllib.unquote(''.join(chr(ord(c) - key) for c in urllib.unquote(s)))
+               df = re.search(r"dF\('(.*)'\)", content)
+               if df:
+                   script_end = content.find('</script>', df.end())
+                   script_end = script_end + 9 if script_end > -1 else -1
+                   content = content[:script_end] + unobscurify(df.group(1)) + content[script_end:]
+
+               # Allupload
+               # http://videobug.se/vid-a/g2S5k34-MoC2293iUaa9Hw
+               json_data = re.findall(r"json_data = '(.+)';", content)
+               if json_data:
+                   strdecode = lambda s: base64.b64decode(urllib.unquote(s)[::-1])
+                   try:
+                       hashes = json.loads(json_data[0])
+                       exclude = ['Subtitles', 'image', 'JS', 'ADV']
+                       videos = [h for h in hashes if h['s'] not in exclude]
+                       vidlink = [(strdecode(h['u']), h['s']) for h in videos]
+                   except Exception:
+                       pass
+
+               # Picasaweb, Videobug
+               # http://videobug.se/video/Wz3_oCoEYozRSbJFQo4fkjmuvR6LpsFHM-XZya5tuk6stTXWdUeyplq5vVvSm0Yr0MXPFUmLt2XqrbLMPnE_Mgz8NbhXMZ6XFDI4hj253Z7af95WQPPDlpizIuuUXavEJqB8-bXuKbx6HTCMb5p5FC90yg1kXJb6?
+               if not vidlink:
+                   soup = BeautifulSoup(content)
+                   player_func = re.compile(r'(player_[^\(]+)\(\);').match
+                   butts = soup.find_all('input', type='button', onclick=player_func)
+
+                   funcs = [player_func(b['onclick']).group(1) for b in butts]
+                   qualities = [b['value'] for b in butts]
+
+                   try:
+                       func_bodies = [re.findall(r'%s\(\) *{(.+)};' % f, content)[0] for f in funcs]
+                       re_flash = re.compile(r"video *= *{[^:]+: *'(.*?)' *}")
+                       re_html5 = re.compile(r'<source.*?src=\"(.*?)\"')
+
+                       urls = [(re_flash.findall(fb) or re_html5.findall(fb))[0] for fb in func_bodies]
+                       vidlink = zip(urls, qualities)
+                   except Exception:
+                       pass
+
+               # http://videobug.se/vid-al/XNkjCT5pBx1YlndruYWdWg?&caption=-sgCv7BkuLZn41-ZxxJZhTsKYcZIDgJPGYNOuIpulC_4kcrZ9k3fGQabH5rDAKgiLMVJdesVZPs
+               if not vidlink:
+                   vids = re.findall(r'''{ *file *: *strdecode\('(.+?)'\).*?label *: *"(.*?)"''', content)
+                   for cryptic_url, quality in vids:
+                       url = base64.b64decode(urllib.unquote(cryptic_url)[::-1])
+                       vidlink.append((url, quality))
+
            elif (newlink.find("play44") > -1):
                 link=GetContent(newlink)
                 link=''.join(link.splitlines()).replace('\'','"')
                 media_url= ""
                 media_url = re.compile('playlist:\s*\[\s*\{\s*url:\s*"(.+?)",').findall(link)[0]
-                vidlink = urllib.unquote(media_url)
+                vidlink = [(urllib.unquote(media_url), 'Unknown Quality')]
            elif (newlink.find("byzoo") > -1):
                 link=GetContent(newlink)
                 link=''.join(link.splitlines()).replace('\'','"')
                 media_url= ""
                 media_url = re.compile('playlist:\s*\[\s*\{\s*url:\s*"(.+?)",').findall(link)[0]
-                vidlink = urllib.unquote(media_url)
+                vidlink = [(urllib.unquote(media_url), 'Unknown Quality')]
            elif (newlink.find("vidzur") > -1 or newlink.find("videofun") > -1 or newlink.find("auengine") > -1):
                 link=GetContent(newlink)
                 link=''.join(link.splitlines()).replace('\'','"')
@@ -444,11 +449,11 @@ def Videosresolve(url,name):
                      if(rows.find("url") > -1):
                           murl= re.compile('url:\s*"(.+?)"').findall(rows)[0]
                           media_url=urllib.unquote_plus(murl)
-                vidlink = media_url
+                vidlink = [(media_url, 'Unknown Quality')]
            elif (newlink.find("cheesestream") > -1 or newlink.find("yucache") > -1):
                 link=GetContent(newlink)
                 link=''.join(pcontent.splitlines()).replace('\'','"')
-                vidlink = re.compile('<meta property="og:video" content="(.+?)"/>').findall(link)[0]
+                vidlink = [(re.compile('<meta property="og:video" content="(.+?)"/>').findall(link)[0], 'Unknown Quality')]
            elif(newlink.find("picasaweb.google") > 0):
                 ua = urllib.urlencode({'iagent' : UASTR})
                 vidcontent=postContent("http://cache.dldrama.com/gk/43/plugins_player.php",ua+"&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true",domain)
@@ -456,13 +461,13 @@ def Videosresolve(url,name):
                 hdmatch=re.compile('"application/x-shockwave-flash"\},\{"url":"(.+?)",(.+?),(.+?)').findall(vidmatch[-1][2])
                 if(len(hdmatch) > 0):
                     vidmatch=hdmatch
-                vidlink=vidmatch[-1][0]
+                vidlink=[(vidmatch[-1][0], 'Unknown Quality')]
            elif (newlink.find("docs.google.com") > -1):
                 vidcontent = GetContent(newlink)
                 vidmatch=re.compile('"url_encoded_fmt_stream_map":"(.+?)",').findall(vidcontent)
                 if(len(vidmatch) > 0):
                         vidparam=urllib.unquote_plus(vidmatch[0]).replace("\u003d","=")
-                        vidlink=re.compile('url=(.+?)\u00').findall(vidparam)
+                        vidlink=[(re.compile('url=(.+?)\u00').findall(vidparam), 'Unknown Quality')]
            elif (newlink.find("allmyvideos") > -1):
                 videoid=  re.compile('http://allmyvideos.net/embed-(.+?).html').findall(newlink)
                 if(len(videoid)>0):
@@ -474,7 +479,7 @@ def Videosresolve(url,name):
                 mfree = re.compile('<input type="hidden" name="method_free" value="(.+?)">').findall(link)[0]
                 posdata=urllib.urlencode({"op":op,"usr_login":"","id":idkey,"fname":fname,"referer":url,"method_free":mfree})
                 pcontent=postContent2(newlink,posdata,url)
-                vidlink=re.compile('"file" : "(.+?)",').findall(pcontent)[0]
+                vidlink=[(re.compile('"file" : "(.+?)",').findall(pcontent)[0], 'Unknown Quality')]
            elif (newlink.find("nosvideo") > -1):
                 videoid=  re.compile('http://nosvideo.com/embed/(.+?)/').findall(newlink)
                 if(len(videoid)>0):
@@ -491,12 +496,12 @@ def Videosresolve(url,name):
                 unpacked = unpackjs4(packed)
                 if unpacked=="":
                         unpacked = unpackjs3(packed,tipoclaves=2)
-                        
+
                 unpacked = unpacked.replace("\\","")
 
                 xmlUrl=re.compile('"playlist=(.+?)&').findall(unpacked)[0]
                 vidcontent = postContent2(xmlUrl,None,url)
-                vidlink=re.compile('<file>(.+?)</file>').findall(vidcontent)[0]
+                vidlink=[(re.compile('<file>(.+?)</file>').findall(vidcontent)[0], 'Unknown Quality')]
            elif (newlink.find("uploadpluz") > -1):
                 videoid=  re.compile('http://nosvideo.com/embed/(.+?)/').findall(newlink)
                 if(len(videoid)>0):
@@ -508,16 +513,16 @@ def Videosresolve(url,name):
                 unpacked = unpackjs4(packed)
                 if unpacked=="":
                         unpacked = unpackjs3(packed,tipoclaves=2)
-                        
+
                 unpacked = unpacked.replace("\\","")
 
                 vidUrl=re.compile('"file","(.+?)"').findall(unpacked)[0]
-                vidlink=vidUrl+"|Referer=http%3A%2F%2Fuploadpluz.com%3A8080%2Fplayer%2Fplayer.swf"
+                vidlink=[(vidUrl+"|Referer=http%3A%2F%2Fuploadpluz.com%3A8080%2Fplayer%2Fplayer.swf", 'Unknown Quality')]
            elif (newlink.find("yourupload") > -1):
                 link = GetContent(newlink)
                 link=''.join(link.splitlines()).replace('\'','"')
                 vidlink=re.compile('<a class="btn btn-primary" [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)[0]
-                vidlink=vidlink.replace("download.yucache.net","stream.yucache.net")
+                vidlink=[(vidlink.replace("download.yucache.net","stream.yucache.net"), 'Unknown Quality')]
            elif (newlink.find("nowvideo") > -1):
                 link = GetContent(newlink)
                 link=''.join(link.splitlines()).replace('\'','"')
@@ -530,10 +535,10 @@ def Videosresolve(url,name):
                 keycode=re.compile('flashvars.filekey=(.+?);').findall(link)[0]
                 keycode=re.compile('var\s*'+keycode+'="(.+?)";').findall(link)[0]
                 vidcontent=GetContent("http://www.nowvideo.sx/api/player.api.php?codes="+urllib.quote_plus(codeid) + "&key="+urllib.quote_plus(keycode) + "&file=" + urllib.quote_plus(fileid))
-                vidlink = re.compile('url=(.+?)\&').findall(vidcontent)[0]
+                vidlink = [(re.compile('url=(.+?)\&').findall(vidcontent)[0], 'Unknown Quality')]
            elif (newlink.find("180upload") > -1):
                 if(newlink.find("embed") == -1):
-                      vidcode = re.compile('180upload.com/(.+?)dk').findall(newlink+"dk")[0] 
+                      vidcode = re.compile('180upload.com/(.+?)dk').findall(newlink+"dk")[0]
                       newlink= 'http://180upload.com/embed-'+vidcode+'.html'
                 link=GetContent(newlink)
                 file_code = re.compile('<input type="hidden" name="file_code" [^>]*value=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)[0]
@@ -549,19 +554,19 @@ def Videosresolve(url,name):
                 if unpacked=="":
                         unpacked = unpackjs3(packed,tipoclaves=2)
                 unpacked=unpacked.replace("\\","")
-                vidlink = re.compile('addVariable\("file",\s*"(.+?)"\)').findall(unpacked)[0]
+                vidlink = [(re.compile('addVariable\("file",\s*"(.+?)"\)').findall(unpacked)[0], 'Unknown Quality')]
            elif (newlink.find("youtube") > -1) and (newlink.find("playlists") > -1):
                 playlistid=re.compile('playlists/(.+?)\?v').findall(newlink)
-                vidlink="plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0]
+                vidlink=[("plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0], 'Unknown Quality')]
            elif (newlink.find("youtube") > -1) and (newlink.find("list=") > -1):
                 playlistid=re.compile('videoseries\?list=(.+?)&').findall(newlink+"&")
-                vidlink="plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0]
+                vidlink=[("plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0], 'Unknown Quality')]
            elif (newlink.find("youtube") > -1) and (newlink.find("/p/") > -1):
                 playlistid=re.compile('/p/(.+?)\?').findall(newlink)
-                vidlink="plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0]
+                vidlink=[("plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0], 'Unknown Quality')]
            elif (newlink.find("youtube") > -1) and (newlink.find("/embed/") > -1):
                 playlistid=re.compile('/embed/(.+?)\?').findall(newlink+"?")
-                vidlink=getYoutube(playlistid[0])
+                vidlink=[(getYoutube(playlistid[0]), 'Unknown Quality')]
            elif (newlink.find("youtube") > -1):
                 match=re.compile('(youtu\.be\/|youtube-nocookie\.com\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink1)
                 if(len(match) == 0):
@@ -569,7 +574,7 @@ def Videosresolve(url,name):
                 if(len(match) > 0):
                     lastmatch = match[0][len(match[0])-1].replace('v/','')
                 print "in youtube" + lastmatch[0]
-                vidlink=getYoutube(lastmatch[0])
+                vidlink=[(getYoutube(lastmatch[0]), 'Unknown Quality')]
            else:
                 import urlresolver
                 sources = []
@@ -579,11 +584,11 @@ def Videosresolve(url,name):
                 source = urlresolver.choose_source(sources)
                 print "inresolver=" + url
                 if source:
-                        vidlink = source.resolve()
+                        vidlink = [(source.resolve(), 'Unknown Quality')]
                 else:
-                        vidlink =""
+                        vidlink = []
            return vidlink
-		   
+
 def extractFlashVars(data):
     for line in data.split("\n"):
             index = line.find("ytplayer.config =")
@@ -599,8 +604,8 @@ def extractFlashVars(data):
             data=data.split(";(function()",1)[0]
             data = json.loads(data)
             flashvars = data["args"]
-    return flashvars    
-		
+    return flashvars
+
 def selectVideoQuality(links):
         link = links.get
         video_url = ""
@@ -698,7 +703,7 @@ def getYoutube(videoid):
                 response = urllib2.urlopen(req)
                 link=response.read()
                 response.close()
-                
+
                 if len(re.compile('shortlink" href="http://youtu.be/(.+?)"').findall(link)) == 0:
                         if len(re.compile('\'VIDEO_ID\': "(.+?)"').findall(link)) == 0:
                                 req = urllib2.Request('http://www.youtube.com/get_video_info?video_id='+code+'&asv=3&el=detailpage&hl=en_US')
@@ -706,7 +711,7 @@ def getYoutube(videoid):
                                 response = urllib2.urlopen(req)
                                 link=response.read()
                                 response.close()
-                
+
                 flashvars = extractFlashVars(link)
 
                 links = {}
@@ -727,8 +732,8 @@ def getYoutube(videoid):
                                 url = url + u"&signature=" + url_desc_map[u"sig"][0]
                         links[key] = url
                 highResoVid=selectVideoQuality(links)
-                return highResoVid  
-				
+                return highResoVid
+
 def loadVideos(url,name):
 		GA("LoadVideo",name)
 		episode_name = ""
@@ -740,46 +745,19 @@ def loadVideos(url,name):
 		try:
 			newlink =newlink.encode("UTF-8")
 		except: pass
-		match=re.compile('<div id="player" align="center"><iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(newlink)
-		if(len(match) > 0):
-				#try:
-					if(match[0].find("dldrama.com")>-1):
-						framecontent = GetContent(match[0])
-						encyptedurl=re.compile('dl.link=dll\*(.+?)&').findall(framecontent)
-					else:
-						vidlink=Videosresolve(match[0],name)
-						addLink("Unknown Quality "+episode_name,vidlink,8,"","")
-						encyptedurl=[]
-						framecontent=""
-					if(len(encyptedurl)>0):
-							vidlink=Videosresolve(decodeurl(encyptedurl[0]),name)
-							addLink("Unknown Quality",vidlink,8,"","")
-					else:
-							qualityval = ["240","360p(MP4)","360p(FLV)","480p","720p","HTML5"]
-							qctr=0
-							embedlink=re.compile('<embed [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(framecontent)
-							if(len(embedlink)>0 and embedlink[0].find(".swf")> -1):
-								vlink=re.compile('streamer=(.+?)\&').findall(framecontent)
-								if(len(vlink) >0):
-									addLink("360p(MP4) "+episode_name,urllib.unquote(vlink[0]),8,"","")
-							if(len(embedlink)==0):
-								embedlink=re.compile('<param [^>]*value="(.+?)" name="flashvars">').findall(framecontent) 
-							if(len(embedlink)==0):
-								vlink=re.compile('streamer:\s*"(.+?)",').findall(framecontent) 
-								if(len(vlink) >0):
-									addLink("360p(MP4) "+episode_name,urllib.unquote(vlink[0]),8,"","")
-							for vname in embedlink:
-								vlink=re.compile('streamer=(.+?)\&').findall(vname)
-								if(len(vlink) == 0):
-									vlink=re.compile('file=(.+?)\&').findall(vname)
-								if(len(vlink) > 0):
-									addLink(qualityval[qctr] +episode_name,urllib.unquote(vlink[0]),8,"","")
-								qctr=qctr+1
-				#except: pass
-		else:
-				encyptedurl=re.compile('dl.link=dll\*(.+?)&').findall(newlink)[0]
-				vidlink=Videosresolve(decodeurl(encyptedurl),name)
-				addLink("Unknown Quality "+episode_name,vidlink,8,"","")
+                soup = BeautifulSoup(newlink)
+                match = [m['src'] for m in soup.select('iframe')]
+
+                if match:
+                    frameurl = match[0]
+                else:
+                    frameurl = decodeurl(re.compile('dl.link=dll\*(.+?)&').findall(newlink)[0])
+
+                videos = Videosresolve(frameurl, name)
+                for url, quality in videos:
+                    pre = episode_name + ': ' if episode_name else ''
+                    addLink(pre + quality, url, 8, '', '')
+
 
 def parseDate(dateString):
     try:
@@ -805,9 +783,9 @@ def checkGA():
         return
 
     ADDON.setSetting('ga_time', str(now).split('.')[0])
-    APP_LAUNCH()    
-    
-                    
+    APP_LAUNCH()
+
+
 def send_request_to_google_analytics(utm_url):
     if GA_PRIVACY == True:
         return
@@ -818,9 +796,9 @@ def send_request_to_google_analytics(utm_url):
                                      )
         response = urllib2.urlopen(req).read()
     except:
-        print ("GA fail: %s" % utm_url)         
+        print ("GA fail: %s" % utm_url)
     return response
-       
+
 def GA(group,name):
         if GA_PRIVACY == True:
             return
@@ -849,7 +827,7 @@ def GA(group,name):
                         print "============================ POSTING TRACK EVENT ============================"
                         send_request_to_google_analytics(utm_track)
                     except:
-                        print "============================  CANNOT POST TRACK EVENT ============================" 
+                        print "============================  CANNOT POST TRACK EVENT ============================"
             if name=="None":
                     utm_url = utm_gif_location + "?" + \
                             "utmwv=" + VERSION + \
@@ -872,14 +850,14 @@ def GA(group,name):
                                 "&utmp=" + quote(PATH+"/"+group+"/"+name) + \
                                 "&utmac=" + UATRACK + \
                                 "&utmcc=__utma=%s" % ".".join(["1", VISITOR, VISITOR, VISITOR, VISITOR,"2"])
-                                
+
             print "============================ POSTING ANALYTICS ============================"
             send_request_to_google_analytics(utm_url)
-            
+
         except:
-            print "================  CANNOT POST TO ANALYTICS  ================" 
-            
-            
+            print "================  CANNOT POST TO ANALYTICS  ================"
+
+
 def APP_LAUNCH():
         versionNumber = int(xbmc.getInfoLabel("System.BuildVersion" )[0:2])
         if versionNumber > 13:
@@ -927,12 +905,12 @@ def APP_LAUNCH():
         import platform
         VISITOR = ADDON.getSetting('ga_visitor')
         for build, PLATFORM in match:
-            if re.search('12',build[0:2],re.IGNORECASE): 
-                build="Frodo" 
-            if re.search('11',build[0:2],re.IGNORECASE): 
-                build="Eden" 
-            if re.search('13',build[0:2],re.IGNORECASE): 
-                build="Gotham" 
+            if re.search('12',build[0:2],re.IGNORECASE):
+                build="Frodo"
+            if re.search('11',build[0:2],re.IGNORECASE):
+                build="Eden"
+            if re.search('13',build[0:2],re.IGNORECASE):
+                build="Gotham"
             print build
             print PLATFORM
             utm_gif_location = "http://www.google-analytics.com/__utm.gif"
@@ -948,19 +926,19 @@ def APP_LAUNCH():
                 print "============================ POSTING APP LAUNCH TRACK EVENT ============================"
                 send_request_to_google_analytics(utm_track)
             except:
-                print "============================  CANNOT POST APP LAUNCH TRACK EVENT ============================" 
-				
+                print "============================  CANNOT POST APP LAUNCH TRACK EVENT ============================"
+
 checkGA()
 
 def addLink(name,url,mode,iconimage,mirrorname):
         name = cleanName(name)
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name.encode('utf-8'))+"&mirrorname="+urllib.quote_plus(mirrorname)
+        u=sys.argv[0]+"?url="+urllib.quote_plus(url.encode('utf-8'))+"&mode="+str(mode)+"&name="+urllib.quote_plus(name.encode('utf-8'))+"&mirrorname="+urllib.quote_plus(mirrorname)
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
         contextMenuItems = []
         liz.addContextMenuItems(contextMenuItems, replaceItems=True)
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
         return ok
 
 def addNext(formvar,url,mode,iconimage):
@@ -972,8 +950,16 @@ def addNext(formvar,url,mode,iconimage):
         return ok
 
 def addDir(name,url,mode,iconimage):
+        try:
+            name = name.encode('utf-8')
+        except:
+            pass
+        try:
+            url = url.encode('utf-8')
+        except:
+            pass
         name = cleanName(name)
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name.encode('utf-8'))
+        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
@@ -990,7 +976,7 @@ def cleanPage(name):
         strireplace = re.compile(re.escape('&laquo; First'), re.IGNORECASE)
         name = strireplace.sub('First Page',name)
         return name
-        
+
 def get_params():
         param=[]
         paramstring=sys.argv[2]

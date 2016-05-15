@@ -10,6 +10,9 @@ try: import simplejson as json
 except ImportError: import json
 import cgi
 import datetime
+from BeautifulSoup import BeautifulSoup
+from BeautifulSoup import BeautifulStoneSoup
+from BeautifulSoup import SoupStrainer
 
 addon = Addon("plugin.video.KhmerAvenue")
 ADDON = xbmcaddon.Addon(id='plugin.video.KhmerAvenue')
@@ -33,14 +36,14 @@ def HOME():
 		addLink('Login','http://www.merlkon.net/',9,'http://www.merlkon.com/wp-contents/uploads/logo.jpg')
 		addDir('Modern Chinese','http://www.khmeravenue.com/genre/modern-series/',2,'http://www.khmeravenue.com/wp-content/uploads/2015/01/hushanxing-150x150.jpg')
 		addDir('Ancent Chinese','http://www.khmeravenue.com/genre/ancient-series/',2,'http://www.khmeravenue.com/wp-content/uploads/2014/11/f-150x150.png')
-		addDir('Korean Videos','http://www.khmerstream.com/genre/korean/',2,'http://www.khmerstream.com/wp-content/uploads/2015/08/bigman_40-150x150.jpg')
+		addDir('Korean Videos','http://www.khmerstream.net/genre/korean/',2,'http://www.khmerstream.net/wp-content/uploads/2015/08/bigman_40-150x150.jpg')
 		addDir('Modern Thai','http://www.merlkon.net/genre/modern-thai/',2,'http://www.merlkon.net/wp-content/uploads/2015/07/lidow_2015729211154504-150x150.jpg')
 		addDir('Boran Thai','http://www.merlkon.net/genre/thai-boran/',2,'http://www.merlkon.net/wp-content/uploads/2014/10/kkk-150x150.jpg')
 		addDir('Horror Thai','http://www.merlkon.net/genre/horror/',2,'http://www.merlkon.net/wp-content/uploads/2013/06/wed-150x150.jpg')
 		addDir('Philippines Videos','http://www.merlkon.net/genre/philippines-videos/',2,'http://www.merlkon.net/wp-content/uploads/2013/09/mkj-150x150.jpg')
 		addDir('Bollywood Videos','http://www.merlkon.net/genre/bollywood-videos/',2,'http://www.merlkon.net/wp-content/uploads/2013/01/santosima-150x150.jpg')
-		addDir('Modern Chinese (KS)','http://www.khmerstream.com/genre/modern-chinese/',2,'http://www.khmerstream.com/wp-content/uploads/2015/05/be-home-for-dinner-2011-s-150x150.jpg')
-		addDir('Ancent Chinese (KS)','http://www.khmerstream.com/genre/ancient-chinese/',2,'http://www.khmerstream.com/wp-content/uploads/2015/08/wulin-150x150.jpg')
+		addDir('Modern Chinese (KS)','http://www.khmerstream.net/genre/modern-chinese/',2,'http://www.khmerstream.net/wp-content/uploads/2015/05/be-home-for-dinner-2011-s-150x150.jpg')
+		addDir('Ancent Chinese (KS)','http://www.khmerstream.net/genre/ancient-chinese/',2,'http://www.khmerstream.net/wp-content/uploads/2015/08/wulin-150x150.jpg')
 		
 def postContent(url,data,referr,cj):
     if cj==None:
@@ -107,7 +110,7 @@ def AutoLogin(cj,url):
       strUsername=getSettings('username',True)
       strpwd=getSettings('password',True)
       if strUsername != None and strUsername !="" and strpwd != None and strpwd !="":
-           (cj,respon)=postContent("http://www.khmerstream.com/wp-login.php","log="+"&pwd="+strpwd,"http://www.khmerstream.com",cj)
+           (cj,respon)=postContent("http://www.khmerstream.net/wp-login.php","log="+"&pwd="+strpwd,"http://www.khmerstream.net",cj)
            cj.save(cookiefile, ignore_discard=True)
       cj.load(cookiefile,ignore_discard=True)
       return cj
@@ -120,7 +123,7 @@ def GetLoginCookie(cj,cookiefile):
       strUsername=urllib.quote_plus(GetInput("Please enter your username","Username",False))
       if strUsername != None and strUsername !="":
            strpwd=urllib.quote_plus(GetInput("Please enter your password","Password",True))
-           (cj,respon)=postContent("http://www.khmerstream.com/wp-login.php","log="+strUsername+"&pwd="+strpwd,"http://www.khmerstream.com",cj)
+           (cj,respon)=postContent("http://www.khmerstream.net/wp-login.php","log="+strUsername+"&pwd="+strpwd,"http://www.khmerstream.net",cj)
            setSettings(strUsername,strpwd,True)
       cj.save(cookiefile, ignore_discard=True)
       cj=None
@@ -134,7 +137,7 @@ if(cj==None):
       cj = cookielib.LWPCookieJar()
 if((tmpUser != None and tmpUser !="") and (tmpPwd != None and tmpPwd !="") and os.path.exists(cookiefile)==False):
       print "in autologin"
-      AutoLogin(cj,"http://www.khmerstream.com/")
+      AutoLogin(cj,"http://www.khmerstream.net/")
 
 if os.path.exists(cookiefile):
     cj = cookielib.LWPCookieJar()
@@ -274,11 +277,14 @@ def getVimeoUrl(videoid,currentdomain=""):
         print result
         if result["status"] == 200:
             html = result["content"]
-            html = html[html.find('={"cdn_url"')+1:]
+            html = html[html.find('={')+1:]
             html = html[:html.find('}};')]+"}}"
             try:
                   collection = json.loads(html)
-                  return collection["request"]["files"]["h264"]["sd"]["url"]
+                  if(collection["request"]["files"]["progressive"]!=None):
+					return collection["request"]["files"]["progressive"][0]["url"]
+                  else:
+					return collection["request"]["files"]["hls"]["url"]
             except:
                   return getVimeoVideourl(videoid,currentdomain)
 
@@ -357,21 +363,21 @@ def Episodes(url,name):
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
+        soup = BeautifulSoup(newlink)
+        listcontent=soup.findAll('div', {"id" : "enhancedtextwidget-11"})
         addLink(name.encode("utf-8"),url,3,'')
-        match=re.compile('>Related Videos</h4>(.+?)</div>').findall(newlink)
-        match=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>(.+?)</a>').findall(match[0])
         counter = 1
         videolist =url+";#"
         vidPerGroup = 5
-        if(len(match) >= 1):
-                for vLink,mcontent in match:
-                    vLinkName=re.compile('<span [^>]*style=["\']?([^>^"^\']+)["\']?[^>]*>(.+?)</span>').findall(mcontent)[0][1]
-                    counter += 1
-                    addLink(vLinkName.encode("utf-8"),vLink,3,'')
-                    videolist=videolist+vLink+";#"
-                    if(counter%vidPerGroup==0 or counter==len(match)+1):
-                            addLink("-------Play the "+ str(len(videolist.split(';#'))-1)+" videos above--------",videolist,8,"")
-                            videolist =""
+        itemmatch=listcontent[0].findAll('a')
+        for item in itemmatch:
+			if(item.span != None ):
+				counter += 1
+				addLink(item.span.contents[0],item["href"],3,'')
+				videolist=videolist+item["href"]+";#"
+				if(counter%vidPerGroup==0 or counter==len(itemmatch)+1):
+					addLink("-------Play the "+ str(len(videolist.split(';#'))-1)+" videos above--------",videolist,8,"")
+					videolist =""
 
     #except: pass
 
@@ -512,6 +518,12 @@ def loadPlaylist(url,name):
                 print idmatch
                 vidurl=getVimeoUrl(idmatch[0],"http://"+url.split('/')[2])
                 CreateList("other",vidurl)
+           elif (newlink.find("sendvid.com") > -1):
+				sid = urllib2.unquote(newlink).replace("//", "http://")
+				link=GetContent(sid)
+				match = re.compile('<source src="(.+?)"').findall(link)
+				vidurl = urllib2.unquote(match[0]).replace("//", "http://")
+				CreateList("sendvid",vidurl)
            elif (newlink.find("vid.me") > -1):
                 link=GetContent(newlink)
                 link = ''.join(link.splitlines()).replace('\'','"')
@@ -602,6 +614,12 @@ def loadVideos(url,name):
                 print idmatch
                 vidurl=getVimeoUrl(idmatch[0],"http://"+url.split('/')[2])
                 playVideo('khmeravenue',vidurl)
+           elif (newlink.find("sendvid.com") > -1):
+				sid = urllib2.unquote(newlink).replace("//", "http://")
+				link=GetContent(sid)
+				match = re.compile('<source src="(.+?)"').findall(link)
+				vidurl = urllib2.unquote(match[0]).replace("//", "http://")
+				playVideo('sendvid',vidurl)
            elif (newlink.find("vid.me") > -1):
                 link=GetContent(newlink)
                 link = ''.join(link.splitlines()).replace('\'','"')

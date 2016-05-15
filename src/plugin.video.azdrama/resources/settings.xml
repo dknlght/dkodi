@@ -1,19 +1,26 @@
 <settings>
-   <category label="Addon-Settings">
-		<setting id="domainurl" type="enum" values="azdrama.net|www.azdrama.info|www1.azdrama.net|icdrama.se|azdrama.se" label="30200" default="3" enable="true" />
-		<setting id="display_mirrors" type="bool" label="30201" default="true"/>
-		<setting id="list_recent_updates" type="bool" label="30202" default="true"/>
-		<setting id="list_english_subtitles" type="bool" label="30203" default="true"/>
-		<setting id="list_hk_dramas" type="bool" label="30204" default="true"/>
-		<setting id="list_hk_movies" type="bool" label="30205" default="true"/>
-		<setting id="list_hk_shows" type="bool" label="30206" default="true"/>
-		<setting id="list_korean_dramas" type="bool" label="30207" default="true"/>
-		<setting id="list_mainlan_dramas" type="bool" label="30208" default="true"/>
-		<setting id="list_taiwanese_dramas" type="bool" label="30209" default="true"/>
-   </category>
-	<category label="Auto-View">
-		<setting id="ga_privacy" type="bool" label="30100" default="false"/>
-		<setting id="ga_time" type="text" label="GA Called" default="2000-01-01 00:00:00" visible="false"/>
-		<setting id="ga_visitor" type="text" label="GA visitor" default="" visible="false"/>
-	</category>
+  <category label="Addon-Settings">
+    <setting id="domainurl" type="enum" values="azdrama.net|www.azdrama.info|www1.azdrama.net|icdrama.se|azdrama.se" label="30300" default="3" enable="true" />
+    <setting id="display_mirrors" type="bool" label="30301" default="true"/>
+    <setting id="title_language" type="enum" label="30310" default="30311" lvalues="30311|30312|30313"/>
+
+    <setting type="lsep" label="30201"/>
+
+    <setting id="list_recent_updates" type="bool" label="30202" default="true"/>
+    <setting id="list_hk_dramas" type="bool" label="30204" default="true"/>
+    <setting id="list_hk_movies" type="bool" label="30205" default="true"/>
+    <setting id="list_hk_shows" type="bool" label="30206" default="true"/>
+    <setting id="list_korean_dramas" type="bool" label="30207" default="true"/>
+    <setting id="list_korean_shows" type="bool" label="30210" default="true"/>
+    <setting id="list_mainlan_dramas" type="bool" label="30208" default="true"/>
+    <setting id="list_taiwanese_dramas" type="bool" label="30209" default="true"/>
+    <setting id="list_japanese_dramas" type="bool" label="30211" default="true"/>
+    <setting id="list_movies" type="bool" label="30212" default="true"/>
+  </category>
+
+  <category label="Auto-View">
+    <setting id="ga_privacy" type="bool" label="30100" default="false"/>
+    <setting id="ga_time" type="text" label="GA Called" default="2000-01-01 00:00:00" visible="false"/>
+    <setting id="ga_visitor" type="text" label="GA visitor" default="" visible="false"/>
+  </category>
 </settings>
