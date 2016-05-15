@@ -17,7 +17,7 @@ from urlparse import urljoin
 def BeautifulSoup(markup):
     return BS(markup, 'html5lib')
 
-ADDON = xbmcaddon.Addon(id='plugin.video.azdrama-forked')
+ADDON = xbmcaddon.Addon(id='plugin.video.azdrama')
 if ADDON.getSetting('ga_visitor')=='':
     from random import randint
     ADDON.setSetting('ga_visitor',str(randint(0, 0x7fffffff)))
