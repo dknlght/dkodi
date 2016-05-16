@@ -111,7 +111,7 @@
 
 <addon
   id="plugin.video.azdrama"
-  version="1.0.26"
+  version="1.0.27"
   name="azdrama.net"
   provider-name="Dknight (maintained by cthlo)">
   <requires>
@@ -401,7 +401,7 @@
 
 <addon
   id="plugin.video.kenh88"
-  version="1.0.11"
+  version="1.0.12"
   name="kenh88.com"
   provider-name="Dknight">
   <requires>

@@ -290,11 +290,11 @@ def loadVideos(url,name):
                    link =link.encode("UTF-8")
            except: pass
            newlink = ''.join(link.splitlines()).replace('\t','')
-           print newlink
-           match=re.compile('proxy.link=(.+?)&').findall(newlink)
-           if(match[0].find("kenh88*") >-1):
-				newlink=decrypt(match[0].replace("kenh88*",""))
-           else:
+
+           match=re.compile('link:\s*"(.+?)"}').findall(newlink)
+           try:
+				newlink=match[0].decode('base-64')
+           except: 
 				newlink=match[0]
            if (newlink.find("dailymotion") > -1):
                 match=re.compile('http://www.dailymotion.com/embed/video/(.+?)\?').findall(newlink)
@@ -306,7 +306,7 @@ def loadVideos(url,name):
                 print match[0]
                 vidlink=getDailyMotionUrl(match[0])
                 playVideo('dailymontion',vidlink)
-           elif (newlink.find("docs.google.com") > -1):
+           elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):
                 vidcontent = GetContent(newlink)
                 vidmatch=re.compile('"url_encoded_fmt_stream_map":"(.+?)",').findall(vidcontent)
                 if(len(vidmatch) > 0):
@@ -316,7 +316,8 @@ def loadVideos(url,name):
            elif(newlink.find("picasaweb.google") > 0):
                  vidcontent=postContent("http://www.kenh88.com/media/plugins/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%3B%20U%3B%20Windows%20NT%206%2E1%3B%20en%2DUS%3B%20rv%3A1%2E9%2E2%2E8%29%20Gecko%2F20100722%20Firefox%2F3%2E6%2E8&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true",homeLink)
                  vidid=vidlink=re.compile('#(.+?)&').findall(newlink+"&")
-                 if(len(vidid)>0):
+                 vidinfo=re.compile('content":\[(.+?)\]').findall(vidcontent)[0]
+                 if(len(vidid)>0 and len(vidinfo)==0):
 					vidmatch=re.compile('feedPreload:(.+?)}}},').findall(vidcontent)[0]+"}}"
 					data = json.loads(vidmatch)
 					vidlink=""
@@ -369,7 +370,6 @@ def loadVideos(url,name):
 def getDailyMotionUrl(id):
     maxVideoQuality="720p"
     content = GetContent("http://www.dailymotion.com/embed/video/"+id)
-    print content
     if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
         xbmc.executebuiltin('XBMC.Notification(Info:,(DailyMotion)!,5000)')
         return ""
@@ -402,7 +402,6 @@ def loadVideosMob(url,name):
            newlink = ''.join(link.splitlines()).replace('\t','')
            match=re.compile('<!--ads2<br>--><iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*></iframe>').findall(newlink)
            newlink=GetDirVideoUrl(viddomain+match[0],url)
-           print newlink
            if (newlink.find("dailymotion") > -1):
                 match=re.compile('http://www.dailymotion.com/embed/video/(.+?)\?').findall(newlink)
                 if(len(match) == 0):
