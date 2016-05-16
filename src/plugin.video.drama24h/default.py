@@ -211,7 +211,7 @@ def HOME():
         addDir('Search Dramas',strdomain,10,'')
         addDir('Search Movies',strdomain,9,'')
         addDir('Your Favorites',strdomain,24,'')
-        addDir('Movies','http://movies.hkdrama24h.se/',19,'')
+        #addDir('Movies','http://movies.hkdrama24h.se/',19,'')
         GetMenu()
 		
 
@@ -229,12 +229,15 @@ def GetMenu():
 			vname=str(item.a.contents[0]).strip()
 			if(vname.strip() != "HOME" and vname.strip() != "GAME" and vname.strip() != "Movies"):
 				addDir(vname,link,18,"")
+			if(vname.strip() == "Movies"):
+				addDir(vname,link,30,"")
 				
 def GetMovieMenu():
-        link = GetContent("http://movies.hkdrama24h.se/")
+        link = GetContent("http://dramacity.se/movie/")
         try:
             link =link.encode("UTF-8")
         except: pass
+        print 
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup  = BeautifulSoup(link)
         vidcontent=soup.findAll('ul', {"id" : "nav"})
@@ -1247,7 +1250,35 @@ def ListShows(url):
 					
 				addDir("Page " +vname,vlink,18,"")
 			
-			
+def ListMovies(url):
+        link = GetContent(url)
+        try:
+            link =link.encode("UTF-8")
+        except: pass
+        newlink = ''.join(link.splitlines()).replace('\t','')
+        soup = BeautifulSoup(newlink)
+        vidcontent=soup.findAll('div', {"id" : "main"})
+        for item in vidcontent[0].findAll('li'):
+
+			if(item.has_key("class")==False or item["class"]!="cleaner"):
+				if(item.div.a!=None):
+					vlink = item.div.a['href'].encode('utf-8', 'ignore')
+					vname=item.div.a["title"].encode('utf-8', 'ignore')
+					vimg=item.div.a.img["src"]
+					vplot=""
+					if(len(item.p.contents)>0):
+						vplot=item.contents[0].encode('utf-8', 'ignore')
+					addDirContext(vname,vlink,32,vimg,vplot,"tvshow")
+        navcontent=soup.findAll('div', {"class" : "navigation"})
+        if(len(navcontent)>0):
+			for item in navcontent[0].findAll('a'):
+				vlink=item["href"]
+				try:
+					vname=item.contents[0].encode('utf-8', 'ignore')
+				except:
+					vname=item.contents[1].encode('utf-8', 'ignore')
+					
+				addDir("Page " +vname,vlink,30,"")
 
 
 
@@ -1308,6 +1339,7 @@ def Episodes(url):
 				vname=currentitem.span.contents[0].encode('utf-8', 'ignore')
 			
 			addDir(vname,vlink,32,"")
+		
 
 
 #borrowed from pelisalacarta
@@ -2286,7 +2318,7 @@ elif mode==25:
 elif mode==28:
         PLAYLIST_VIDEOLINKS(url,name)
 elif mode==30:
-		MovieIndex(url)
+		ListMovies(url)
 elif mode==31:
 		SensenEpisode(url)
 elif mode==32:

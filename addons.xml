@@ -221,7 +221,7 @@
 
 <addon
   id="plugin.video.drama24h"
-  version="1.0.5"
+  version="1.0.6"
   name="drama24h"
   provider-name="Dknight">
   <requires>
