@@ -881,7 +881,7 @@
 
 <addon
   id="plugin.video.viki"
-  version="1.1.36"
+  version="1.1.37"
   name="Viki"
   provider-name="Dknight">
   <requires>

@@ -563,8 +563,8 @@ def getVideoUrl(url,name):
                         match=re.compile('/video/(.+?)&dk;').findall(dailylink)
                 link = 'http://www.dailymotion.com/video/'+str(match[0])
                 vidlink=getDailyMotionUrl(str(match[0]))
-        elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
-                vidcontent = GetContent(newlink)
+        elif (url.find("docs.google.com") > -1 or url.find("drive.google.com") > -1):  
+                vidcontent = GetContent(url)
                 html = vidcontent.encode("utf-8","ignore")
                 stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)
                 vidlink=""
