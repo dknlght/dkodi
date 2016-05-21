@@ -4,8 +4,8 @@ import base64
 import xml.dom.minidom
 import xbmcaddon,xbmcplugin,xbmcgui,xbmc
 import json #For VIMEO
-PLUGIN = xbmcaddon.Addon(id='plugin.video.mega_khmer_addon')
-addon_name = 'plugin.video.mega_khmer_addon'
+PLUGIN = xbmcaddon.Addon(id='plugin.video.Mega_Khmer_Addon')
+addon_name = 'plugin.video.Mega_Khmer_Addon'
 KHMERAVE ='http://www.khmeravenue.com/'
 KHMERSTREAM ='http://www.khmerstream.net/'
 MERLKON ='http://www.merlkon.net/'
