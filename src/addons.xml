@@ -575,6 +575,25 @@
 </addon>
 
 <addon
+  id="plugin.video.mega_khmer_addon"
+  version="0.0.1"
+  name="[B][COLOR fff5f5dc]Mega_[/COLOR][COLOR ffffd700]Khmer_Addon[/COLOR][/B]"
+  provider-name="Price">
+  <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="ADDON.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Watch video in Khmer</summary>
+    <description>Watch Video in Khmer</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
   id="plugin.video.MovieKhmer"
   version="1.0.28"
   name="MovieKhmer"
