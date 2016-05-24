@@ -1,13 +1,22 @@
 <strings>
-<string id="30100">Privacy mode</string>
-<string id="30200">Domain</string>
-<string id="30201">Display Mirrors</string>
-<string id="30202">List Recent Updates</string>
-<string id="30203">List English Subtitles</string>
-<string id="30204">List HK Dramas</string>
-<string id="30205">List HK Movies</string>
-<string id="30206">List HK Shows</string>
-<string id="30207">List Korean Dramas</string>
-<string id="30208">List Mainland Chinese Dramas</string>
-<string id="30209">List Taiwanese Dramas</string>
+  <string id="30300">Domain</string>
+  <string id="30301">Display Mirrors</string>
+  <string id="30310">Title Language</string>
+  <string id="30311">English and Original</string>
+  <string id="30312">English</string>
+  <string id="30313">Original</string>
+
+  <string id="30201">Categories</string>
+  <string id="30202">Recent Updates</string>
+  <string id="30204">HK Dramas</string>
+  <string id="30205">HK Movies</string>
+  <string id="30206">HK Shows</string>
+  <string id="30207">Korean Dramas</string>
+  <string id="30208">Mainland Chinese Dramas</string>
+  <string id="30209">Taiwanese Dramas</string>
+  <string id="30210">Korean Variety Shows</string>
+  <string id="30211">Japanese Dramas</string>
+  <string id="30212">Movies</string>
+
+  <string id="30100">Privacy mode</string>
 </strings>

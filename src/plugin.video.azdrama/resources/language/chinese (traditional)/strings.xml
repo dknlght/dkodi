@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <string id="30300">域名</string>
+  <string id="30301">顯示影片來源</string>
+  <string id="30310">標題語言</string>
+  <string id="30311">英語及原本語言</string>
+  <string id="30312">英語</string>
+  <string id="30313">原本語言</string>
+
+  <string id="30201">類別</string>
+  <string id="30202">最近更新</string>
+  <string id="30204">香港電視劇</string>
+  <string id="30205">香港電影</string>
+  <string id="30206">香港節目</string>
+  <string id="30207">韓國電視劇</string>
+  <string id="30208">中國內地電視劇</string>
+  <string id="30209">台灣電視劇</string>
+  <string id="30210">韓國綜藝節目</string>
+  <string id="30211">日本電視劇</string>
+  <string id="30212">電影</string>
+
+
+  <string id="30100">隱私模式</string>
+</strings>
