@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    
+<settings>
+	<category label="KhmerStream">
+	<setting id="hide-successful-login-messages" type="bool" label="Hide Successfull login message" default="false"/>
+	<setting type="sep" />
+      		<setting id="khmerstream-account" type="bool" label="Enable Khmerstream login" default="false"/>
+		<setting id="khmerstream-username" type="text" label="Username" default="" enable="!eq(-1,false)"/>
+		<setting id="khmerstream-password" type="text" label="Password" default="" option="hidden" enable="!eq(-2,false)"/>
+</category>
+	
+</settings>

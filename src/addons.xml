@@ -554,6 +554,25 @@
 </addon>
 
 <addon
+  id="plugin.video.konkhmerall"
+  version="1.1.9"
+  name="KonKhmerAll"
+  provider-name="Cat2115">
+  <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="ADDON.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Special Thanks Price</summary>
+    <description>Watch Video in Khmer</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
   id="plugin.video.malimartv"
   version="1.0.7"
   name="malimartv"
