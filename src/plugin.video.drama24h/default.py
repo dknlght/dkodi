@@ -1238,11 +1238,7 @@ def ListShows(url):
 					vplot=""
 					if(len(item.p.contents)>0):
 						vplot=item.contents[0].encode('utf-8', 'ignore')
-					p = re.compile(ur'\d{4}-\d{2}-\d{2}\/?$')
-					if(re.search(p, vlink)):
-						addDirContext(vname,vlink,32,vimg,vplot,"tvshow")
-					else:
-						addDirContext(vname,vlink,8,vimg,vplot,"tvshow")
+					addDirContext(vname,vlink,8,vimg,vplot,"tvshow")
         navcontent=soup.findAll('div', {"class" : "navigation"})
         if(len(navcontent)>0):
 			for item in navcontent[0].findAll('a'):
@@ -1332,6 +1328,19 @@ def Episodes(url):
         soup = BeautifulSoup(newlink)
         vidcontent=soup.findAll('div', {"id" :re.compile('post-*')})
         for item in vidcontent[0].findAll('h5'):
+			if(item.span==None):
+				currentitem=item.a
+			else:
+				currentitem=item.span.a
+			vlink = currentitem['href'].encode('utf-8', 'ignore')
+			if(currentitem.span==None):
+				vname=currentitem.contents[0].encode('utf-8', 'ignore')
+			else:
+				vname=currentitem.span.contents[0].encode('utf-8', 'ignore')
+			
+			addDir(vname,vlink,32,"")
+        vidcontent=soup.findAll('ul', {"id" :re.compile('lcp_instance*')})
+        for item in vidcontent[0].findAll('li'):
 			if(item.span==None):
 				currentitem=item.a
 			else:
@@ -2295,7 +2304,6 @@ elif mode==6:
         GenreList(url,19)
 elif mode==8:
         Episodes(url)
-        SensenGetVideo(url)
 elif mode==9:
         SEARCH(url,"movie")
 elif mode==10:

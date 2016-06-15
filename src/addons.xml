@@ -221,7 +221,7 @@
 
 <addon
   id="plugin.video.drama24h"
-  version="1.0.6"
+  version="1.0.7"
   name="drama24h"
   provider-name="Dknight">
   <requires>
@@ -595,7 +595,7 @@
 
 <addon
   id="plugin.video.Mega_Khmer_Addon"
-  version="0.0.1"
+  version="0.0.2"
   name="[B][COLOR fff5f5dc]Mega_[/COLOR][COLOR ffffd700]Khmer_Addon[/COLOR][/B]"
   provider-name="Price">
   <requires>
@@ -765,7 +765,7 @@
 
 <addon
   id="plugin.video.pinoy_ako"
-  version="1.0.28"
+  version="1.0.29"
   name="pinoy_ako"
   provider-name="Dknight">
   <requires>

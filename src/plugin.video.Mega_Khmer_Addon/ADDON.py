@@ -11,10 +11,14 @@ KHMERSTREAM ='http://www.khmerstream.net/'
 MERLKON ='http://www.merlkon.net/'
 JOLCHET7 ='http://www.7khmer.com/'
 JOLCHETC ='http://7khmerch.blogspot.com/'
-VIDEO4U ='http://www.video4khmer3.com/'
-FILM4KH ='http://www.thevideokhmer.com/'
+VIDEO4U ='http://www.video4khmer2.com/'
+FILM4KH ='http://www.myvideokhmer.com/'
 KHDRAMA ='http://www.drama4khmers.com/'
+HOTKHMER ='http://www.khmerkomsan24.com/'
+KHMERALL = 'http://www.khmer6.com/'#'http://www.konkhmerall.com/'
 K8MER = 'http://k8mer.co/'
+TUBE_KHMER ='http://www.tubekh7.com/'
+PHUMIKHMER = 'http://www.phumikhmer9.com/'
 USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:16.0.1) Gecko/20121011 Firefox/16.0.1"
 datapath = xbmc.translatePath('special://profile/addon_data/'+addon_name)
 cookiejar = os.path.join(datapath,'khmerstream.lwp')
@@ -22,7 +26,7 @@ ADDON_PATH = PLUGIN.getAddonInfo('path')
 #append lib directory
 sys.path.append( os.path.join( ADDON_PATH, 'resources', 'lib' ) )
 from net import Net
-from bs4 import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 import CommonFunctions #For VIMEO
 common = CommonFunctions
 net = Net()
@@ -34,6 +38,7 @@ Film2usImage = os.path.join(ADDON_PATH, 'resources', 'images','film2us.jpg')
 JolchetImage = os.path.join(ADDON_PATH, 'resources', 'images','7khmer.png')
 KHdramaImage = os.path.join(ADDON_PATH, 'resources', 'images','khdram.jpg')
 K8merImage = os.path.join(ADDON_PATH, 'resources', 'images','K8mer.png')
+TubekhmerImage = os.path.join(ADDON_PATH, 'resources', 'images','TubeKhmer.gif')
 fanart = os.path.join(ADDON_PATH, 'resources', 'images','Angkor4.jpg')
 def OpenURL(url):
     req = urllib2.Request(url)
@@ -90,7 +95,10 @@ def HOME():
         addDir('[B][COLOR orange]VIDEO4U[/B][/COLOR]',VIDEO4U,30,'http://www.video4khmer3.com/templates/kulenkiri/images/header/logo.png')
         addDir('[B][COLOR orange]FILM2US[/B][/COLOR]',FILM4KH,40,'http://www.film4kh.com/images/Film2us.png')
         addDir('[B][COLOR orange]KHDRAMA[/B][/COLOR]',KHDRAMA,50,'http://www.drama2khmer.com/img/logo/khdram.jpg')
+        addDir('[B][COLOR orange]HOTKHMER[/B][/COLOR]',HOTKHMER,60,K8merImage+'')
+        addDir('[B][COLOR orange]KHMERALL[/B][/COLOR]',KHMERALL,130,'')
         addDir('[B][COLOR orange]K8MERHD[/B][/COLOR]',K8MER,80,K8merImage+'')
+        addDir('[B][COLOR orange]TUBEKHMER[/B][/COLOR]',TUBE_KHMER,90,TubekhmerImage+'')
         addDir('[B][COLOR red]KARAOKE[/B][/COLOR]','KARAOKE(MUSIC_MENU)',110,'')
         addDir('[B][COLOR red]KARAOKE[/B][/COLOR]','http://www.khmerlovesong.com/',120,'http://www.khmerlovesong.com/images/khmer-love-song.jpg')
 ########## START MERLKON ***********
@@ -129,7 +137,8 @@ def INDEX_MERLKON(url):
            html =html.encode("UTF-8")
         except: pass
         soup = BeautifulSoup(html.decode('utf-8'))
-        div_index = soup('div',{'style':"width:120px; height:120px;padding:1px;background-color:#444444"})
+        #div_index = soup('div',{'style':"width:120px; height:120px;padding:1px;background-color:#444444"})
+        div_index = soup('div',{'style':"width:140px; height:115px;padding:4px;border: 1px solid silver; background-color:#ffffff"})
         for link in div_index:
             vLink = BeautifulSoup(str(link))('a')[0]['href']
             vTitle = BeautifulSoup(str(link))('a')[0]['title']
@@ -150,7 +159,8 @@ def INDEX_KHMERSTREAM(url):
            html =html.encode("UTF-8")
         except: pass
         soup = BeautifulSoup(html.decode('utf-8'))
-        div_index = soup('div',{"style":"width:120px; height:120px;padding:1px;background-color:#444444"})
+        #div_index = soup('div',{"style":"width:120px; height:120px;padding:1px;background-color:#444444"})
+        div_index = soup('div',{'style':"width:140px; height:115px;padding:4px;border: 1px solid silver; background-color:#ffffff"})
         for link in div_index:
             vLink = BeautifulSoup(str(link))('a')[0]['href']
             vTitle = BeautifulSoup(str(link))('a')[0]['title']
@@ -272,8 +282,8 @@ def EPISODE4U(url,name):
 def JOLCHET():####MODE===20
         addDir('[B][COLOR blue]Home[/B][/COLOR]',JOLCHET7+'',21,'%s' % JolchetImage)
         addDir('[B][COLOR orange]Chinese Drama[/B][/COLOR]',JOLCHET7+'search/label/Chinese%20Drama?&max-results=20',21,'http://movietokhmer.com/assets/img/drama_thumbnail/2/Dav_Tip_MaChas_Piphp_Koun.jpg')
-        addDir('[B][COLOR orange]Chinese Drama[/B][/COLOR]',JOLCHETC,21,'http://movietokhmer.com/assets/img/drama_thumbnail/2/Dav_Tip_MaChas_Piphp_Koun.jpg')
-        addDir('Chinese Movie',JOLCHET7+'search/label/Chinese%20movie?&max-results=20',21,'http://movietokhmer.com/assets/img/drama_thumbnail/8/sdach_internet.jpg')
+        addDir('[B][COLOR orange]Chinese Drama[/B][/COLOR]',JOLCHETC,23,'http://movietokhmer.com/assets/img/drama_thumbnail/2/Dav_Tip_MaChas_Piphp_Koun.jpg')
+        addDir('Chinese Movie',JOLCHET7+'search/label/Chinese%20movie?&max-results=20',22,'http://movietokhmer.com/assets/img/drama_thumbnail/8/sdach_internet.jpg')
         addDir('[B][COLOR blue]Korean Drama[/COLOR][/B]',JOLCHET7+'search/label/Korean%20Drama?&max-results=20',21,'http://movietokhmer.com/assets/img/drama_thumbnail/1/Thornbird.jpg')
         
         addDir('[B][COLOR green]Khmer Drama[/B][/COLOR]',JOLCHET7+'search/label/Khmer%20drama?&max-results=20',21,'http://movietokhmer.com/assets/img/drama_thumbnail/3/koun-ort-kan-sla.jpg')
@@ -309,6 +319,7 @@ def INDEX_JJ(url):
         video_list = soup('div',{'class':'post-outer'})
         for link in video_list:
             vLink = BeautifulSoup(str(link))('a')[0]['href']
+            vLink = vLink.encode("UTF-8",'replace')
             #print vLink
             vTitle = BeautifulSoup(str(link))('a')[0].contents[0]#['title']
             vTitle = vTitle.encode("UTF-8",'replace')
@@ -334,6 +345,7 @@ def MOVIE_J(url):
         video_list = soup('div',{'class':'post-outer'})
         for link in video_list:
             vLink = BeautifulSoup(str(link))('a')[0]['href']
+            vLink = vLink.encode("UTF-8",'replace')
             vTitle = BeautifulSoup(str(link))('a')[0].contents[0]#['title']
             vTitle = vTitle.encode("UTF-8",'replace')
             #vImage = BeautifulSoup(str(link))('img')[0]['src']
@@ -414,12 +426,12 @@ def FILM2US():
 def INDEX_FILM2US(url):
     html = OpenSoup(url)
     soup = BeautifulSoup(html.decode('utf-8'))
-    #video_list = soup('div',{'class':'thumbnail'})
-    video_list = soup('div',{'class':'single-product-img'})
+    #video_list = soup('div',{'class':"panel-body"})
+    video_list = soup('div',{'class':"col-lg-3 col-md-3 col-sm-4 col-xs-6"})
     for link in video_list:
-        vLink = BeautifulSoup(str(link))('a')[0]['href']
+        vLink = BeautifulSoup(str(link))('a')[1]['href']
         #vTitle = BeautifulSoup(str(link))('a')[0].contents[0]
-        vTitle = BeautifulSoup(str(link))('a')[0]['title']
+        vTitle = BeautifulSoup(str(link))('a')[1]['title']
         vImage = BeautifulSoup(str(link))('img')[0]['src']
         addDir(vTitle,vLink,45,vImage)
     match5=re.compile('<ul class="pagination">(.+?)</ul>').findall(html)
@@ -432,12 +444,12 @@ def INDEX_FILM2US(url):
 def EPISODE_FILM2US(url):    
         html =urllib2.urlopen(url).read()
         soup = BeautifulSoup(html.decode('utf-8'))
-        #episodes = soup('div',{'class':'thumbnail'})
-        episodes = soup('div',{'class':'single-product-img'})
+        #episodes = soup('div',{'class':"panel-body"})
+        episodes = soup('div',{'class':"col-lg-3 col-md-3 col-sm-4 col-xs-6"})
         for link in episodes:
-            vLink = BeautifulSoup(str(link))('a')[0]['href']
+            vLink = BeautifulSoup(str(link))('a')[1]['href']
             #vTitle = BeautifulSoup(str(link))('a')[0].contents[0]
-            vTitle = BeautifulSoup(str(link))('a')[0]['title']
+            vTitle = BeautifulSoup(str(link))('a')[1]['title']
             vImage = BeautifulSoup(str(link))('img')[0]['src']
             addLink(vTitle,vLink,3,vImage)
         match5=re.compile('<ul class="pagination">(.+?)</ul>').findall(html)
@@ -463,34 +475,153 @@ def KHDRAMA2():
         #addDir('[B][COLOR red]KARAOKE[/B][/COLOR]','http://www.khmerlovesong.com/',7,'http://www.khmerlovesong.com/images/khmer-love-song.jpg')        
          
         xbmcplugin.endOfDirectory(pluginhandle) 
+def INDEX_KHDRAMA(url):
+         html = OpenSoup(url)
+         soup = BeautifulSoup(html.decode('utf-8'))
+         video_list = soup('div',{'class':"thumbnail"})
+         for link in video_list:
+             vLink = BeautifulSoup(str(link))('a')[0]['href']
+             vTitle = BeautifulSoup(str(link))('a')[0]['title']
+             vImage = BeautifulSoup(str(link))('img')[0]['src']
+             addDir(vTitle,vLink,55,vImage)
+         match5=re.compile('<ul class="pagination catalogue-pagination">(.+?)</ul>').findall(html)
+         if(len(match5)):
+           pages=re.compile('<li><a href="(.+?)">(.+?)</a></li>').findall(match5[0])
+           for pageurl,pagenum in pages:
+               addDir(" Page " + pagenum,pageurl.encode("utf-8"),51,"")  
+                        
+         xbmcplugin.endOfDirectory(pluginhandle)	
+def EPISODE_KHDRAMA(url,name):
+         html = OpenSoup(url)
+         soup = BeautifulSoup(html.decode('utf-8'))
+         video_list = soup('div',{'class':"thumbnail"})
+         for link in video_list:
+             vLink = BeautifulSoup(str(link))('a')[0]['href']
+             vTitle = BeautifulSoup(str(link))('a')[0]['title']
+             vImage = BeautifulSoup(str(link))('img')[0]['src']
+             addDir(vTitle,vLink,3,vImage)
+         match5=re.compile('<ul class="pagination catalogue-pagination">(.+?)</ul>').findall(html)
+         if(len(match5)):
+           pages=re.compile('<li><a href="(.+?)">(.+?)</a></li>').findall(match5[0])
+           for pageurl,pagenum in pages:
+               addDir(" Page " + pagenum,pageurl.encode("utf-8"),55,"")
 
-def INDEX_KHDRAMA(url):     
+         xbmcplugin.endOfDirectory(pluginhandle)        
+############## END KHDRAMA ******************
+#######################################
+def KHMERKOMSAN():#60
+        #addDir('[B][COLOR blue]Home[/B][/COLOR]',HOTKHMER+'',61,'%s' % HomeImage)
+        addDir('[B][COLOR orange]Chinese Drama[/B][/COLOR]',HOTKHMER+'category.php?cat=chinese-drama-dubbed',61,'http://www.vdokhmer.com/images/subcat/506/3363.jpg')   
+        addDir('[B][COLOR green]Khmer Drama[/B][/COLOR]',HOTKHMER+'category.php?cat=khmer-drama-dubbed',61,'http://www.vdokhmer.com/images/subcat/504/3159.jpg')
+        #addDir('[B][COLOR blue]Korean Drama[/B][/COLOR]',HOTKHMER+'',61,'http://www.vdokhmer.com/images/subcat/507/2687.jpg')
+        addDir('[B][COLOR purple]Thai Lakorn[/B][/COLOR]',HOTKHMER+'category.php?cat=thai-lakorn-dubbed',61,'http://www.vdokhmer.com/images/subcat/537/3323.jpg')
+        addDir('[B][COLOR purple]Thai Continued[/B][/COLOR]',HOTKHMER+'category.php?cat=thai-continued-dubbed',61,'http://www.vdokhmer.com/images/subcat/537/3323.jpg')
+        addDir('Chinese Movie',HOTKHMER+'category.php?cat=chinese-movie-dubbed',61,'http://www.vdokhmer.com/images/subcat/505/3283.jpg')  
+        addDir('Thai Movie',HOTKHMER+'category.php?cat=thai-movie-dubbed',61,'http://www.vdokhmer.com/images/subcat/525/3326.jpg')
+        addDir('Khmer Movie',HOTKHMER+'category.php?cat=thai-movie-dubbed',61,'')
+def INDEX_KHMERKOMSAN(url):
+     
+     #try:
+        html = OpenSoup(url)
+        try:   
+           html =html.encode("UTF-8")
+        except: pass
+        soup = BeautifulSoup(html.decode('utf-8'))
+        div_index = soup('div',{'class':"fra-thunmb"})
+        for link in div_index:            
+            vLink = BeautifulSoup(str(link))('a')[0]['href']
+            vImage = BeautifulSoup(str(link))('img')[0]['src']
+            vTitle = BeautifulSoup(str(link))('img')[0]['title']
+            vTitle = vTitle.encode("UTF-8",'replace')
+            addDir(vTitle,vLink,65,vImage)
+        pages=re.compile('<li class="">\r\n\s*<a href="(.+?)">&raquo;</a>').findall(html)
+        if(len(pages)):
+          for pageurl in pages:
+              addDir("[B][COLOR blue]<< Next Page >>[/B][/COLOR]",('http://www.khmerkomsan24.com/' + pageurl.encode("utf-8")),61,"")
+def INDEX_KHMERKOMSAN_MOVIE(url):
+     
+     #try:
+        html = OpenSoup(url)
+        try:   
+           html =html.encode("UTF-8")
+        except: pass
+        soup = BeautifulSoup(html.decode('utf-8'))
+        div_index = soup('div',{'class':"fra-thunmb"})
+        for link in div_index:            
+            vLink = BeautifulSoup(str(link))('a')[0]['href']
+            vImage = BeautifulSoup(str(link))('img')[0]['src']
+            vTitle = BeautifulSoup(str(link))('img')[0]['title']
+            vTitle = vTitle.encode("UTF-8",'replace')
+            addDir(vTitle,vLink,65,vImage)
+        pages=re.compile('<li class="">\r\n\s*<a href="(.+?)">&raquo;</a>').findall(html)
+        if(len(pages)):
+          for pageurl in pages:
+              addDir("[B][COLOR blue]<< Next Page >>[/B][/COLOR]",('http://www.khmerkomsan24.com/' + pageurl.encode("utf-8")),62,"")
+def EPISODE_KHMERKOMSAN(url,name):    
+        link = OpenURL(url)        
+        match=re.compile('{\s*"file":\s*"(.+?)",\s*"title":\s*"(.+?)",').findall(link)     
+        if(len(match) > 0):      
+         for vLink,vLinkName in match:                 
+             addLink(vLinkName,vLink,4,'')
+        else: 
+         match=re.compile('[^>]*{"idGD":\s*"([^"]+?)"').findall(link)
+         print 'MATCHIFRAM: %s' % match
+         if(len(match) > 0):
+           EPlink = match[0].replace("0!?^0!?A"," ")       
+           match = EPlink.split(' ')   
+           counter = 0      
+           for vLink in match:
+               counter += 1 
+               addLink(name.encode("utf-8") + " part " + str(counter), 'https://docs.google.com/file/d/%s' % vLink,4,'')
+         else:
+           match=re.compile('<div id="Playerholder">\r\n\t\t\t<iframe [^>]*src="([^"]+?)"').findall(link)
+           print 'MATCHPLAY: %s' % match
+           if(len(match) > 0):      
+            for vLink in match:
+              addLink(name.encode("utf-8"),vLink,4,'')
+
+def KONKHMERALL():
+        addDir('[B][COLOR orange]Chinese Drama[/B][/COLOR]',KHMERALL+'search/label/China%20Drama#',131,'http://movietokhmer.com/assets/img/drama_thumbnail/2/Dav_Tip_MaChas_Piphp_Koun.jpg')
+        #addDir('Chinese Movie',K8MER+'type-chinese-movies',81,'http://movietokhmer.com/assets/img/drama_thumbnail/8/sdach_internet.jpg')
+        #addDir('[B][COLOR blue]Korean Drama[/B][/COLOR]',KHMERALL+'category/home/korea-drama/',101,'http://movietokhmer.com/assets/img/drama_thumbnail/1/Thornbird.jpg')
+        #addDir('Korean Movie',K8MER+'type-korean-movies',81,'http://vdo168.com/images/baby-and-me-comedy-action-2013-korea-full-movie-with-english-subtitles-khmer-movie.jpg')
+        #addDir('[B][COLOR green]Khmer Drama[/B][/COLOR]',LAKORNKHMER+'type-khmer-drama',101,'http://www.film2us.com//images/cover/Rolok-Bok-Ksach.jpg')
+        #addDir('Khmer Movie',K8MER+'type-khmer-movies',81,'http://www.film2us.com//images/cover/Preay-Dek-Koul.jpg')
+        #addDir('Thai Drama',KHMERALL+'category/home/thai-lakorn/',101,'http://movietokhmer.com/assets/img/drama_thumbnail/4/Andath_Plerng_Sneha.jpg')
+        #addDir('Thai Movie',K8MER+'type-thai-movies',81,'http://www.film2us.com//images/cover/Nak-KaPea-II.jpg')
+        #addDir('Philippines Drama',LAKORNKHMER+'category/philippines-drama/',101,'')
+
+def INDEX_KONKHMERALL(url):
+         html = OpenSoup(url)
+         try:
+             html = html.encode("UTF-8")
+         except: pass
+         soup = BeautifulSoup(html.decode('utf-8'))
+         div_index = soup('div',{"class":'post-outer'})
+         for link in div_index:
+             vLink = BeautifulSoup(str(link))('a')[0]['href']
+             vLink = vLink.encode("UTF-8",'replace')
+             print vLink
+             vTitle = BeautifulSoup(str(link))('a')[0].contents[0]
+             vTitle = vTitle.encode("UTF-8",'replace')
+             print vTitle
+             vImage = BeautifulSoup(str(link))('a')[1]['href']
+             print vImage
+             addDir(vTitle,vLink,135,vImage)             
+         pages=re.compile('<span id=\'blog-pager-older-link\'>\n<a class=\'blog-pager-older-link\' href=\'([^"]+?)\' ').findall(html)
+         for pageurl in pages:
+               addDir("[B][COLOR blue]%s >>[/B][/COLOR]"% 'NEXT PAGE',pageurl,131,"")
+
+def EPISODE_KONKHMERALL(url,name):    
         link = OpenURL(url)
         try:
-            link =link.encode("UTF-8")
+             link = link.encode("UTF-8")
         except: pass
-        match=re.compile('<center><a href="(.+?)" title="(.+?)"><img src="(.+?)" width="170px" height="178px" alt=".+?" /></a></center>').findall(link)
-        for vurl,vname,vimage in match:
-            addDir(vname,vurl,55,vimage)
-            match5=re.compile('<ul id="pagination-digg">(.+?)</ul>').findall(link)
-        if(len(match5)):
-            pages=re.compile('<li><a href="(.+?)">(.+?)</a></li>').findall(match5[0])
-            for pageurl,pagenum in pages:
-                addDir(" Page " + pagenum,pageurl.encode("utf-8"),51,"")                        
-        xbmcplugin.endOfDirectory(pluginhandle)	
-
-def EPISODE_KHDRAMA(url,name):    
-        link = OpenURL(url)
-        match=re.compile('<center><a href="(.+?)" title="(.+?)"><img src="(.+?)" width="170px" height="178px" alt=".+?" /></a></center>').findall(link)      
-        for vLink,vLinkName,vImage in match:                   
-            addLink(vLinkName,vLink,3,vImage)
-            match5=re.compile('<ul id="pagination-digg">(.+?)</ul>').findall(link)
-        if(len(match5)):
-            pages=re.compile('<li><a href="(.+?)">(.+?)</a></li>').findall(match5[0])
-            for pageurl,pagenum in pages:
-                addDir(" Page " + pagenum,pageurl.encode("utf-8"),55,"")
-        xbmcplugin.endOfDirectory(pluginhandle)        
-############## END KHDRAMA ******************
+        #addLink(name.encode("utf-8"),url,3,'')
+        match=re.compile('{\s*"file":\s*"(.+?)",\s*"title":\s*"(.+?)",').findall(link)     
+        if(len(match) > 0):      
+         for vLink,vLinkName in match:                 
+          addLink(vLinkName,vLink,4,'')
 ####################################
 def K8MERHD():
         addDir('[B][COLOR orange]Chinese Drama[/B][/COLOR]',K8MER+'category/home-feather/chinese/',81,'http://movietokhmer.com/assets/img/drama_thumbnail/2/Dav_Tip_MaChas_Piphp_Koun.jpg')
@@ -540,6 +671,134 @@ def EPISODE_K8MERHD(url,name):
              #vImage = BeautifulSoup(str(link))('img')[0]['src']
              #print vImage
              addLink(vTitle,vLink,3,'')
+##########################################################
+def TUBEKHMER():
+        addDir('[B][COLOR orange]Chinese Drama[/B][/COLOR]',TUBE_KHMER+'search/label/Chinese%20Series',91,'http://movietokhmer.com/assets/img/drama_thumbnail/2/Dav_Tip_MaChas_Piphp_Koun.jpg')
+        #addDir('Chinese Movie',HomeURL+'movie/load/8',2,'http://movietokhmer.com/assets/img/drama_thumbnail/8/sdach_internet.jpg')
+        #addDir('Chinese Drama_V',HomeURL+'khmer-movie-category/chinese-series-drama-watch-online-free-catalogue-506-page-1.html',6,'http://www.vdokhmer.com/images/subcat/506/3363.jpg')       
+        #addDir('[B][COLOR blue]Korean Drama[/B][/COLOR]',HomeURL+'search/label/Korean%20Series',2,'http://movietokhmer.com/assets/img/drama_thumbnail/1/Thornbird.jpg')
+        addDir('Thai Lakorn',PHUMIKHMER+'search/label/Thai%20Lakorn?&max-results=16',92,'http://movietokhmer.com/assets/img/drama_thumbnail/1/Thornbird.jpg')
+        #addDir('[B][COLOR green]Khmer Drama[/B][/COLOR]',HomeURL+'search/label/Khmer%20Drama',2,'http://movietokhmer.com/assets/img/drama_thumbnail/3/koun-ort-kan-sla.jpg')
+        addDir('Thai Drama',TUBE_KHMER+'search/label/Thai%20Lakorn?&max-results=15',91,'http://movietokhmer.com/assets/img/drama_thumbnail/4/Andath_Plerng_Sneha.jpg')
+        #addDir('HOME',PHUMIKHMER+'',2,'%s' % HomeImage)
+        xbmcplugin.endOfDirectory(pluginhandle)
+
+def INDEX_PHUMIKHMER(url):     
+    try:
+        html = OpenSoup(url)
+        try:
+            html =html.encode("UTF-8")
+        except: pass
+        #html = urllib2.urlopen(url).read()
+        soup = BeautifulSoup(html.decode('utf-8'))
+        video_list = soup('div',{'class':'cutter'})
+        for link in video_list:
+            vLink = BeautifulSoup(str(link))('a')[0]['href']
+            vTitle = BeautifulSoup(str(link))('a')[0]['title']
+            vTitle = vTitle.encode("UTF-8",'replace')
+            vImage = BeautifulSoup(str(link))('img')[0]['src']
+            addDir(vTitle,vLink,95,vImage)
+        label=re.compile("/label/(.+?)\?").findall(url)[0]
+        print label
+        pagenum=re.compile("PageNo=(.+?)").findall(url)
+        print pagenum
+        prev="0"
+        if(len(pagenum)>0):
+              prev=str(int(pagenum[0])-1)
+              pagenum=str(int(pagenum[0])+1)
+
+        else:
+              pagenum="2"
+        nexurl=buildNextPage(pagenum,label)
+
+        if(int(pagenum)>2 and prev=="1"):
+              urlhome=url.split("?")[0]+"?"
+              addDir("[B][COLOR blue]<< Back Page >>[/B][/COLOR]",urlhome,92,"")
+        elif(int(pagenum)>2):
+              addDir("[B][COLOR blue]<< Back Page >>[/B][/COLOR]",buildNextPage(prev,label),92,"")
+        if(nexurl!=""):
+              addDir("[B][COLOR green]<< Next Page >>[/B][/COLOR]",nexurl,92,"")
+        
+    except:pass
+    #xbmc.executebuiltin('Container.SetViewMode(500)')
+    xbmcplugin.endOfDirectory(pluginhandle)	
+def INDEX_TUBEKHMER(url):     
+    
+        html = OpenURL(url)
+        try:
+            html =html.encode("UTF-8")
+        except: pass
+        soup = BeautifulSoup(html.decode('utf-8'))
+        video_list = soup('div',{'class':'post-outer'})
+        for link in video_list:
+            vImage = BeautifulSoup(str(link))('a')[1]['href']    
+            vLink = BeautifulSoup(str(link))('a')[0]['href']
+            vTitle = BeautifulSoup(str(link))('a')[2]['title']
+            vTitle = vTitle.encode("UTF-8",'replace')
+            addDir(vTitle,vLink,95,vImage)
+        Page= soup('a',{"class":"blog-pager-older-link"})
+        for Next in Page:
+         pageurl = BeautifulSoup(str(Next))('a')[0]['href']
+         #print vLink
+         pagenum = BeautifulSoup(str(Next))('a')[0]['title'] 
+         addDir("[B][COLOR blue]<<<%s>>>[/B][/COLOR]"% pagenum,pageurl,91,"")    
+                         
+       # xbmcplugin.endOfDirectory(pluginhandle)
+
+def buildNextPage(pagenum,label):
+	pagecount=str((int(pagenum) - 1) * 18)
+	url=PHUMIKHMER+"feeds/posts/summary/-/"+label+"?start-index="+pagecount+"&max-results=1&alt=json-in-script&callback=finddatepost"
+	link = OpenURL(url)
+	try:
+		link =link.encode("UTF-8")
+	except: pass
+	match=re.compile('"published":\{"\$t":"(.+?)"\}').findall(link)
+	print match
+	if(len(match)>0):
+		tsvalue=urllib.quote_plus(match[0][0:19]+match[0][23:29])
+		newurl=PHUMIKHMER+"search/label/"+label+"?updated-max="+tsvalue+"&max-results=18#PageNo="+pagenum
+	else:
+		newurl=""
+	return newurl
+def EPISODE_TUBEKHMER(url,name):
+        link = OpenURL(url)
+        try:
+            link =link.encode("UTF-8")
+        except: pass
+        #addLink(name.encode("utf-8"),url,3,'')
+        match=re.compile('{\s*"file":\s*"(.+?)",\s*"title":\s*"(.+?)",\s*"description": "",').findall(link)
+        if(len(match)>0):
+         for vLink,vLinkName in match:
+          addLink(vLinkName,vLink,4,'')
+        else:#if(len(match)==0):
+         match=re.compile('href="(.+?)" target="_blank">(.+?)</a>').findall(link)
+         if(len(match)>0):
+          for vLink,vLinkName in match:
+           addLink(vLinkName,vLink,4,'')
+         else:#if(len(match)==0):
+          match=re.compile('<li class="v-item active" data-vid="(.+?)"><img /><span class="v-title">(.+?)</span>').findall(link)
+          if(len(match)>0):
+           for vLink,vLinkName in match:
+            addLink(vLinkName,('https://player.vimeo.com/video/'+vLink),4,'')
+          else:
+           #match=re.compile('{\s*"file":\s*"(.+?)",\s*"title":\s*".+?",\s*"description":\s*"(.+?)",').findall(link)
+           match=re.compile('{\s*"file":\s*"(.+?)",\s*"title":\s*"(.+?)",').findall(link)
+           if(len(match)>0):
+            for vLink,vLinkName in match:
+             addLink(vLinkName,vLink,4,'')
+           else:
+            #match=re.compile('{\s*"file":\s*"(.+?)",\s*"title":\s*"(.+?)",\s*"description":\s*"",').findall(link)
+            match=re.compile('{\s*"file":\s*"(.+?)",\s*"title":\s*".+?",\s*"description":\s*"(.+?)",').findall(link)
+            if(len(match)>0):
+             for vLink,vLinkName in match:
+              addLink(vLinkName,vLink,4,'')
+            else:
+             match=re.compile('{\s*"file":\s*"(.+?)",\s*"title":\s*"",\s*"description":\s*"(.+?"),').findall(link)
+             if(len(match)>0):
+              for vLink,vLinkName in match:
+               addLink(vLinkName,vLink,4,'')  
+        xbmcplugin.endOfDirectory(pluginhandle)
+             
 ##########################################################
 ################ KARAOKE ************ START #################
 def MUSIC_MENU(url,name):
@@ -644,12 +903,10 @@ def PLAYLIST_VIDEO_HOSTING(vlink):
                 VideoURL = DAILYMOTION(vlink)
                 print 'VideoURL: %s' % VideoURL
                 PlayLIST_VIDEO(VideoURL)
-                 
            elif 'facebook.com' in vlink:
                 VideoURL = FACEBOOK(vlink)
                 print 'VideoURL: %s' % VideoURL
-                PlayLIST_VIDEO(VideoURL)
-                
+                PlayLIST_VIDEO(VideoURL)      
            elif 'google.com' in vlink:
                 VideoURL = DOCS_GOOGLE(vlink)
                 print 'VideoURL: %s' % VideoURL
@@ -789,11 +1046,13 @@ def VIDEOLINKS(url):
             if(len(match) == 0):
              match=re.compile('file:\s*"([^"]+?)"').findall(link)# Good Link
              if(len(match) == 0):
+              match=re.compile('<iframe [^>]*src="(.+?)"').findall(link)
+              if(len(match) == 0):
                 match=re.compile('<iframe frameborder="0" [^>]*src="(.+?)">').findall(link)
                 if(len(match)==0):
                  match=re.compile('<IFRAME SRC="(.+?)" [^>]*').findall(link)
                  if(len(match) == 0):   
-                   #match=re.compile('<iframe src="(.+?)" [^>]*').findall(link)
+                   #match=re.compile('<iframe [^>]*src="(.+?)" [^>]*').findall(link)
                    match=re.compile("'file': '(.+?)',").findall(link)
                    if(len(match) == 0):
                     match=re.compile('<div class="video_main">\s*<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)
@@ -812,9 +1071,11 @@ def VIDEOLINKS(url):
                           for url in match:
                            vid = url[0].replace("['']", "")       
                            match ='https://docs.google.com/file/d/'+ (vid)+'/preview'
-                           REAL_VIDEO_HOST(match)
+                           #REAL_VIDEO_HOST(match)
+                           VIDEO_HOSTING(match)
                            print match
            VIDEO_HOSTING(match[0])
+           print match
            xbmcplugin.endOfDirectory(pluginhandle)
    
 def VIDEO_HOSTING(vlink):
@@ -1023,7 +1284,9 @@ def FACEBOOK (SID):
        response.close()
        #vlink = 'http://www.facebook.com/video/video.php?v=' + str(link)
        vlink = re.compile('"params","([\w\%\-\.\\\]+)').findall(link)[0]
+       print 'VIDEO Link: %s' % vlink 
        html = urllib.unquote(vlink.replace('\u0025', '%')).decode('utf-8')
+       print 'VIDEO HTML: %s' % html 
        html = html.replace('\\', '')
        videoUrl = re.compile('(?:hd_src|sd_src)\":\"([\w\-\.\_\/\&\=\:\?]+)').findall(html)
        if len(videoUrl) > 0:    
@@ -1267,13 +1530,22 @@ elif mode==50:
 elif mode==51:
         INDEX_KHDRAMA(url)
 elif mode==55:
-        EPISODE_KHDRAMA(url,name)
+        EPISODE_KHDRAMA(url,name)       
 elif mode==80:
         K8MERHD()
 elif mode==81:
         INDEX_K8MERHD(url)
 elif mode==85:
         EPISODE_K8MERHD(url,name)
+elif mode==90:
+        TUBEKHMER()
+elif mode==91:
+        INDEX_TUBEKHMER(url)
+elif mode==92:
+        INDEX_PHUMIKHMER(url)
+elif mode==95:
+        EPISODE_TUBEKHMER(url,name)
+############## START KARAOKE
 elif mode==110:
         MUSIC_MENU(url,name)
 elif mode==111:
@@ -1289,5 +1561,21 @@ elif mode==121:
         INDEX_KHMERLOVES(url)
 elif mode==125:
         EPISODE_KHMERLOVES(url,name)        
+################ END KARAOKE
+elif mode==130:
+        KONKHMERALL()
+elif mode==131:
+        INDEX_KONKHMERALL(url)
+elif mode==135:
+        EPISODE_KONKHMERALL(url,name)
+elif mode==60:
+        KHMERKOMSAN()
+elif mode==61:
+        INDEX_KHMERKOMSAN(url)
+elif mode==62:
+        INDEX_KHMERKOMSAN_MOVIE(url)
+elif mode==65:
+        EPISODE_KHMERKOMSAN(url,name)         
+
 xbmcplugin.endOfDirectory(int(sysarg))
         
