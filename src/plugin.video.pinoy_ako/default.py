@@ -44,7 +44,7 @@ if not os.path.exists(cookie_path):
 def HOME():
         addDir('Search','http://www.pinoy-ako.ws',8,'')
         addDir('Latest Videos','http://www.pinoy-ako.ws',6,'')
-        addDir('Pinoy Movies','http://www.pinoymovie.se/videos',15,'')
+        addDir('Pinoy Movies','http://www.fullpinoymovies.com',15,'')
         addDir('ABS-CBN by Shows',strdomain2+'/category/abs-cbn/',13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
         addDir('GMA 7 shows on lambingan',strdomain2+'/category/Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
         addDir('Kapuso','http://www.pinoy-ako.ws/kapuso/',6,'')
@@ -58,6 +58,7 @@ def HOME():
         addDir('Pinoy Recipes','http://www.pinoy-ako.ws/pinoy-recipes/',6,'')
         addDir('Viral Videos','http://www.pinoy-ako.ws/viral/',6,'')
         addDir('Trending Videos','http://www.pinoy-ako.ws/trending/',6,'')
+		
 def AllTV(url):
         link = GetContent(url)
         link=link.encode("UTF-8")
@@ -69,22 +70,36 @@ def AllTV(url):
             (vurl,vname)=vurlc[0]
             addDir(vname,strdomain+vurl,5,"")
 			
+def MovieMenu(url):
+        link = GetContent(url)
+        try:
+            link=link.encode("UTF-8")
+        except: pass
+        soup = BeautifulSoup(link)
+        vidcontent=soup.findAll('ul', {"class" : "categories"})[0]
+        for item in vidcontent.findAll('li'):
+			vname=item.a.contents[0].encode('utf-8','ignore')
+			vurl=item.a["href"]
+			vimg=""
+			addDir(vname.replace("&amp;","&").replace("&#8211;","-").replace("&#8217;","'"),vurl.replace("&amp;amp;","&amp;"),17,vimg)
+
+		
 def MovieINDEX2(url):
         link = GetContent(url)
         try:
             link=link.encode("UTF-8")
         except: pass
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"id" : "content_box"})[0]
-        for item in vidcontent.findAll('div', {"class" :"thumbnailvid"}):
+        vidcontent=soup.findAll('article', {"id" : "article"})[0]
+        for item in vidcontent.findAll('div', {"class" :"Tw-FilmResim"}):
 			vname=item.a["title"].replace("Permanent Link to ","").encode('utf-8','ignore')
 			vurl=item.a["href"]
-			vimg=item.a.img["src"]
+			vimg=item.a.figure.img["src"]
 			addDir(vname.replace("&amp;","&").replace("&#8211;","-").replace("&#8217;","'"),vurl.replace("&amp;amp;","&amp;"),16,vimg)
-        navcontent=soup.findAll('div', {"class" : "pagination"})
+        navcontent=soup.findAll('div', {"class" : "paGination"})
         if(len(navcontent) > 0):
 			for item in navcontent[0].findAll('a'):
-					addDir("Page " + item.contents[0].replace("&raquo;",">>").replace("&laquo;","<<").replace("&rsaquo;","next"),item["href"],15,"")
+					addDir("Page " + item.contents[0].encode('utf-8','ignore').replace("&raquo;",">>").replace("&laquo;","<<").replace("&rsaquo;","next"),item["href"],17,"")
 					
 def INDEXlamb(url):
         link = GetContent(url)
@@ -201,7 +216,7 @@ def GetMovieLinks(url):
             link=link.encode("UTF-8")
         except: pass
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"class" : "tabcontents"})[0]
+        vidcontent=soup.findAll('div', {"id" : "1"})[0]
         for item in vidcontent.findAll('iframe'):
 			vname= item["src"].replace("http://","").replace("https://","").split(".")[0] 
 			vurl=item["src"]
@@ -1526,8 +1541,10 @@ elif mode==13:
        INDEXlamb(url)   
 elif mode==14:
        GetVideoLinkslamb(url)
-elif mode==15:
+elif mode==17:
        MovieINDEX2(url)
 elif mode==16:
 	   GetMovieLinks(url)
+elif mode==15:
+		MovieMenu(url)
 xbmcplugin.endOfDirectory(int(sysarg))
