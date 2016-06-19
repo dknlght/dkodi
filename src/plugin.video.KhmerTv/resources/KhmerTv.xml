@@ -15,10 +15,17 @@
       <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/khmer-mytv-standardHD.jpg</thumbnail>
       <resolve>true</resolve>
     </item>
-    <item>
-      <title>MediaBiz</title>
-      <link>http://live.wmncdn.net/medibiztv/d0dbe915091d400bd8ee7f27f0791303.sdp/playlist.m3u8</link>
-      <thumbnail>http://khiptv.com/images_tv/TV.png</thumbnail>
+	<item>
+      <title>CTV8</title>
+      <link>https://shapi.ppctvhd.com/api/channels/556f2f2dd4c62e92331ecc74?userPhonePlatform=IOS</link>
+      <thumbnail>https://images.malimar.tv/kh/CTV8HD.jpg</thumbnail>
+      <resolve>true</resolve>
+    </item>
+	    <item>
+      <title>PPCTV</title>
+      <link>https://shapi.ppctvhd.com/api/channels/56fab962935c563de2ba4ecd?userPhonePlatform=IOS</link>
+      <thumbnail>http://ppctv-ott-cdn.imperialtech.asia/tvnow/images/channels/logo/ppctv6_logo_t.jpg</thumbnail>
+      <resolve>true</resolve>
     </item>
     <item>
       <title>CNC</title>
@@ -104,6 +111,7 @@
       <link>rtmp://123.30.134.108/live/nctlive</link>
       <thumbnail>http://khiptv.com/images_tv/TV9.png</thumbnail>
     </item>
+
   </channel>
   <channel>
     <name>Khmer Radios</name>

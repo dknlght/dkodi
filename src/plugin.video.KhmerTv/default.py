@@ -218,7 +218,32 @@ def GetContent2(url):
     except:	
        d = xbmcgui.Dialog()
        d.ok(url,"Can't Connect to site",'Try again in a moment')
-	   
+	  
+
+def GetPPCContent(url):
+    cj = cookielib.LWPCookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    opener.addheaders = [('Accept', '*/*'),
+        ('Accept-Encoding', 'gzip, deflate'),
+        ('User-Agent', 'Appcelerator Titanium/5.2.0 (iPhone/9.0; iPhone OS; en_US;)'),
+        ('Proxy-Connection', 'keep-alive'),
+        ('Connection', 'keep-alive'),
+        ('Accept-Language', 'en-us'),
+        ('X-Titanium-Id', 'f54f1815-ed0a-41b1-9999-72a54d03c529'),
+        ('If-None-Match', 'W/"113-vbZ2xXqr2LQknSSdPsm0zg"'),
+        ('Appauthsignature', 'MTQ2NjM1Nzk5MDo6NzE1ODVlYzZhODg2N2EyMTlmZTRkMzFiZGI2ZWNmNGM0ODQxNWZhMzdkZDY0OTE2YTE0MjJlZTA3OTM1NzQxYg=='),
+        ('X-Requested-With', 'XMLHttpRequest'),
+        ('Host', 'shapi.ppctvhd.com')]
+    usock = opener.open(url)
+    if usock.info().get('Content-Encoding') == 'gzip':
+        buf = StringIO.StringIO(usock.read())
+        f = gzip.GzipFile(fileobj=buf)
+        response = f.read()
+    else:
+        response = usock.read()
+    usock.close()
+    return (response)
+	
 def GetContent(url):
 
     cj = cookielib.LWPCookieJar()
@@ -345,6 +370,14 @@ def Resolver(url):
 				vidlink=data["url"] + " live=true"
 			else:
 				vidlink=data["url"] 
+		elif (url.find("ppctvhd.com") > -1):
+			mydata=GetPPCContent(url)
+			data = json.loads(mydata)
+			if(kodiversionNumber < 15):
+				vidlink=data["result"]["realUrl"] + " live=true"
+			else:
+				vidlink=data["result"]["realUrl"] 
+			
 		return vidlink
 def ParseXml(tagname):
         f = open(filename, "r")
