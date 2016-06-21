@@ -15,22 +15,20 @@
       <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/khmer-mytv-standardHD.jpg</thumbnail>
       <resolve>true</resolve>
     </item>
-	<item>
-      <title>CTV8</title>
-      <link>https://shapi.ppctvhd.com/api/channels/556f2f2dd4c62e92331ecc74?userPhonePlatform=IOS</link>
-      <thumbnail>https://images.malimar.tv/kh/CTV8HD.jpg</thumbnail>
-      <resolve>true</resolve>
+	    <item>
+      <title>MSJTV</title>
+      <link>rtmp://124.248.165.18:1935/live/myStream playpath=myStream swfUrl=http://msjtv.asia/Scripts/player/6.11/player.flash.swf live=true</link>
+      <thumbnail>http://msjtv.asia/Content/Images/msjTVLogo.png</thumbnail>
     </item>
 	    <item>
-      <title>PPCTV</title>
-      <link>https://shapi.ppctvhd.com/api/channels/56fab962935c563de2ba4ecd?userPhonePlatform=IOS</link>
-      <thumbnail>http://ppctv-ott-cdn.imperialtech.asia/tvnow/images/channels/logo/ppctv6_logo_t.jpg</thumbnail>
-      <resolve>true</resolve>
+      <title>ATV 2</title>
+      <link>rtmp://113.161.212.25/live2 playpath=atv2 swfUrl=http://www.atv.org.vn/player/player.swf swfVfy=true live=true timeout=90</link>
+      <thumbnail>http://www.atv.org.vn/images/logof.png</thumbnail>
     </item>
     <item>
       <title>CNC</title>
       <link>http://mobile.interface.stmg.net.kh/nn_cms/nn_cms_view/jpz/n3_a_a.php?nns_version=2.3.7.0.2.SC-JPZ-IPAD.0.0_Release&amp;nns_output_type=json&amp;nns_user_agent=nn_pad/ipad/1.0.0&amp;nns_language=en_US&amp;nns_tag=28&amp;nns_user_id=IPADB123456789089756745634523456&amp;nns_device_id=&amp;nns_buss_id=2000002&amp;nns_category_id=1000001&amp;nns_func=apply_play_video&amp;nns_mac_id=112233445566&amp;nns_media_assets_id=pad_live_v1&amp;nns_media_id=51cb3efed11a0094944cc78c7f950fdd&amp;nns_video_id=305c725d29f8e7b9684e09e9d463669e&amp;nns_video_index=0&amp;nns_video_type=1</link>
-      <thumbnail>http://cnc.com.kh/images/logo.png</thumbnail>
+      <thumbnail>https://images.malimar.tv/kh/CNCHD.jpg</thumbnail>
       <resolve>true</resolve>
     </item>
     <item>
