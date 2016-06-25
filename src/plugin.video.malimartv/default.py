@@ -168,7 +168,7 @@ def AutoLogin(url=""):
 def GetLoginToken():
     strUsername = GetInput("Please enter your username", "Username", False)
     if strUsername is not None and strUsername != "":
-        strpwd = urllib.quote_plus(GetInput("Please enter your password", "Password", True))
+        strpwd = GetInput("Please enter your password", "Password", True)
         strcredential=base64.b64encode(strUsername+":"+strpwd)
         __settings__.setSetting('login',strcredential)
         respon = postContent(strLoginurl,"",strcredential)

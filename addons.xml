@@ -574,7 +574,7 @@
 
 <addon
   id="plugin.video.malimartv"
-  version="1.0.7"
+  version="1.0.8"
   name="malimartv"
   provider-name="Dknight">
   <requires>
