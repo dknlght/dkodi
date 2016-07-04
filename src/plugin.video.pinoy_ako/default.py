@@ -107,11 +107,11 @@ def INDEXlamb(url):
             link=link.encode("UTF-8")
         except: pass
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"class" : "review-box-container"})[0]
-        for item in vidcontent.findAll('div', {"class" :"post-thumbnail"}):
-			vname=item.a["title"].encode('utf-8','ignore')
+        vidcontent=soup.findAll('div', {"class" : "content-panel"})[0]
+        for item in vidcontent.findAll('div', {"class" :"item-header"}):
+			vname=item.a.img["alt"].encode('utf-8','ignore')
 			vurl=item.a["href"]
-			vimg=item.a.img["src"]
+			vimg=item.a.img["rel"]
 			addDir(vname.replace("&amp;","&").replace("&#8211;","-").replace("&#8217;","'"),vurl.replace("&amp;amp;","&amp;"),14,vimg)
         navcontent=soup.findAll('div', {"class" : "wp-pagenavi cat-navi"})
         if(len(navcontent) > 0):
@@ -228,9 +228,11 @@ def GetVideoLinkslamb(url):
         try:
             link=link.encode("UTF-8")
         except: pass
-        vidcontent=re.compile('<input type="text" name="s" id="searchbar"(.+?)<div id="sidebar">').findall(link)
-        frmsrc1=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(vidcontent[0])
-        lnksrc1=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(vidcontent[0])
+        soup = BeautifulSoup(link)
+        vidcontent=soup.findAll('div', {"class" : "content-panel"})
+        #vidcontent=re.compile('<input type="text" name="s" id="searchbar"(.+?)<div id="sidebar">').findall(link)
+        frmsrc1=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(str(vidcontent[0]))
+        lnksrc1=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(str(vidcontent[0]))
         mirrorcnt = 0
         partcnt=0
         alist=['facebook', 'lambingan', 'tumblr','twitter','linkedin','reddit','delicious','mail','digg','stumbleupon']
@@ -940,7 +942,9 @@ def getinnerlink(url):
 		if (url.find("watchnew") > -1):
 				pcontent=GetContent(url)
 				pcontent=''.join(pcontent.splitlines()).replace('\'','"')
-                newlink = re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(pcontent.lower())[0]
+                newlink = BeautifulSoup(str(pcontent))('iframe')[0]['src']
+                if(newlink.find("http") == -1):
+					newlink="http:"+newlink
 		return newlink
 def loadVideos(url,name):
         #try:
@@ -953,6 +957,9 @@ def loadVideos(url,name):
            xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1,3000,__icon__))
            if (newlink.find("watchnew") > -1):
 				newlink=getinnerlink(newlink)
+				try:
+					newlink=newlink.encode("UTF-8")
+				except: pass
            print "newlink=" + newlink
            if (newlink.find("dailymotion") > -1):
                 match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink)
@@ -1087,10 +1094,10 @@ def loadVideos(url,name):
            else:
                 sources = []
                 label=name
-                hosted_media = urlresolver.HostedMediaFile(url=url, title=label)
+                hosted_media = urlresolver.HostedMediaFile(url=newlink, title=label)
                 sources.append(hosted_media)
                 source = urlresolver.choose_source(sources)
-                print "inresolver=" + url
+                print "inresolver=" + newlink
                 if source:
                         vidlink = source.resolve()
                 else:
