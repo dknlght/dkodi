@@ -33,8 +33,8 @@ VERSION = "1.0.9" #<---- PLUGIN VERSION
 
 
 
-strdomain ='http://www.pinoy-ako.ws/'
-strdomain2="http://www.lambingan.su"
+strdomain ='http://www.pinoy-ako.yt/'
+strdomain2="http://www.lambingan.su/"
 
 if not os.path.exists(datapath):
         os.makedirs(datapath)
@@ -42,22 +42,22 @@ if not os.path.exists(cookie_path):
         os.makedirs(cookie_path)
 		
 def HOME():
-        addDir('Search','http://www.pinoy-ako.ws',8,'')
-        addDir('Latest Videos','http://www.pinoy-ako.ws',6,'')
+        addDir('Search',strdomain,8,'')
+        addDir('Latest Videos',strdomain+"/page/2/",6,'')
         addDir('Pinoy Movies','http://www.fullpinoymovies.com',15,'')
         addDir('ABS-CBN by Shows',strdomain2+'/category/abs-cbn/',13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
         addDir('GMA 7 shows on lambingan',strdomain2+'/category/Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
-        addDir('Kapuso','http://www.pinoy-ako.ws/kapuso/',6,'')
+        addDir('Kapuso',strdomain+'/kapuso/',6,'')
         ###addDir('GMA 7 Old Shows','http://www.pinoy-ako.info/index.php?option=com_content&view=article&id=11671:watch-old-gma-7-kapuso-tv-shows',2,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
         addDir('TV5 Episode List','http://www.pinoy-ako.ws/category/tv-5',6,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
 
 		
-        addDir('GMA on Demand','http://www.pinoy-ako.ws/kapuso/',6,'')
-        addDir('PBA on Demand','http://www.pinoy-ako.ws/sports/pba/',6,'')
-        addDir('Boxing on Demand','http://www.pinoy-ako.ws/sports/boxing/',6,'')
-        addDir('Pinoy Recipes','http://www.pinoy-ako.ws/pinoy-recipes/',6,'')
-        addDir('Viral Videos','http://www.pinoy-ako.ws/viral/',6,'')
-        addDir('Trending Videos','http://www.pinoy-ako.ws/trending/',6,'')
+        #addDir('GMA on Demand',strdomain+'/kapuso/',6,'')
+        addDir('PBA on Demand',strdomain+'/sports/pba/',6,'')
+        addDir('Boxing on Demand',strdomain+'/sports/boxing/',6,'')
+        addDir('Pinoy Recipes',strdomain+'/pinoy-recipes/',6,'')
+        addDir('Viral Videos',strdomain+'/viral/',6,'')
+        addDir('Trending Videos',strdomain+'/trending/',6,'')
 		
 def AllTV(url):
         link = GetContent(url)
@@ -136,11 +136,9 @@ def INDEX2(url):
         except:pass
         link = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"id" : "content"})[0]
-        for item in vidcontent.findAll('li'):
-			if(item.div==None and item.h3==None):
-				continue
-			linkobj= item.div.a
+        vidcontent=soup.findAll('div', {"id" : "container"})[0]
+        for item in vidcontent.findAll('a',{"class":"entry-thumbnails-link"}):
+			linkobj= item
 			vimg=""
 			if(linkobj.img !=None ):
 				vimg=linkobj.img["src"]
