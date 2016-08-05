@@ -33,8 +33,8 @@ VERSION = "1.0.9" #<---- PLUGIN VERSION
 
 
 
-strdomain ='http://www.pinoy-ako.yt/'
-strdomain2="http://www.lambingan.su/"
+strdomain ='http://www.pinoy-ako.ws/'
+strdomain2="http://www.lambingan.su"
 
 if not os.path.exists(datapath):
         os.makedirs(datapath)
@@ -91,10 +91,10 @@ def MovieINDEX2(url):
         except: pass
         soup = BeautifulSoup(link)
         vidcontent=soup.findAll('article', {"id" : "article"})[0]
-        for item in vidcontent.findAll('div', {"class" :"Tw-FilmResim"}):
-			vname=item.a["title"].replace("Permanent Link to ","").encode('utf-8','ignore')
-			vurl=item.a["href"]
-			vimg=item.a.figure.img["src"]
+        for item in vidcontent.findAll('div', {"class" :"FilmResim"}):
+			vname=item('a')[0]["title"].replace("Permanent Link to ","").encode('utf-8','ignore')
+			vurl=item('a')[0]["href"]
+			vimg=item('img')[0]["src"]
 			addDir(vname.replace("&amp;","&").replace("&#8211;","-").replace("&#8217;","'"),vurl.replace("&amp;amp;","&amp;"),16,vimg)
         navcontent=soup.findAll('div', {"class" : "paGination"})
         if(len(navcontent) > 0):
@@ -136,9 +136,11 @@ def INDEX2(url):
         except:pass
         link = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"id" : "container"})[0]
-        for item in vidcontent.findAll('a',{"class":"entry-thumbnails-link"}):
-			linkobj= item
+        vidcontent=soup.findAll('div', {"id" : "content"})[0]
+        for item in vidcontent.findAll('li'):
+			if(item.div==None and item.h3==None):
+				continue
+			linkobj= item.div.a
 			vimg=""
 			if(linkobj.img !=None ):
 				vimg=linkobj.img["src"]
