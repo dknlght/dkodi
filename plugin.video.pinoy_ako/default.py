@@ -43,7 +43,7 @@ if not os.path.exists(cookie_path):
 		
 def HOME():
         addDir('Search',strdomain,8,'')
-        addDir('Latest Videos',strdomain,6,'')
+        addDir('Latest Videos',strdomain+"/page/2/",6,'')
         addDir('Pinoy Movies','http://www.fullpinoymovies.com',15,'')
         addDir('ABS-CBN by Shows',strdomain2+'/category/abs-cbn/',13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
         addDir('GMA 7 shows on lambingan',strdomain2+'/category/Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
@@ -91,10 +91,10 @@ def MovieINDEX2(url):
         except: pass
         soup = BeautifulSoup(link)
         vidcontent=soup.findAll('article', {"id" : "article"})[0]
-        for item in vidcontent.findAll('div', {"class" :"FilmResim"}):
-			vname=item('a')[0]["title"].replace("Permanent Link to ","").encode('utf-8','ignore')
-			vurl=item('a')[0]["href"]
-			vimg=item('img')[0]["src"]
+        for item in vidcontent.findAll('div', {"class" :"Tw-FilmResim"}):
+			vname=item.a["title"].replace("Permanent Link to ","").encode('utf-8','ignore')
+			vurl=item.a["href"]
+			vimg=item.a.figure.img["src"]
 			addDir(vname.replace("&amp;","&").replace("&#8211;","-").replace("&#8217;","'"),vurl.replace("&amp;amp;","&amp;"),16,vimg)
         navcontent=soup.findAll('div', {"class" : "paGination"})
         if(len(navcontent) > 0):
@@ -136,45 +136,26 @@ def INDEX2(url):
         except:pass
         link = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"id" : "archive-posts"})
-        if(len(vidcontent)>0):
-			
-			for item in vidcontent[0].findAll('li'):
-				vimg=""
-				linkobj=item('a')[0]
+        vidcontent=soup.findAll('div', {"id" : "container"})[0]
+        for item in vidcontent.findAll('a',{"class":"entry-thumbnails-link"}):
+			linkobj= item
+			vimg=""
+			if(linkobj.img !=None ):
+				vimg=linkobj.img["src"]
+				vname=linkobj.img["title"]
+				vurl=linkobj["href"]
+			else:
+				linkobj=item.h3.a
 				vname=linkobj.contents[0].encode("utf-8","ignore")
 				vurl=linkobj["href"]
-				try:
-					vname=vname.encode("utf-8","ignore")
-				except: pass
-				addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg.replace("http://","//").replace("//","http://"))
-			pagenavcontent=soup.findAll('div', {"class" : "navigation clearfix"})
-			if(len(pagenavcontent)>0):
-				for item in pagenavcontent[0].findAll('a'):
-					pagenum=item.contents[0]
-					pageurl=item["href"]
-					addDir('page '+ pagenum.replace("&raquo;",">>"),pageurl,6,'')
-        else:
-			vidcontent=soup.findAll('div', {"id" : "content"})
-			for item in vidcontent[0].findAll('div', {"class" : "entry-thumbnails"}):
-				vimg=""
-				if(len(item('a'))>0):
-					linkobj=item('a')[0]
-					if(linkobj.img!=None):
-						vimg=linkobj.img["src"]
-						vname=linkobj.img["title"]
-					vurl=linkobj["href"]
-					try:
-						vname=vname.encode("utf-8","ignore")
-					except: pass
-					addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg.replace("http://","//").replace("//","http://"))
-			pagenavcontent=soup.findAll('div', {"class" : "wp-pagenavi"})
-			if(len(pagenavcontent)>0):
-				for item in pagenavcontent[0].findAll('a'):
-					pagenum=item.contents[0]
-					pageurl=item["href"]
-					addDir('page '+ pagenum.replace("&raquo;",">>"),pageurl,6,'')
-
+			vname=vname.encode("utf-8","ignore")
+			addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg.replace("http://","//").replace("//","http://"))
+        pagenavcontent=soup.findAll('div', {"class" : "wp-pagenavi"})
+        if(len(pagenavcontent)>0):
+			for item in pagenavcontent[0].findAll('a'):
+				pagenum=item.contents[0]
+				pageurl=item["href"]
+				addDir('page '+ pagenum.replace("&raquo;",">>"),pageurl,6,'')
 def SEARCH():
         keyb = xbmc.Keyboard('', 'Enter search text')
         keyb.doModal()
