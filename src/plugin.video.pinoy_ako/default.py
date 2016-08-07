@@ -34,7 +34,7 @@ VERSION = "1.0.9" #<---- PLUGIN VERSION
 
 
 strdomain ='http://www.pinoy-ako.yt/'
-strdomain2="http://www.lambingan.su/"
+strdomain2="http://www.lambingan.me/"
 
 if not os.path.exists(datapath):
         os.makedirs(datapath)
@@ -46,10 +46,10 @@ def HOME():
         addDir('Latest Videos',strdomain,6,'')
         addDir('Pinoy Movies','http://www.fullpinoymovies.com',15,'')
         addDir('ABS-CBN by Shows',strdomain2+'/category/abs-cbn/',13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
-        addDir('GMA 7 shows on lambingan',strdomain2+'/category/Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
+        #addDir('GMA 7 shows on lambingan',strdomain2+'Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
         addDir('Kapuso',strdomain+'/kapuso/',6,'')
         ###addDir('GMA 7 Old Shows','http://www.pinoy-ako.info/index.php?option=com_content&view=article&id=11671:watch-old-gma-7-kapuso-tv-shows',2,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
-        addDir('TV5 Episode List','http://www.pinoy-ako.ws/category/tv-5',6,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
+        addDir('TV5 Episode List',strdomain+'tv-5/',6,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
 
 		
         #addDir('GMA on Demand',strdomain+'/kapuso/',6,'')
@@ -102,16 +102,17 @@ def MovieINDEX2(url):
 					addDir("Page " + item.contents[0].encode('utf-8','ignore').replace("&raquo;",">>").replace("&laquo;","<<").replace("&rsaquo;","next"),item["href"],17,"")
 					
 def INDEXlamb(url):
+        print url
         link = GetContent(url)
         try:
             link=link.encode("UTF-8")
         except: pass
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"class" : "content-panel"})[0]
-        for item in vidcontent.findAll('div', {"class" :"item-header"}):
+        vidcontent=soup.findAll('div', {"class" : "review-box-container"})[0]
+        for item in vidcontent.findAll('div', {"class" :"post-thumbnail"}):
 			vname=item.a.img["alt"].encode('utf-8','ignore')
 			vurl=item.a["href"]
-			vimg=item.a.img["rel"]
+			vimg=item.a.img["src"]
 			addDir(vname.replace("&amp;","&").replace("&#8211;","-").replace("&#8217;","'"),vurl.replace("&amp;amp;","&amp;"),14,vimg)
         navcontent=soup.findAll('div', {"class" : "wp-pagenavi cat-navi"})
         if(len(navcontent) > 0):
@@ -130,33 +131,19 @@ def INDEX(itemnum):
         for (vlink,vname) in showlist:
                 addDir(vname.replace("&amp;","&").replace("&#8211;","-").replace("&#8217;","'"),vlink.replace("&amp;amp;","&amp;"),6,"")
 def INDEX2(url):
-        link = GetContent(url)
-        try:
+		link = GetContent(url)
+		try:
 			link=link.encode("UTF-8")
-        except:pass
-        link = ''.join(link.splitlines()).replace('\t','')
-        soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"id" : "archive-posts"})
-        if(len(vidcontent)>0):
-			
-			for item in vidcontent[0].findAll('li'):
-				vimg=""
-				linkobj=item('a')[0]
-				vname=linkobj.contents[0].encode("utf-8","ignore")
-				vurl=linkobj["href"]
-				try:
-					vname=vname.encode("utf-8","ignore")
-				except: pass
-				addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg.replace("http://","//").replace("//","http://"))
-			pagenavcontent=soup.findAll('div', {"class" : "navigation clearfix"})
-			if(len(pagenavcontent)>0):
-				for item in pagenavcontent[0].findAll('a'):
-					pagenum=item.contents[0]
-					pageurl=item["href"]
-					addDir('page '+ pagenum.replace("&raquo;",">>"),pageurl,6,'')
-        else:
+		except:pass
+		link = ''.join(link.splitlines()).replace('\t','')
+		soup = BeautifulSoup(link)
+		vidcontent=soup.findAll('div', {"id" : "archive-posts"})
+		
+		if(len(vidcontent)==0):
 			vidcontent=soup.findAll('div', {"id" : "content"})
-			for item in vidcontent[0].findAll('div', {"class" : "entry-thumbnails"}):
+		viditems=vidcontent[0].findAll('div', {"class" : "entry-thumbnails"})
+		if(len(viditems)>0):
+			for item in viditems:
 				vimg=""
 				if(len(item('a'))>0):
 					linkobj=item('a')[0]
@@ -168,12 +155,29 @@ def INDEX2(url):
 						vname=vname.encode("utf-8","ignore")
 					except: pass
 					addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg.replace("http://","//").replace("//","http://"))
-			pagenavcontent=soup.findAll('div', {"class" : "wp-pagenavi"})
-			if(len(pagenavcontent)>0):
-				for item in pagenavcontent[0].findAll('a'):
-					pagenum=item.contents[0]
-					pageurl=item["href"]
-					addDir('page '+ pagenum.replace("&raquo;",">>"),pageurl,6,'')
+		else:
+			for item in vidcontent[0].findAll('li'):
+				vimg=""
+				linkobj=item('a')[0]
+				vname=linkobj.contents[0].encode("utf-8","ignore")
+				vurl=linkobj["href"]
+				try:
+					vname=vname.encode("utf-8","ignore")
+				except: pass
+				addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg.replace("http://","//").replace("//","http://"))
+		pagenavcontent=soup.findAll('div', {"class" : "navigation clearfix"})
+		if(len(pagenavcontent)>0):
+			for item in pagenavcontent[0].findAll('a'):
+				pagenum=item.contents[0]
+				pageurl=item["href"]
+				addDir('page '+ pagenum.replace("&raquo;",">>"),pageurl,6,'')
+
+		pagenavcontent=soup.findAll('div', {"class" : "wp-pagenavi"})
+		if(len(pagenavcontent)>0):
+			for item in pagenavcontent[0].findAll('a'):
+				pagenum=item.contents[0]
+				pageurl=item["href"]
+				addDir('page '+ pagenum.replace("&raquo;",">>"),pageurl,6,'')
 
 def SEARCH():
         keyb = xbmc.Keyboard('', 'Enter search text')
@@ -246,13 +250,13 @@ def GetVideoLinkslamb(url):
             link=link.encode("UTF-8")
         except: pass
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"class" : "content-panel"})
+        vidcontent=soup.findAll('div', {"id" : "post-content"})
         #vidcontent=re.compile('<input type="text" name="s" id="searchbar"(.+?)<div id="sidebar">').findall(link)
         frmsrc1=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(str(vidcontent[0]))
         lnksrc1=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(str(vidcontent[0]))
         mirrorcnt = 0
         partcnt=0
-        alist=['facebook', 'lambingan', 'tumblr','twitter','linkedin','reddit','delicious','mail','digg','stumbleupon']
+        alist=['facebook', 'lambingan', 'tumblr','twitter','linkedin','reddit','delicious','mail','digg','stumbleupon','google']
         for frmvid in frmsrc1:
 			vname = frmvid.replace("http://","").replace("https://","").split(".")
 			if(len(vname) > 1 and vname[1].find("/") > -1):
@@ -279,7 +283,6 @@ def GetVideoLinkslamb(url):
 				mirrorcnt=mirrorcnt+1
 
 				#partcnt=partcnt+1
-				print frmvid2
 				vname="mirror "+str(mirrorcnt)+" "+ vname + " full "
 				addLink(vname,frmvid2,3,"")
 def GetVideoLinks(url):
@@ -1151,6 +1154,8 @@ def getDailyMotionUrl(id):
             xbmc.executebuiltin('XBMC.Notification(Info:, No playable Link found (DailyMotion)!,5000)')
 			
 def extractFlashVars(data):
+    found=False
+    flashvars=""
     for line in data.split("\n"):
             index = line.find("ytplayer.config =")
             if index != -1:
@@ -1257,7 +1262,7 @@ def selectVideoQuality(links):
         return video_url
 
 def getYoutube(videoid):
-
+	
                 code = videoid
                 linkImage = 'http://i.ytimg.com/vi/'+code+'/default.jpg'
                 req = urllib2.Request('http://www.youtube.com/watch?v='+code+'&fmt=18')
@@ -1265,35 +1270,37 @@ def getYoutube(videoid):
                 response = urllib2.urlopen(req)
                 link=response.read()
                 response.close()
-                
-                if len(re.compile('shortlink" href="http://youtu.be/(.+?)"').findall(link)) == 0:
-                        if len(re.compile('\'VIDEO_ID\': "(.+?)"').findall(link)) == 0:
-                                req = urllib2.Request('http://www.youtube.com/get_video_info?video_id='+code+'&asv=3&el=detailpage&hl=en_US')
-                                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-                                response = urllib2.urlopen(req)
-                                link=response.read()
-                                response.close()
-                
-                flashvars = extractFlashVars(link)
+                try:
+					if len(re.compile('shortlink" href="http://youtu.be/(.+?)"').findall(link)) == 0:
+							if len(re.compile('\'VIDEO_ID\': "(.+?)"').findall(link)) == 0:
+									req = urllib2.Request('http://www.youtube.com/get_video_info?video_id='+code+'&asv=3&el=detailpage&hl=en_US')
+									req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+									response = urllib2.urlopen(req)
+									link=response.read()
+									response.close()
+					
+					flashvars = extractFlashVars(link)
 
-                links = {}
+					links = {}
 
-                for url_desc in flashvars[u"url_encoded_fmt_stream_map"].split(u","):
-                        url_desc_map = cgi.parse_qs(url_desc)
-                        if not (url_desc_map.has_key(u"url") or url_desc_map.has_key(u"stream")):
-                                continue
+					for url_desc in flashvars[u"url_encoded_fmt_stream_map"].split(u","):
+							url_desc_map = cgi.parse_qs(url_desc)
+							if not (url_desc_map.has_key(u"url") or url_desc_map.has_key(u"stream")):
+									continue
 
-                        key = int(url_desc_map[u"itag"][0])
-                        url = u""
-                        if url_desc_map.has_key(u"url"):
-                                url = urllib.unquote(url_desc_map[u"url"][0])
-                        elif url_desc_map.has_key(u"stream"):
-                                url = urllib.unquote(url_desc_map[u"stream"][0])
+							key = int(url_desc_map[u"itag"][0])
+							url = u""
+							if url_desc_map.has_key(u"url"):
+									url = urllib.unquote(url_desc_map[u"url"][0])
+							elif url_desc_map.has_key(u"stream"):
+									url = urllib.unquote(url_desc_map[u"stream"][0])
 
-                        if url_desc_map.has_key(u"sig"):
-                                url = url + u"&signature=" + url_desc_map[u"sig"][0]
-                        links[key] = url
-                highResoVid=selectVideoQuality(links)
+							if url_desc_map.has_key(u"sig"):
+									url = url + u"&signature=" + url_desc_map[u"sig"][0]
+							links[key] = url
+					highResoVid=selectVideoQuality(links)
+                except:
+					highResoVid='plugin://plugin.video.youtube?path=/root/video&action=play_video&videoid=' + code 
                 return highResoVid   
 
 def parseDate(dateString):
