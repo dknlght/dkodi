@@ -1,5 +1,6 @@
 <settings>
    <category label="Addon-Settings">
+    <setting id="showcomments" type="bool" label="Show timed Comments" default="true" visible="true"/>
   	<setting id="enableProxy" type="bool" label="Enable Proxy" default="false"/>
     <setting id="region" type="enum" values="USA|Romainia|Germany|England" label="Proxy Region" default="0" enable="true" />
     <setting id="enableTrans" type="bool" label="Enable Translation" default="false"/>

@@ -17,7 +17,8 @@ from xml.dom.minidom import Document
 import datetime
 import ssl
 from functools import wraps
-
+import math
+import srt2ass
 from textwrap import wrap
 try:
     import urllib2 as request
@@ -43,6 +44,7 @@ strdomain ="https://www.viki.com"
 enableProxy= ADDON.getSetting('enableProxy')
 enableTrans= (ADDON.getSetting('enableTrans')=="true")
 translanguage=ADDON.getSetting('translang')
+showcomments=(ADDON.getSetting('showcomments')=="true")
 reg_list = ["https://losangeles-s02-i01.cg-dialup.net/go/browse.php?u=*url*&b=7", 
             "https://bucharest-s05-i01.cg-dialup.net/go/browse.php?u=*url*&b=7",
             "https://frankfurt-s02-i01.cg-dialup.net/go/browse.php?u=*url*&b=7", 
@@ -160,23 +162,24 @@ def write2srt(url, fname):
     f = open(fname, 'w');f.write(subcontent);f.close()
 
 def json2srt(url, fname):
-
-    data = json.loads(GetContent(url))['subtitles']
+    print "jsonurl|"+url
+    data = json.loads(GetContent(url))
+    print data[1]
 
     def conv(t):
         return '%02d:%02d:%02d,%03d' % (
-            t / 1000 / 60 / 60,
-            t / 1000 / 60 % 60,
-            t / 1000 % 60,
-            t % 1000)
+            math.floor(t/3600),
+            t / 60 % 60,
+            t % 60,
+            0)
 
-    with open(fname, 'wb') as fhandle:
+    with open(fname+"1", 'wb') as fhandle:
         for i, item in enumerate(data):
             fhandle.write('%d\n%s --> %s\n%s\n\n' %
                 (i,
-                 conv(item['start_time']),
-                 conv(item['end_time']),
-                 item['content'].encode('utf8')))
+                 conv(int(item['time'])),
+                 conv(int(item['time'])+1),
+                 item["value"].encode('utf8')))
 
 def HOME(translator):
         #addDir('Search channel','search',5,'')
@@ -405,7 +408,9 @@ def getRelatedVID(url):
 		
 		
 def getVidPage(url,page):
+		url=urllib.unquote_plus(url)
 		print ("getVidPage = " + url)
+
 		if(url.find("/video_esi/") > -1):
 			url=getContainerID(url)
 		link = GetContent(url)
@@ -421,12 +426,19 @@ def getVidPage(url,page):
 			transtext=translator.translate(transtext.encode("UTF-8","ignore")).replace(" | ","|")
 			namelist=transtext.split("|")
 		totalpage=round((int(data["count"])/50)+ .5)
+
 		for episode in data["response"]:
+			HD=False
+			try:
+				HD=episode['flags']['hd']
+			except:pass
 			vname = "Episode " + str(episode["number"]) +": "+ episode["container"]["titles"]["en"]
 			vimg= episode["container"]["images"]["poster"]["url"]
 			vid= episode["id"]
 			if(len(namelist)>0):
 				vname=namelist[ctr]
+			if(HD):
+				vname=vname+"(HD)"
 			addDir(vname.encode("UTF-8","ignore"),vid,4,vimg)
 			ctr=ctr+1
 		if(url.find("page=") > -1):
@@ -689,7 +701,7 @@ def SEARCHByID():
 
 def GetVideoInfo(vidid):
     infourl=sign_request(vidid,".json")
-    print infourl
+    print infourl 
     data = json.loads(GetContent(infourl))
     return data
     
@@ -717,6 +729,13 @@ def getVidQuality(vidid,name,filename,checkvideo):
   GA("Playing",name)
   print ("getVidQuality name = " + name)  
   useProxy=(enableProxy=="true")
+  commenturl="http://api.viki.io/v4/videos/"+vidid+"/timed_comments/en.json?app=65535a&t=1470614411&site=www.viki.com"
+  pardata=None
+  try:
+	os.remove(filename)
+	os.remove(filename.replace(".srt",".ass"))
+  except OSError:
+      pass
   if(checkvideo):
           pardata=GetVideoInfo(vidid)
 
@@ -730,8 +749,8 @@ def getVidQuality(vidid,name,filename,checkvideo):
           vidurl=proxyurl.replace("*url*",urllib.quote_plus(sign_request(vidid,"/streams.json")))
   else:
           vidurl = sign_request(vidid,"/streams.json")
-
-  #print vidurl
+  
+  print vidurl
   data = json.loads(GetContent(vidurl))
   if(len(data) == 0):
           if(useProxy):
@@ -751,12 +770,16 @@ def getVidQuality(vidid,name,filename,checkvideo):
                 suburl=sign_request(vidid,"/subtitles/" + langcode + ".srt")
           print ("suburl = " + suburl)
           write2srt(suburl, filename) 
+
   except:
           suburl=sign_request(vidid,"/subtitles/en.srt")
           write2srt(suburl, filename) 
-          
+
+  if(pardata!=None and len(pardata["subtitle_completions"]) > 0):
+	srt2ass.main(filename,json.loads(GetContent(commenturl)))
   #movies = data["movies"]["url"]["api"]
-    
+  show720p=(name.find("(HD)") > -1)
+
   for i, item in enumerate(data):
           strQual=str(item)
           #print data
@@ -771,13 +794,19 @@ def getVidQuality(vidid,name,filename,checkvideo):
                   print("Video Link = " + vlink)
                   if(strprot=="http"):
                         addLink(strQual +"("+strprot+")",vlink,3,"")
+                  if(show720p and strQual=="360p" and strprot=="http"):
+					newvlink=vlink.replace("v.viki.io","content.viki.com").replace('360p','720p')
+					addLink("720p("+strprot+")",newvlink,3,"")
           else:
               vlink=getVideoUrl(mydata["url"],name)
               addLink("external Video",vlink,3,"")
                  
 
 def playVideo(suburl,videoId):
-        print videoId
+        print "next is showcomments"
+        print showcomments
+        if(showcomments):
+			suburl=suburl.replace(".srt",".ass")
         vidinfo = videoId.split("_")[0]
         win = xbmcgui.Window(10000)
         win.setProperty('1ch.playing.title', vidinfo)
@@ -969,6 +998,7 @@ def addLinkSub(name,url,mode,iconimage,suburl):
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&suburl="+urllib.quote_plus(suburl)
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+        liz.setProperty('mimetype', 'video/x-msvideo') 
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
         contextMenuItems = []
         liz.addContextMenuItems(contextMenuItems, replaceItems=True)
@@ -979,6 +1009,7 @@ def addLink(name,url,mode,iconimage):
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+        liz.setProperty('mimetype', 'video/x-msvideo') 
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
         contextMenuItems = []
         liz.addContextMenuItems(contextMenuItems, replaceItems=True)
