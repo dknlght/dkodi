@@ -376,14 +376,14 @@ def UpdatedVideos(url,name):
 					vlink=vid
 					mode=4
 				ctr=ctr+1
-				addDir(vname.encode("UTF-8","ignore"),vlink,mode,urllib.unquote_plus(vimg))
+				addDir(vname.encode("UTF-8","ignore"),vlink,mode,urllib.unquote_plus(vimg.replace("&b=7","")))
 
         navcontent=soup.findAll('div', {"class" : "pagination"})
         if(len(navcontent) >0):
 			for navitem in navcontent[0].findAll('a'):
 				pname=navitem.contents[0]
-				purl=navitem["href"]
-				addDir("page " + pname.replace("&rarr;",">").replace("&larr;","<"),strdomain+purl,8,"")
+				purl=urllib.unquote_plus(navitem["href"])
+				addDir("page " + pname.replace("&rarr;",">").replace("&larr;","<"),strdomain+purl.replace(strdomain,""),8,"")
    
 
 
@@ -779,7 +779,7 @@ def getVidQuality(vidid,name,filename,checkvideo):
 	srt2ass.main(filename,json.loads(GetContent(commenturl)))
   #movies = data["movies"]["url"]["api"]
   show720p=(name.find("(HD)") > -1)
-
+  
   for i, item in enumerate(data):
           strQual=str(item)
           #print data
@@ -793,20 +793,25 @@ def getVidQuality(vidid,name,filename,checkvideo):
                   vlink=mydata[seas]["url"]
                   print("Video Link = " + vlink)
                   if(strprot=="http"):
-                        addLink(strQual +"("+strprot+")",vlink,3,"")
+                        #addLink(strQual +"("+strprot+")",vlink,3,"")
+                        addLinkSub(strQual +"("+strprot+")",vlink,3,"",suburl)
                   if(show720p and strQual=="360p" and strprot=="http"):
 					newvlink=vlink.replace("v.viki.io","content.viki.com").replace('360p','720p')
-					addLink("720p("+strprot+")",newvlink,3,"")
+					#addLink("720p("+strprot+")",newvlink,3,"")
+					addLinkSub("720p("+strprot+")",newvlink,3,"",suburl)
           else:
               vlink=getVideoUrl(mydata["url"],name)
               addLink("external Video",vlink,3,"")
                  
 
 def playVideo(suburl,videoId):
-        print "next is showcomments"
-        print showcomments
-        if(showcomments):
+        print filename
+        if os.path.exists(filename):
+			suburl=filename
+			print "filename srt exists"
+        if showcomments and os.path.exists(suburl.replace(".srt",".ass")):
 			suburl=suburl.replace(".srt",".ass")
+			print "filename ass exists"
         vidinfo = videoId.split("_")[0]
         win = xbmcgui.Window(10000)
         win.setProperty('1ch.playing.title', vidinfo)
@@ -1087,7 +1092,7 @@ if mode==None or url==None or len(url)<1:
 elif mode==2:
         ListGenres(url,name) 
 elif mode==3:
-        playVideo(filename,url)
+        playVideo(subtitleurl,url)
 elif mode==4:
         getVidQuality(url,name,filename,True) 
 elif mode==5:

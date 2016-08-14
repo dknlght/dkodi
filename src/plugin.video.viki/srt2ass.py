@@ -3,7 +3,7 @@
 
 import sys
 import math
-
+import random
 def coded(str):
     try:
         try:
@@ -31,10 +31,16 @@ def returntime(t):
 	
 def jsontoass(data,merge):
     style2="Top"
-
+    timectr=-1
+    diffrang = [2000,2300,2500,2700,3000,3300,3600]
+    timediff=random.choice(diffrang)
+    print "timediff="+str(timediff)
     for i, item in enumerate(data):
 		#print item.encode('utf-8')
-		merge.append((returntime(int(item['time'])), returntime(int(item['time'])+4), (item["user"]["username"] +":  "+ item["value"]).encode('utf8'),style2))
+		starttime=int(item['time'])
+		if(timectr==-1 or starttime-timectr > timediff):
+			merge.append((returntime(starttime/1000), returntime(starttime/1000+4), (item["user"]["username"] +":  "+ item["value"]).encode('utf8'),style2))
+			timectr=starttime
     return merge
 	
 def main(name,jdata):
