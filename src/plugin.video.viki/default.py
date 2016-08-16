@@ -819,6 +819,13 @@ def playVideo(suburl,videoId):
         win.setProperty('1ch.playing.episode', str(4))
         xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(videoId)
+        for i in range(100):
+			if(xbmcPlayer.isPlaying()):
+				print "Subtitle is delaying:"+ str(i*50)+" ms"
+				break
+			xbmc.sleep(50)
+        else:
+				print "subtitle timeout error"
         xbmcPlayer.setSubtitles(suburl) 
 
 		
