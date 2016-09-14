@@ -701,11 +701,13 @@ def ParseVideoLink(url):
                 media_url= ""
                 media_url = re.compile('<meta property="og:video" content="(.+?)"/>').findall(link)[0]
                 vidlink = media_url
-        elif (redirlink.find("embedzone") > -1 or redirlink.find("embedrip") > -1 or redirlink.find("embeds") > -1):
+        elif (redirlink.find("embedzone") > -1 or redirlink.find("embedrip") > -1 or redirlink.find("embeds") > -1 or redirlink.find("embedsr") > -1):
 					media_url= ""
 					media_url = re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower())
 					if(len(media_url)==0):
 					  media_url = re.compile('<a\s*class="main-button dlbutton" [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower().replace('target=""',""))
+					if(len(media_url)==0):
+					  media_url = re.compile('<a\s*class="main-button dlbutton" [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower().replace('rel="nofollow"',""))
 					vidlink = ParseVideoLink(media_url[0])
         elif (redirlink.find("hqq.tv") > -1):
                 #print resolve(redirlink)
@@ -775,7 +777,7 @@ def ParseVideoLink(url):
                 keycode=re.compile('var '+filekey+'="(.+?)";').findall(link)[0]
                 vidcontent=GetContent("http://www.movshare.net/api/player.api.php?codes="+urllib.quote_plus(codeid) + "&key="+urllib.quote_plus(keycode) + "&file=" + urllib.quote_plus(fileid))
                 vidlink = re.compile('url=(.+?)\&').findall(vidcontent)[0]
-        elif (redirlink.find("nowvideo") > -1):
+        elif (redirlink.find("nowvideo1") > -1):
                 fileid=re.compile('flashvars.file="(.+?)";').findall(link)[0]
                 codeid=re.compile('flashvars.cid2="(.+?)";').findall(link)[0]
                 keycode=re.compile('flashvars.filekey=(.+?);').findall(link)[0]
@@ -1451,8 +1453,10 @@ def ParseVideoLink(url):
                 sources.append(hosted_media)
                 source = urlresolver.choose_source(sources)
                 print "inresolver=" + redirlink
+
                 if source:
                         vidlink = source.resolve()
+                print "inresolvervidlink=" + redirlink
     dialog.close()
     return vidlink
 	

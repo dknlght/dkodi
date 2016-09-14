@@ -636,7 +636,7 @@
 
 <addon
   id="plugin.video.movierulz"
-  version="1.0.8"
+  version="1.0.9"
   name="movierulz"
   provider-name="Dknight">
   <requires>
