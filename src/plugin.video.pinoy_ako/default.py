@@ -33,7 +33,7 @@ VERSION = "1.0.9" #<---- PLUGIN VERSION
 
 
 
-strdomain ='http://www.pinoy-ako.yt/'
+strdomain ='http://www.pinoy-tv.ws/'
 strdomain2="http://www.lambingan.me/"
 
 if not os.path.exists(datapath):
@@ -41,24 +41,26 @@ if not os.path.exists(datapath):
 if not os.path.exists(cookie_path):
         os.makedirs(cookie_path)
 		
+
 def HOME():
         addDir('Search',strdomain,8,'')
         addDir('Latest Videos',strdomain,6,'')
         addDir('Pinoy Movies','http://www.fullpinoymovies.com',15,'')
         addDir('ABS-CBN by Shows',strdomain2+'/category/abs-cbn/',13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
         #addDir('GMA 7 shows on lambingan',strdomain2+'Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
-        addDir('Kapuso',strdomain+'/kapuso/',6,'')
+        addDir('GMA Kapuso',strdomain2+'/category/Gma7/',13,'')
         ###addDir('GMA 7 Old Shows','http://www.pinoy-ako.info/index.php?option=com_content&view=article&id=11671:watch-old-gma-7-kapuso-tv-shows',2,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
         addDir('TV5 Episode List',strdomain+'tv-5/',6,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
 
-		
-        #addDir('GMA on Demand',strdomain+'/kapuso/',6,'')
+        #addDir('Eat Bulaga',strdomain,18,'')
+        EatHD()
+        addDir('GMA on Demand',strdomain+'/kapuso/',6,'')
         addDir('PBA on Demand',strdomain+'/sports/pba/',6,'')
         addDir('Boxing on Demand',strdomain+'/sports/boxing/',6,'')
         addDir('Pinoy Recipes',strdomain+'/pinoy-recipes/',6,'')
         addDir('Viral Videos',strdomain+'/viral/',6,'')
         addDir('Trending Videos',strdomain+'/trending/',6,'')
-		
+
 def AllTV(url):
         link = GetContent(url)
         link=link.encode("UTF-8")
@@ -69,7 +71,17 @@ def AllTV(url):
             vurlc=re.compile('<a href="(.+?)" class="category">(.+?)</a>').findall(moviecontent)
             (vurl,vname)=vurlc[0]
             addDir(vname,strdomain+vurl,5,"")
-			
+
+		
+
+		
+def EatHD():
+    itemurl = "plugin://plugin.video.youtube/channel/UCi623vUlmMZGgZbVcmzHc7Q/"
+    listitem = xbmcgui.ListItem( "Eat Bulaga", iconImage="DefaultVideo.png", thumbnailImage='https://upload.wikimedia.org/wikipedia/en/f/f1/Eat_Bulaga!_logo.jpg' )
+    #xbmc.executebuiltin("xbmc.PlayMedia("+url+")")
+    listitem.setProperty('IsPlayable', 'true')
+    xbmcplugin.addDirectoryItem( handle=int(sys.argv[1]), url=itemurl, listitem=listitem, isFolder=True)
+
 def MovieMenu(url):
         link = GetContent(url)
         try:
@@ -1578,4 +1590,5 @@ elif mode==16:
 	   GetMovieLinks(url)
 elif mode==15:
 		MovieMenu(url)
+
 xbmcplugin.endOfDirectory(int(sysarg))

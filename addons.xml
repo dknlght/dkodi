@@ -765,7 +765,7 @@
 
 <addon
   id="plugin.video.pinoy_ako"
-  version="1.0.35"
+  version="1.0.36"
   name="pinoy_ako"
   provider-name="Dknight">
   <requires>
