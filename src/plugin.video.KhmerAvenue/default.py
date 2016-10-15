@@ -481,17 +481,21 @@ def loadPlaylist(url,name):
                 vidlink=getDailyMotionUrl(match[0])
                 CreateList('dailymontion',vidlink)
            elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
-                vidcontent = GetContent(newlink)
-                html = vidcontent.encode("utf-8","ignore")
-                stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)
+                docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
+                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                html = urllib2.unquote(vidcontent)
+                try:
+					html=html.encode("utf-8","ignore")
+                except: pass
+                stream_map = re.compile('fmt_stream_map=(.+?)&fmt_list').findall(html)
                 if(len(stream_map) > 0):
 					formatArray = stream_map[0].replace("\/", "/").split(',')
 					for formatContent in formatArray:
 						 formatContentInfo = formatContent.split('|')
 						 qual = formatContentInfo[0]
 						 vidlink = (formatContentInfo[1]).decode('unicode-escape')
+
                 else:
-						docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
 						cj = cookielib.LWPCookieJar()
 						newlink1="https://docs.google.com/uc?export=download&id="+docid  
 						(cj,vidcontent) = GetContent2(newlink1,newlink, cj)
@@ -588,17 +592,21 @@ def loadVideos(url,name):
                 vidlink=getDailyMotionUrl(match[0])
                 playVideo('dailymontion',vidlink)
            elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
-                vidcontent = GetContent(newlink)
-                html = vidcontent.encode("utf-8","ignore")
-                stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)
+                docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
+                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                html = urllib2.unquote(vidcontent)
+                try:
+					html=html.encode("utf-8","ignore")
+                except: pass
+                stream_map = re.compile('fmt_stream_map=(.+?)&fmt_list').findall(html)
                 if(len(stream_map) > 0):
 					formatArray = stream_map[0].replace("\/", "/").split(',')
 					for formatContent in formatArray:
 						 formatContentInfo = formatContent.split('|')
 						 qual = formatContentInfo[0]
 						 vidlink = (formatContentInfo[1]).decode('unicode-escape')
+
                 else:
-						docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
 						cj = cookielib.LWPCookieJar()
 						newlink1="https://docs.google.com/uc?export=download&id="+docid  
 						(cj,vidcontent) = GetContent2(newlink1,newlink, cj)

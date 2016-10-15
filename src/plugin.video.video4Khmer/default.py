@@ -508,15 +508,20 @@ def loadPlaylist(newlink,name):
                 dm_high=re.compile('"hqURL":"(.+?)"').findall(newseqeunce)
                 CreateList('dailymontion',urllib2.unquote(dm_low[0]).decode("utf8"))
            elif (newlink.find("docs.google.com") > -1):  
-                vidcontent = GetContent(newlink)
-                html = vidcontent.decode('utf8')
-                stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)[0].replace("\/", "/")
-                formatArray = stream_map.split(',')
-                for formatContent in formatArray:
-                     formatContentInfo = formatContent.split('|')
-                     qual = formatContentInfo[0]
-                     url = (formatContentInfo[1]).decode('unicode-escape')
-                     CreateList('googledocs',url)
+                docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
+                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                html = urllib2.unquote(vidcontent)
+                try:
+					html=html.encode("utf-8","ignore")
+                except: pass
+                stream_map = re.compile('fmt_stream_map=(.+?)&fmt_list').findall(html)
+                if(len(stream_map) > 0):
+					formatArray = stream_map[0].replace("\/", "/").split(',')
+					for formatContent in formatArray:
+						 formatContentInfo = formatContent.split('|')
+						 qual = formatContentInfo[0]
+						 url = (formatContentInfo[1]).decode('unicode-escape')
+					CreateList('googledocs',url)
            elif (newlink.find("video.google.com") > -1):
                 match=re.compile('http://video.google.com/videoplay.+?docid=(.+?)&.+?').findall(newlink)
                 glink=""
@@ -621,15 +626,20 @@ def loadVideos(newlink,name):
                 vidlink=getDailyMotionUrl(match[0])
                 playVideo('dailymontion',vidlink)
            elif (newlink.find("docs.google.com") > -1):  
-                vidcontent = GetContent(newlink)
-                html = vidcontent.decode('utf8')
-                stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)[0].replace("\/", "/")
-                formatArray = stream_map.split(',')
-                for formatContent in formatArray:
-                     formatContentInfo = formatContent.split('|')
-                     qual = formatContentInfo[0]
-                     url = (formatContentInfo[1]).decode('unicode-escape')
-                     playVideo('google',url)
+                docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
+                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                html = urllib2.unquote(vidcontent)
+                try:
+					html=html.encode("utf-8","ignore")
+                except: pass
+                stream_map = re.compile('fmt_stream_map=(.+?)&fmt_list').findall(html)
+                if(len(stream_map) > 0):
+					formatArray = stream_map[0].replace("\/", "/").split(',')
+					for formatContent in formatArray:
+						 formatContentInfo = formatContent.split('|')
+						 qual = formatContentInfo[0]
+						 url = (formatContentInfo[1]).decode('unicode-escape')
+					playVideo('google',url)
            elif (newlink.find("video.google.com") > -1):
                 match=re.compile('http://video.google.com/videoplay.+?docid=(.+?)&.+?').findall(newlink)
                 glink=""

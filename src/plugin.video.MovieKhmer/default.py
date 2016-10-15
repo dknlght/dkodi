@@ -451,15 +451,20 @@ def loadVideos(url,name):
                 dm_high=re.compile('"hqURL":"(.+?)"').findall(newseqeunce)
                 playVideo('dailymontion',urllib2.unquote(dm_low[0]).decode("utf8"))
            elif (newlink.find("docs.google.com") > -1):  
-                vidcontent = GetContent(newlink)
-                html = vidcontent.decode('utf8')
-                stream_map = re.compile('fmt_stream_map","(.+?)"').findall(html)[0].replace("\/", "/")
-                formatArray = stream_map.split(',')
-                for formatContent in formatArray:
-                     formatContentInfo = formatContent.split('|')
-                     qual = formatContentInfo[0]
-                     url = (formatContentInfo[1]).decode('unicode-escape')
-                     playVideo("direct",url)
+                docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
+                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                html = urllib2.unquote(vidcontent)
+                try:
+					html=html.encode("utf-8","ignore")
+                except: pass
+                stream_map = re.compile('fmt_stream_map=(.+?)&fmt_list').findall(html)
+                if(len(stream_map) > 0):
+					formatArray = stream_map[0].replace("\/", "/").split(',')
+					for formatContent in formatArray:
+						 formatContentInfo = formatContent.split('|')
+						 qual = formatContentInfo[0]
+						 url = (formatContentInfo[1]).decode('unicode-escape')
+					playVideo("direct",url)
            elif (newlink.find("4shared") > -1):
                 d = xbmcgui.Dialog()
                 d.ok('Not Implemented','Sorry 4Shared links',' not implemented yet')		
