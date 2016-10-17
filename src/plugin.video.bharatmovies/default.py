@@ -154,14 +154,11 @@ def getVimeoUrl(videoid):
         collection = {}
         if result["status"] == 200:
             html = result["content"]
-            html = html[html.find(',a={'):]
-            html = html[:html.find('}};') + 2]
-            html = html.replace(",a={", '{') 
+            html = html[html.find('={')+1:]
+            html = html[:html.find('}};')]+"}}"
             try:
                   collection = json.loads(html)
-                  codec=collection["request"]["files"]["codecs"][0]
-                  filecol = collection["request"]["files"][codec]
-                  return filecol["sd"]["url"]
+                  return collection["request"]["files"]["h264"]["sd"]["url"]
             except:
                   return getVimeoVideourl(videoid)
 				  
@@ -402,6 +399,23 @@ def selResolution(streamtypes):
         sel = 0
     return streamtypes[ratelist[sel][2]], ratelist[sel][1]
 	
+def getDailyMotionUrl(id):
+    content = GetContent("http://www.dailymotion.com/embed/video/"+id)
+    if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
+        xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
+        return ""
+    
+    else:
+        get_json_code = re.compile(r'var config\s=\s(.+?);\s*window.playerV5').findall(''.join(content.splitlines()))[0]
+        #print len(get_json_code)
+        cc= json.loads(get_json_code)['metadata']['stream_chromecast_url']  #['380'][0]['url']
+        vidqal = GetContent(cc)
+        vidlist= re.compile('http(.+?).m3u8').findall(''.join(vidqal.splitlines()))
+        vidlink=""
+        for item in vidlist:
+			vidlink='http%s.m3u8' % item
+        return vidlink
+		
 def loadVideos(url,name):
         #try:
            xbmc.executebuiltin("XBMC.Notification(Please Wait!,Loading selected video)")
@@ -410,30 +424,25 @@ def loadVideos(url,name):
                link =link.encode("UTF-8")
            except: pass
            link = ''.join(link.splitlines()).replace('\t','')
-           vidcontent=re.compile('<div id="vidcontainer">(.+?)</div>').findall(link)[0]
-           match=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(vidcontent)
+           vidcontent=BeautifulSoup(str(link)).findAll('div', {"id" : "vidcontainer"})[0]
+           match=vidcontent("iframe")
            if(len(match)==0):
 				match=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(vidcontent)
-           newlink=urllib.unquote_plus(match[0])
+           newlink=urllib.unquote_plus(match[0]["src"])
            print newlink
+           xbmc.log(newlink)
            if (newlink.find("dailymotion") > -1):
-                match=re.compile('(dailymotion\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink)
-                lastmatch = match[0][len(match[0])-1]
-                link = 'http://www.dailymotion.com/'+str(lastmatch)
-                req = urllib2.Request(link)
-                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-                response = urllib2.urlopen(req)
-                link=response.read()
-                response.close()
-                sequence=re.compile('"sequence",  "(.+?)"').findall(link)
-                newseqeunce = urllib.unquote(sequence[0]).decode('utf8').replace('\\/','/')
-                #print 'in dailymontion:' + str(newseqeunce)
-                imgSrc=re.compile('"videoPreviewURL":"(.+?)"').findall(newseqeunce)
-                if(len(imgSrc[0]) == 0):
-                	imgSrc=re.compile('/jpeg" href="(.+?)"').findall(link)
-                dm_low=re.compile('"sdURL":"(.+?)"').findall(newseqeunce)
-                dm_high=re.compile('"hqURL":"(.+?)"').findall(newseqeunce)
-                playVideo('dailymontion',urllib2.unquote(dm_low[0]).decode("utf8"))
+                match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink)
+                if(len(match) == 0):
+                        match=re.compile('/video/(.+?)&dk;').findall(newlink+"&dk;")
+                else:
+						match=re.compile('www.dailymotion.com/video/(.+?)&dk;').findall(match[0]+"&dk;")
+                if(len(match) == 0):
+                        match=re.compile('http://www.dailymotion.com/swf/(.+?)\?').findall(newlink)
+                if(len(match) == 0):
+                	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink.replace("$","?"))
+                vidlink=getDailyMotionUrl(match[0])
+                playVideo('dailymontion',vidlink)
            elif (newlink.find("4shared") > -1):
                 d = xbmcgui.Dialog()
                 d.ok('Not Implemented','Sorry 4Shared links',' not implemented yet')		
@@ -478,15 +487,22 @@ def loadVideos(url,name):
 					))
 					movurl = 'http://pl.youku.com/playlist/m3u8?%s' % (query)
 					playVideo("direct",movurl)
-           elif (newlink.find("docs.google.com") > -1):
-                vidcontent = postContent("http://javaplugin.org/WL/grp2/plugins/plugins_player.php","iagent=Mozilla%2F5%2E0%20%28Windows%3B%20U%3B%20Windows%20NT%206%2E1%3B%20en%2DUS%3B%20rv%3A1%2E9%2E2%2E8%29%20Gecko%2F20100722%20Firefox%2F3%2E6%2E8&ihttpheader=true&url="+urllib.quote_plus(newlink)+"&isslverify=true",strDomain)
-                if(len(vidcontent.strip())==0):
-                     vidcontent = GetContent(newlink)
-                vidmatch=re.compile('"url_encoded_fmt_stream_map":"(.+?)",').findall(vidcontent)
-                if(len(vidmatch) > 0):
-                        vidparam=urllib.unquote_plus(vidmatch[0]).replace("\u003d","=")
-                        vidlink=re.compile('url=(.+?)\u00').findall(vidparam)
-                        playVideo("direct",vidlink[0])
+           elif (newlink.find("docs.google.com") > -1):  
+                xbmc.log("ingoogle")
+                docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
+                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                html = urllib2.unquote(vidcontent)
+                try:
+					html=html.encode("utf-8","ignore")
+                except: pass
+                stream_map = re.compile('fmt_stream_map=(.+?)&fmt_list').findall(html)
+                if(len(stream_map) > 0):
+					formatArray = stream_map[0].replace("\/", "/").split(',')
+					for formatContent in formatArray:
+						 formatContentInfo = formatContent.split('|')
+						 qual = formatContentInfo[0]
+						 vidlink = (formatContentInfo[1]).decode('unicode-escape')
+					playVideo("direct",vidlink)
            elif (newlink.find("vimeo") > -1):
                 idmatch =re.compile("http://player.vimeo.com/video/([^\?&\"\'>]+)").findall(newlink)
                 if(len(idmatch) > 0):

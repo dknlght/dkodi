@@ -134,7 +134,7 @@
 
 <addon
   id="plugin.video.bharatmovies"
-  version="1.0.2"
+  version="1.0.3"
   name="bharatmovies"
   provider-name="Dknight">
   <requires>
