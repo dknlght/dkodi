@@ -263,7 +263,7 @@
 
 <addon
   id="plugin.video.dramago"
-  version="1.0.9"
+  version="1.0.10"
   name="DramaGo"
   provider-name="Dknight">
   <requires>

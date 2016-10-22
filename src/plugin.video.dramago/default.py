@@ -64,7 +64,7 @@ def GetContent2(url):
 		headers['Host']='api.dramago.com'
 		headers['App-LandingPage']='http://www.mobi24.net/drama.html'
 		headers['App-Name']='#Dramania'
-		headers['App-Version']='7.5'
+		headers['App-Version']='7.8'
 		net = Net()
 		second_response = net.http_GET(url,headers=headers)
 		rcontent=second_response.content
@@ -356,26 +356,24 @@ def Mirrors(EpisodeID,name):
 	MirrorList=GetJSON("http://api.dramago.com/GetVideos/"+EpisodeID+"?direct","","")
 	mctr=1
 	playurl={}
+	#xbmc.log("http://api.dramago.com/GetVideos/"+EpisodeID+"?direct")
+	#xbmc.log(str(MirrorList[0]))
 	for vidgroup in MirrorList:
-		#
-		if (vidgroup is None) or (len(vidgroup) == 0):
-			rangeVidGroup = 0
-		else:
-			rangeVidGroup = len(vidgroup)
-		for i in range(rangeVidGroup):
-		#for viditem in vidgroup:
-			if(vidgroup[i]["source"]=="storage"):
-				mirrorname=vidgroup[i]["link"].split("/")[2]
-			else:
-				mirrorname=vidgroup[i]["source"]
-			addLink(mirrorname + " part " + str(mctr) + " Mirror " +str(i+1) ,vidgroup[i]["link"],3,"",name) 
-			
-			#vurllist=",".join(vidgroup[i]["link"])
-			if(playurl.has_key(i)):
-				playurl[i]=playurl[i]+"|"+vidgroup[i]["link"]
-			else:
-				playurl[i]=vidgroup[i]["link"] 
-		mctr=mctr+1
+		if vidgroup!= None:
+			for i in range(len(vidgroup)):
+			#for viditem in vidgroup:
+				if(vidgroup[i]["source"]=="storage"):
+					mirrorname=vidgroup[i]["link"].split("/")[2]
+				else:
+					mirrorname=vidgroup[i]["source"]
+				addLink(mirrorname + " part " + str(mctr) + " Mirror " +str(i+1) ,vidgroup[i]["link"],3,"",name) 
+				
+				#vurllist=",".join(vidgroup[i]["link"])
+				if(playurl.has_key(i)):
+					playurl[i]=playurl[i]+"|"+vidgroup[i]["link"]
+				else:
+					playurl[i]=vidgroup[i]["link"] 
+			mctr=mctr+1
 	for key in playurl:
 		if(playurl[key].find("|")>-1):
 			addLink("-----Play all mirror "+ str(key+1)+ " parts ------",playurl[key],28,"",name) 
