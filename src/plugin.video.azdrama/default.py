@@ -376,12 +376,13 @@ def Videosresolve(url,name):
                 vidlink = [(media_url[0], 'Unknown Quality')]
            elif (newlink.find("videobug") > -1):
                content = GetContent(newlink)
+               content = jsunpack.unpack(content)
                vidlink = []
 
                # unobscurify
                key = 5
                unobscurify = lambda s: urllib.unquote(''.join(chr(ord(c) - key) for c in urllib.unquote(s)))
-               df = re.search(r"dF\('(.*)'\)", content)
+               df = re.search(r"dF\(\\'(.*)\\'\)", content)
                if df:
                    script_end = content.find('</script>', df.end())
                    script_end = script_end + 9 if script_end > -1 else -1
