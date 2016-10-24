@@ -13,6 +13,7 @@ import json
 import jsunpack
 from bs4 import BeautifulSoup as BS
 from urlparse import urljoin
+import urlresolver
 
 def BeautifulSoup(markup):
     return BS(markup, 'html5lib')
@@ -252,8 +253,14 @@ def playVideo(videoType,videoId):
     elif (videoType == "tudou"):
         url = 'plugin://plugin.video.tudou/?mode=3&url=' + videoId
     else:
-        xbmcPlayer = xbmc.Player()
-        xbmcPlayer.play(videoId)
+        if any(x in videoId for x in ['h265.se', 'uptobox.com', 'uptostream.com', 'openload.co']):
+            videoId = urlresolver.resolve(videoId)
+
+        if videoId:
+            xbmcPlayer = xbmc.Player()
+            xbmcPlayer.play(videoId)
+        else:
+            xbmc.executebuiltin('Notification(Info:,Video not playable,5000,)')
 
 def postContent(url,data,referr):
     opener = urllib2.build_opener()
@@ -376,12 +383,13 @@ def Videosresolve(url,name):
                 vidlink = [(media_url[0], 'Unknown Quality')]
            elif (newlink.find("videobug") > -1):
                content = GetContent(newlink)
+               content = jsunpack.unpack(content)
                vidlink = []
 
                # unobscurify
                key = 5
                unobscurify = lambda s: urllib.unquote(''.join(chr(ord(c) - key) for c in urllib.unquote(s)))
-               df = re.search(r"dF\('(.*)'\)", content)
+               df = re.search(r"dF\(\\'(.*)\\'\)", content)
                if df:
                    script_end = content.find('</script>', df.end())
                    script_end = script_end + 9 if script_end > -1 else -1
@@ -930,7 +938,7 @@ def APP_LAUNCH():
 
 checkGA()
 
-def addLink(name,url,mode,iconimage,mirrorname):
+def addLink(name,url,mode,iconimage,mirrorname):        
         name = cleanName(name)
         u=sys.argv[0]+"?url="+urllib.quote_plus(url.encode('utf-8'))+"&mode="+str(mode)+"&name="+urllib.quote_plus(name.encode('utf-8'))+"&mirrorname="+urllib.quote_plus(mirrorname)
         ok=True
@@ -938,7 +946,7 @@ def addLink(name,url,mode,iconimage,mirrorname):
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
         contextMenuItems = []
         liz.addContextMenuItems(contextMenuItems, replaceItems=True)
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
         return ok
 
 def addNext(formvar,url,mode,iconimage):
