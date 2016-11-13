@@ -46,9 +46,9 @@ def HOME():
         addDir('Search',strdomain,8,'')
         addDir('Latest Videos',strdomain,6,'')
         addDir('Pinoy Movies','http://www.fullpinoymovies.com',15,'')
-        addDir('ABS-CBN by Shows',strdomain2+'/category/abs-cbn/',13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
+        addDir('lambingan Latest',strdomain2,13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
         #addDir('GMA 7 shows on lambingan',strdomain2+'Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
-        addDir('GMA Kapuso',strdomain2+'/category/Gma7/',13,'')
+        #addDir('GMA Kapuso',strdomain2+'/category/Gma7/',13,'')
         ###addDir('GMA 7 Old Shows','http://www.pinoy-ako.info/index.php?option=com_content&view=article&id=11671:watch-old-gma-7-kapuso-tv-shows',2,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
         addDir('TV5 Episode List',strdomain+'tv-5/',6,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
 
