@@ -990,20 +990,6 @@
 	</extension>
 </addon>
 
-<addon id="repository.unofficialrepo" name="unofficial Add-on Repository" version="1.1.1" provider-name="dk">
-	<extension point="xbmc.addon.repository" name="unofficial Add-on Repository">
-		<info compressed="false">http://45.62.243.101/spmc/addons.xml</info>
-		<checksum>http://45.62.243.101/spmc/addons.xml.md5</checksum>
-		<datadir zip="true">http://45.62.243.101/spmc/</datadir>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>Repository of unofficial versions of addons</summary>
-		<description>Video plug-ins for XBMC</description>
-		<disclaimer></disclaimer>
-		<platform>all</platform>
-	</extension>
-</addon>
-
 <addon id="script.module.beautifulsoup"
        name="BeautifulSoup"
        version="3.2.1"
