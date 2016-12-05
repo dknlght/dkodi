@@ -752,6 +752,7 @@ def getVidQuality(vidid,name,filename,checkvideo):
   
   print vidurl
   data = json.loads(GetContent(vidurl))
+  print data
   if(len(data) == 0):
           if(useProxy):
                 vidurl=proxyurl.replace("*url*",urllib.quote_plus(sign_request(vidid+"v","/streams")))
@@ -794,11 +795,12 @@ def getVidQuality(vidid,name,filename,checkvideo):
                   print("Video Link = " + vlink)
                   if(strprot=="http"):
                         #addLink(strQual +"("+strprot+")",vlink,3,"")
-                        addLinkSub(strQual +"("+strprot+")",vlink,3,"",suburl)
-                  if(show720p and strQual=="360p" and strprot=="http"):
-					newvlink=vlink.replace("v.viki.io","content.viki.com").replace('360p','720p')
+					addLinkSub(strQual +"("+strprot+")",vlink,3,"",suburl)
+                  if(show720p and strQual=="360p" and strprot=="rtmp"):
+					newvlink=vlink.split(vidid+"/")[-1].replace('360p','720p')
+					newvlink="http://content.viki.com/"+vidid+"/"+newvlink
 					#addLink("720p("+strprot+")",newvlink,3,"")
-					addLinkSub("720p("+strprot+")",newvlink,3,"",suburl)
+					addLinkSub("720p(http)",newvlink,3,"",suburl)
           else:
               vlink=getVideoUrl(mydata["url"],name)
               addLink("external Video",vlink,3,"")
