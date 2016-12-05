@@ -526,6 +526,7 @@ def ParseVideoLink(url,name,movieinfo):
     win.setProperty('1ch.playing.episode', str(4))
     # end 1channel code
     redirlink=url
+    print redirlink
     try:
     #if True:
         if (redirlink.find("youtube") > -1):
@@ -533,9 +534,10 @@ def ParseVideoLink(url,name,movieinfo):
                 vidlink=vidmatch[0][len(vidmatch[0])-1].replace('v/','')
                 vidlink='plugin://plugin.video.youtube?path=/root/video&action=play_video&videoid='+vidlink
         elif (redirlink.find("videoting") > -1):
-                media_url= ""
-                media_url = re.compile('player.src\(\[{src:\s*"(.+?)",').findall(link)[0]
-                vidlink = media_url
+                tingid=re.compile('link1=(.+?)&').findall(redirlink)[0]
+                vidcontent=postContent("http://videoting.se/BSplugin/plugin/BS_Load.php","link="+tingid,strdomain)
+                data=json.loads(vidcontent)
+                vidlink = data["playlist"][0]["sources"][0]["file"]
         elif (redirlink.find("vidxtreme") > -1):
                 paccked= re.compile('<script type=(?:"|\')text/javascript(?:"|\')>(eval\(function\(p,a,c,k,e,d\).*?)</script>').findall(link)
                 if(len(paccked) > 0):
@@ -1340,19 +1342,20 @@ def Episodes(url):
 			
 			addDir(vname,vlink,32,"")
         vidcontent=soup.findAll('ul', {"id" :re.compile('lcp_instance*')})
-        for item in vidcontent[0].findAll('li'):
-			if(item.span==None):
-				currentitem=item.a
-			else:
-				currentitem=item.span.a
-			vlink = currentitem['href'].encode('utf-8', 'ignore')
-			if(currentitem.span==None):
-				vname=currentitem.contents[0].encode('utf-8', 'ignore')
-			else:
-				vname=currentitem.span.contents[0].encode('utf-8', 'ignore')
+        if len(vidcontent) >0:
+			for item in vidcontent[0].findAll('li'):
+				if(item.span==None):
+					currentitem=item.a
+				else:
+					currentitem=item.span.a
+				vlink = currentitem['href'].encode('utf-8', 'ignore')
+				if(currentitem.span==None):
+					vname=currentitem.contents[0].encode('utf-8', 'ignore')
+				else:
+					vname=currentitem.span.contents[0].encode('utf-8', 'ignore')
+				
+				addDir(vname,vlink,32,"")
 			
-			addDir(vname,vlink,32,"")
-		
 
 
 #borrowed from pelisalacarta

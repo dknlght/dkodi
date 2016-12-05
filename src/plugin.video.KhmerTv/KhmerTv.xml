@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<channels>
+  <channel>
+    <name>Khmer channels</name>
+    <info>Khmer channels from khiptv</info>
+	<item>
+      <title>CTN 240</title>
+      <link>rtmp://119.82.251.230:1935/live/channel2_240p</link>
+      <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/CTNHD.jpg</thumbnail>
+      <resolve>false</resolve>
+    </item>
+	    <item>
+      <title>ATV 2</title>
+      <link>rtmp://113.161.212.25/live2 playpath=atv2 swfUrl=http://www.atv.org.vn/player/player.swf swfVfy=true live=true timeout=90</link>
+      <thumbnail>http://www.atv.org.vn/images/logof.png</thumbnail>
+    </item>
+    <item>
+      <title>CNC</title>
+      <link>rtmp://119.82.251.230/live//channel3_240p</link>
+      <thumbnail>https://images.malimar.tv/kh/CNCHD.jpg</thumbnail>
+      <resolve>false</resolve>
+    </item>
+	<item>
+      <title>TV5</title>
+      <link>rtmp://203.176.130.123:8989/live//tv5_480k.stream</link>
+      <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/tv5HD.jpg</thumbnail>
+    </item>
+	<item>
+      <title>TV3</title>
+      <link>rtmp://svr-wow-live.khmerlive.tv/live/_definst_//tv3.stream_250</link>
+      <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/tv3HD.jpg</thumbnail>
+    </item>
+	<item>
+      <title>ETV</title>
+      <link>rtmp://203.176.130.123:8989/live/etv_480k.stream</link>
+      <thumbnail>https://aseaniptv2.s3.amazonaws.com/images/channel/428/image/etvHD.jpg</thumbnail>
+      <resolve>false</resolve>
+    </item>
+	<item>
+      <title>PNN</title>
+      <link>rtmp://203.176.130.123:8989/live//pnn_480k.stream</link>
+      <thumbnail>http://www.phnompenhpost.com/sites/default/files/pnn.jpg</thumbnail>
+      <resolve>false</resolve>
+    </item>
+    <item>
+      <title>Sea TV</title>
+      <link>rtmp://203.176.130.123:8989/live//seatv_480k.stream</link>
+      <thumbnail>http://khmer.be/images/tv/seatv.gif</thumbnail>
+      <resolve>false</resolve>
+    </item>
+    <item>
+      <title>TVK</title>
+      <link>rtmp://203.176.130.123:8989/live//tvk_480k.stream</link>
+      <thumbnail>http://khiptv.com/images_tv/TVK.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Apsara</title>
+      <link>rtmp://203.176.130.123:8989/live//apsaratv_480k.stream</link>
+      <thumbnail>http://khiptv.com/images_tv/APSARA.JPG</thumbnail>
+	  <resolve>false</resolve>
+    </item>
+    <item>
+      <title>Bayon</title>
+      <link>rtmp://203.176.130.123:8989/live/bayontv_480k.stream</link>
+      <thumbnail>
+      http://khiptv.com/images_tv/bayon-tv.png</thumbnail>
+    </item>
+    <item>
+      <title>BTV News</title>
+      <link>rtmp://203.176.130.123:8989/live//bayontv1_480k.stream</link>
+      <thumbnail>https://malimar.hs.llnwd.net/v1/images/kh/btvHD.jpg</thumbnail>
+    </item>
+    <item>
+      <title>NCT</title>
+      <link>rtmp://123.30.134.108/live/nctlive</link>
+      <thumbnail>http://khiptv.com/images_tv/TV9.png</thumbnail>
+    </item>
+
+  </channel>
+  <channel>
+    <name>Khmer Radios</name>
+    <info>Khmer Radios from khiptv</info>
+    <item>
+      <title>Khmer FM107 Radio</title>
+      <link>http://KhipTV.org:44412/RC_FM107</link>
+      <thumbnail>
+      http://khiptv.com/images_tv/Bayon_Replay.png</thumbnail>
+    </item>
+    <item>
+      <title>Bayon Radio</title>
+      <link>http://KhipTV.org:44412/RC_FM95</link>
+      <thumbnail>http://khiptv.com/images_tv/TVK.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Phnom Penh Radio FM103</title>
+      <link>http://KhipTV.org:44412/RCFM103</link>
+      <thumbnail>
+      http://khiptv.com/images_tv/bayon-tv.png</thumbnail>
+    </item>
+    <item>
+      <title>ABC Cambodia Radio</title>
+      <link>http://KhipTV.org:44412/RC_FM1075</link>
+      <thumbnail>http://khiptv.com/images_tv/TV5.png</thumbnail>
+    </item>
+    <item>
+      <title>DAP Radio - FM93.75</title>
+      <link>http://KhipTV.org:44412/dap</link>
+      <thumbnail>
+      http://khiptv.com/images_tv/BayonTV1.png</thumbnail>
+    </item>
+    <item>
+      <title>Sovann Phum Radio - FM104</title>
+      <link>http://KhipTV.org:44412/RC_FM104</link>
+      <thumbnail>http://khiptv.com/images_tv/TV9.png</thumbnail>
+    </item>
+    <item>
+      <title>Sovann Angkor FM106 - Battambong</title>
+      <link>http://KhipTV.org:44412/KEO</link>
+      <thumbnail>http://khiptv.com/images_tv/APSARA.JPG</thumbnail>
+    </item>
+    <item>
+      <title>Apsara Radio FM 97 MHz</title>
+      <link>http://KhipTV.org:44412/RCFM97</link>
+      <thumbnail>http://khiptv.com/images_tv/KGNCAN.png</thumbnail>
+    </item>
+    <item>
+      <title>Nokorwat Radio FM101 MHz</title>
+      <link>http://KhipTV.org:44412/psp</link>
+      <thumbnail>http://khiptv.com/images_tv/ABC.png</thumbnail>
+    </item>
+    <item>
+      <title>KMAT Radio FM90MHz</title>
+      <link>http://KhipTV.org:44412/KMAT</link>
+      <thumbnail>http://khiptv.com/images_tv/nat.png</thumbnail>
+    </item>
+    <item>
+      <title>National Radio FM96</title>
+      <link>http://KhipTV.org:44412/RCFM96</link>
+      <thumbnail>http://khiptv.com/images_TV/MK.png</thumbnail>
+    </item>
+    <item>
+      <title>Women 's Radio FM102</title>
+      <link>http://KhipTV.org:44412/RCFM102</link>
+      <thumbnail>
+      http://khiptv.com/images_tv/goodidea.png</thumbnail>
+    </item>
+    <item>
+      <title>Ta Prohm Radio FM90.5</title>
+      <link>http://KhipTV.org:44412/taprohm</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>STARFM Radio</title>
+      <link>
+      http://110.74.223.162:88/broadwave.mp3?src=2&amp;rate=1&amp;ref=</link>
+      <thumbnail>http://khiptv.com/images_TV/lakorn.jpg</thumbnail>
+    </item>
+    <item>
+      <title>Mean Chey FM99 MHz Radio</title>
+      <link>http://KhipTV.org:44412/MCH</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>VOY FM 105.25MHz</title>
+      <link>http://KhipTV.org:44412/fm105.3</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Kolyanmet FM88.5</title>
+      <link>http://KhipTV.org:44412/KEOV</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Voice of Dombang Kronhoung FM 100MHz</title>
+      <link>http://KhipTV.org:44412/Dombang</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>UFM 106.5MHz BMC</title>
+      <link>http://KhipTV.org:44412/ufmradio</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Our Radio - FM106.75 Mhz</title>
+      <link>http://KhipTV.org:44412/our-radio</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Beehive FM105</title>
+      <link>http://KhipTV.org:44412/BFM105</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Mongkul Sovann - FM93.5 - Battambong</title>
+      <link>http://KhipTV.org:44412/FM 93.5 MHz</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Mongkul Sovann - FM105.5 - Champong Soum</title>
+      <link>http://KhipTV.org:44412/FM 105.5 MHzA</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Sangke Radio - FM104.5 MHz - Battambong</title>
+      <link>http://KhipTV.org:44412/Sangke Radio FM104.5MHz</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Ta Prohm Radio FM90.5</title>
+      <link>http://KhipTV.org:44412/taprohm</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Ratanakiri Radio FM 97.5</title>
+      <link>http://KhipTV.org:44412/ratanakiri</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Mongkulsovann FM 91.75 MHz Banteay Meanchey</title>
+      <link>http://KhipTV.org:44412/FM 91.75 Mhz</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+    <item>
+      <title>Siem Reap Radio</title>
+      <link>http://KhipTV.org:44412/SIEM RAEP</link>
+      <thumbnail>http://khiptv.com/images_tv/KNN.PNG</thumbnail>
+    </item>
+  </channel>
+  <channels></channels>
+</channels>
