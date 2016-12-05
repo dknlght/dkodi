@@ -793,9 +793,11 @@ def getVidQuality(vidid,name,filename,checkvideo):
                   strprot=str(seas)
                   vlink=mydata[seas]["url"]
                   print("Video Link = " + vlink)
-                  if(strprot=="http"):
+                  if(strprot=="rtmp" or strprot=="http"):
                         #addLink(strQual +"("+strprot+")",vlink,3,"")
-					addLinkSub(strQual +"("+strprot+")",vlink,3,"",suburl)
+					newvlink=vlink.split(vidid+"/")[-1]
+					newvlink="http://content.viki.com/"+vidid+"/"+newvlink
+					addLinkSub(strQual +"("+strprot+")",newvlink,3,"",suburl)
                   if(show720p and strQual=="360p" and strprot=="rtmp"):
 					newvlink=vlink.split(vidid+"/")[-1].replace('360p','720p')
 					newvlink="http://content.viki.com/"+vidid+"/"+newvlink
