@@ -16,15 +16,63 @@ from xml.dom.minidom import Document
 from t0mm0.common.addon import Addon
 import commands
 import jsunpack
+import MyNet
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.drama24h')
 home = __settings__.getAddonInfo('path')
 #addon = Addon('plugin.video.1channel', sys.argv)
 datapath = xbmc.translatePath(os.path.join(home, 'resources', ''))
+addon_profile_path = xbmc.translatePath(os.path.join(xbmc.translatePath('special://profile'), 'addon_data', 'plugin.video.drama24h'))
 #langfile = xbmc.translatePath(os.path.join(home, 'resources', 'lang.txt'))
-strdomain ="http://hkdrama4u.com"
+strdomain ="http://dramacity.se/"
 AZ_DIRECTORIES = ['0','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y', 'Z']
 net = Net()
+
+if not os.path.exists(addon_profile_path):
+    try: xbmcvfs.mkdirs(addon_profile_path)
+    except: os.mkdir(addon_profile_path)
+	
+_cookie_file = xbmc.translatePath(os.path.join(xbmc.translatePath(addon_profile_path), 'cookies.txt'))
+
+def _is_cookie_file(the_file):
+    exists = os.path.exists(the_file)
+    if not exists:
+        return False
+    else:
+        try:
+            tmp = xbmcvfs.File(the_file).read()
+            if tmp.startswith('#LWP-Cookies-2.0'):
+                return True
+            return False
+        except:
+            with open(the_file, 'r') as f:
+                tmp = f.readline()
+                if tmp == '#LWP-Cookies-2.0\n':
+                    return True
+                return False
+				
+def _create_cookie(the_file):
+    try:
+        if xbmcvfs.exists(the_file):
+            xbmcvfs.delete(the_file)
+        _file = xbmcvfs.File(the_file, 'w')
+        _file.write('#LWP-Cookies-2.0\n')
+        _file.close()
+        return the_file
+    except:
+        try:
+            _file = open(the_file, 'w')
+            _file.write('#LWP-Cookies-2.0\n')
+            _file.close()
+            return the_file
+        except:
+            return ''
+
+if not _is_cookie_file(_cookie_file):
+    _cookie_file = _create_cookie(_cookie_file)
+	
+net2 = MyNet.MyNet(_cookie_file, cloudflare=True)
+
 class InputWindow(xbmcgui.WindowDialog):# Cheers to Bastardsmkr code already done in Putlocker PRO resolver.
     def __init__(self, *args, **kwargs):
         self.cptloc = kwargs.get('captcha')
@@ -57,20 +105,27 @@ def convertascii(strInput, param2, param3):
 
 	
 def GetContent(url):
-    try:
-       net = Net()
-       second_response = net.http_GET(url)
-       rcontent=second_response.content
+    #try:
+       headers={'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                         'Accept-Encoding':'gzip, deflate',
+                         'Referer': url,
+                         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:15.0) Gecko/20100101 Firefox/15.0.1',
+                         'Connection':'keep-alive',
+                         'Accept-Language':'en-us,en;q=0.5',
+                         'Pragma':'no-cache'
+       }
+       resp = net2.http_GET(url,headers=headers,compression=True)
+       net2.save_cookies(_cookie_file)
        try:
-            rcontent =rcontent.encode("UTF-8")
+            rcontent =resp.content.encode("UTF-8")
        except: pass
        encstring =re.compile('eval\(unescape\((.+?)\)\);').findall(rcontent)
        if(len(encstring)>1):
 			rcontent=eval("convertascii("+encstring[1]+")").replace("\/","/") 
        return rcontent
-    except:	
-       d = xbmcgui.Dialog()
-       d.ok(url,"Can't Connect to site",'Try again in a moment')
+    #except:	
+    #   d = xbmcgui.Dialog()
+    #   d.ok(url,"Can't Connect to site",'Try again in a moment')
 
 try:
 
@@ -222,6 +277,7 @@ def GetMenu():
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
+        print newlink
         soup  = BeautifulSoup(newlink)
         vidcontent=soup.findAll('ul', {"id" : "nav"})
         for item in vidcontent[0].findAll('li'):
