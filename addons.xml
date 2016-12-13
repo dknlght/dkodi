@@ -876,7 +876,7 @@
 
 <addon
   id="plugin.video.vidics"
-  version="1.0.18"
+  version="1.0.19"
   name="Vidics"
   provider-name="Dknight">
   <requires>

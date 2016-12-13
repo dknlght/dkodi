@@ -202,16 +202,15 @@ def GetContent(url):
 
 try:
 
-    DB_NAME = __settings__.getSetting('db_name')
-    DB_USER = __settings__.getSetting('db_user')
-    DB_PASS = __settings__.getSetting('db_pass')
-    DB_ADDRESS = __settings__.getSetting('db_address')
+    DB_NAME = 	 ADDON.getSetting('db_name')
+    DB_USER = 	 ADDON.getSetting('db_user')
+    DB_PASS = 	 ADDON.getSetting('db_pass')
+    DB_ADDRESS = ADDON.getSetting('db_address')
 
-    if  __settings__.getSetting('use_remote_db')=='true' and DB_ADDRESS is not None and DB_USER is not None and DB_PASS is not None and DB_NAME is not None:
+    if  ADDON.getSetting('use_remote_db')=='true' and DB_ADDRESS is not None and DB_USER is not None and DB_PASS is not None and DB_NAME is not None:
         import mysql.connector as database
         print 'Loading MySQL as DB engine'
         DB = 'mysql'
-        db_dir = ''
     else:
         print'MySQL not enabled or not setup correctly'
         raise ValueError('MySQL not enabled or not setup correctly')
@@ -229,15 +228,9 @@ except:
 
 def initDatabase():
     if DB == 'mysql':
-        try:
-          db = database.connect(user=DB_USER, password=DB_PASS,host=DB_ADDRESS, database=DB_NAME)
-          cur = db.cursor()
-          cur.execute('CREATE TABLE IF NOT EXISTS favorites (type VARCHAR(10), name TEXT, url VARCHAR(255) UNIQUE, imgurl VARCHAR(255))')
-        except database.Error as err:
-          d = xbmcgui.Dialog()
-          str = ' :'
-          seq = ('Vidics',err)
-          d.ok(url,str.join(seq),'Try checking MySQL settings')
+        db = database.connect(DB_NAME, DB_USER, DB_PASS, DB_ADDRESS, buffered=True)
+        cur = db.cursor()
+        cur.execute('CREATE TABLE IF NOT EXISTS favorites (type VARCHAR(10), name TEXT, url VARCHAR(255) UNIQUE, imgurl VARCHAR(255))')
     else:
         if not os.path.isdir(os.path.dirname(db_dir)):
             os.makedirs(os.path.dirname(db_dir))
@@ -248,7 +241,7 @@ def initDatabase():
 	
 def SaveData(SQLStatement): #8888
     if DB == 'mysql':
-        db = database.connect(user=DB_USER, password=DB_PASS,host=DB_ADDRESS, database=DB_NAME)
+        db = database.connect(DB_NAME, DB_USER, DB_PASS, DB_ADDRESS, buffered=True)
     else:
         db = database.connect( db_dir )
     cursor = db.cursor()
@@ -278,7 +271,7 @@ def SaveFav(fav_type, name, url, img):
         if fav_type == '': fav_type = getVideotype(url)
         statement  = 'INSERT INTO favorites (type, name, url, imgurl) VALUES (%s,%s,%s,%s)'
         if DB == 'mysql':
-            db = database.connect(user=DB_USER, password=DB_PASS,host=DB_ADDRESS, database=DB_NAME)
+            db = database.connect(DB_NAME, DB_USER, DB_PASS, DB_ADDRESS, buffered=True)
         else:
             db = database.connect( db_dir )
             statement = statement.replace("%s","?")
@@ -305,7 +298,7 @@ def ListFavorites():
 def BrowseFavorites(section):
     sql = 'SELECT type, name, url, imgurl FROM favorites WHERE type = ? ORDER BY name'
     if DB == 'mysql':
-        db = database.connect(user=DB_USER, password=DB_PASS,host=DB_ADDRESS, database=DB_NAME)
+        db = database.connect(DB_NAME, DB_USER, DB_PASS, DB_ADDRESS, buffered=True)
         sql = sql.replace('?','%s')
     else: db = database.connect( db_dir )
     cur = db.cursor()
@@ -331,7 +324,7 @@ def DeleteFav(name,url):
     xbmc.executebuiltin(builtin)
     sql_del = 'DELETE FROM favorites WHERE name=%s AND url=%s'
     if DB == 'mysql':
-            db = database.connect(user=DB_USER, password=DB_PASS,host=DB_ADDRESS, database=DB_NAME)
+            db = database.connect(DB_NAME, DB_USER, DB_PASS, DB_ADDRESS, buffered=True)
     else:
             db = database.connect( db_dir )
             sql_del = sql_del.replace('%s','?')
@@ -497,6 +490,16 @@ def ParseVideoLink(url,name,movieinfo):
     #try:
     if True:
 
+       sources = []
+       label=name
+       hosted_media = urlresolver.HostedMediaFile(url=redirlink, title=label)
+       sources.append(hosted_media)
+       source = urlresolver.choose_source(sources)
+       print "inresolver=" + redirlink
+       xbmc.log(str(source))
+       if source:
+        vidlink=source.resolve()
+       else:
         if (redirlink.find("youtube") > -1):
                 vidmatch=re.compile('(youtu\.be\/|youtube-nocookie\.com\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(redirlink)
                 vidlink=vidmatch[0][len(vidmatch[0])-1].replace('v/','')
@@ -1043,6 +1046,7 @@ def ParseVideoLink(url,name,movieinfo):
                 hash = re.compile('<input type="hidden" name="hash" [^>]*value=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)[0]
                 fname = re.compile('<input type="hidden" name="fname" [^>]*value=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link)[0]
                 posdata=urllib.urlencode({"op":op,"usr_login":"","id":idkey,"fname":fname,"referer":"","hash":hash})
+                xbmc.log(str(posdata))
                 dialog.close()
                 do_wait('Waiting on link to activate', '', 5)
                 dialog.create('Resolving', 'Resolving flashx Link...') 
@@ -1224,18 +1228,7 @@ def ParseVideoLink(url,name,movieinfo):
                 print "inresolver=" + redirlink
                 if source:
                         vidlink = source.resolve()
-    #except:
-                if(redirlink.find("putlocker.com") > -1 or redirlink.find("sockshare.com") > -1):
-                        redir = redirlink.split("/file/")
-                        redirlink = redir[0] +"/file/" + redir[1].upper()
-                sources = []
-                label=name
-                hosted_media = urlresolver.HostedMediaFile(url=redirlink, title=label)
-                sources.append(hosted_media)
-                source = urlresolver.choose_source(sources)
-                print "inresolver=" + redirlink
-                if source:
-                        vidlink = source.resolve()
+
     dialog.close()
     return vidlink
                
