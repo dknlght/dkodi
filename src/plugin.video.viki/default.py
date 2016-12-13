@@ -780,32 +780,44 @@ def getVidQuality(vidid,name,filename,checkvideo):
 	srt2ass.main(filename,json.loads(GetContent(commenturl)))
   #movies = data["movies"]["url"]["api"]
   show720p=(name.find("(HD)") > -1)
-  
-  for i, item in enumerate(data):
-          strQual=str(item)
-          #print data
-          mydata = data[item]
-          if(mydata==401):
-            print("401 error detected")
-            break 
-          if(item!="external"):
-              for seas in mydata:
-                  strprot=str(seas)
-                  vlink=mydata[seas]["url"]
-                  print("Video Link = " + vlink)
-                  if(strprot=="rtmp" or strprot=="http"):
-                        #addLink(strQual +"("+strprot+")",vlink,3,"")
-					newvlink=vlink.split(vidid+"/")[-1]
-					newvlink="http://content.viki.com/"+vidid+"/"+newvlink
-					addLinkSub(strQual +"("+strprot+")",newvlink,3,"",suburl)
-                  if(show720p and strQual=="360p" and strprot=="rtmp"):
-					newvlink=vlink.split(vidid+"/")[-1].replace('360p','720p')
-					newvlink="http://content.viki.com/"+vidid+"/"+newvlink
-					#addLink("720p("+strprot+")",newvlink,3,"")
-					addLinkSub("720p(http)",newvlink,3,"",suburl)
-          else:
-              vlink=getVideoUrl(mydata["url"],name)
-              addLink("external Video",vlink,3,"")
+  if data.has_key("vcode")!=True:
+	  for i, item in enumerate(data):
+			  strQual=str(item)
+			  #print data
+			  mydata = data[item]
+			  if(mydata==401):
+				print("401 error detected")
+				break 
+			  if(item!="external"):
+				  for seas in mydata:
+					  strprot=str(seas)
+					  vlink=mydata[seas]["url"]
+					  print("Video Link = " + vlink)
+					  if(strprot=="rtmp" or strprot=="http"):
+							#addLink(strQual +"("+strprot+")",vlink,3,"")
+						newvlink=vlink.split(vidid+"/")[-1]
+						newvlink="http://content.viki.com/"+vidid+"/"+newvlink
+						addLinkSub(strQual +"("+strprot+")",newvlink,3,"",suburl)
+					  if(show720p and strQual=="360p" and strprot=="rtmp"):
+						newvlink=vlink.split(vidid+"/")[-1].replace('360p','720p')
+						newvlink="http://content.viki.com/"+vidid+"/"+newvlink
+						#addLink("720p("+strprot+")",newvlink,3,"")
+						addLinkSub("720p(http)",newvlink,3,"",suburl)
+			  else:
+				  vlink=getVideoUrl(mydata["url"],name)
+				  addLink("external Video",vlink,3,"")
+  else:
+		vidata = json.loads(GetContent(sign_request(vidid,".json")))
+		posterurl= vidata["images"]["poster"]["url"]
+		idpart=re.compile(vidid+'_(.+?)_').findall(posterurl)
+		if(len(idpart)>0):
+			newvlink="http://content.viki.com/%s/%s_high_720p_%s.mp4" % (vidid,vidid,idpart[0])
+			addLinkSub("720p(?)",newvlink,3,"",suburl)
+			newvlink="http://content.viki.com/%s/%s_high_480p_%s.mp4" % (vidid,vidid,idpart[0])
+			addLinkSub("480p(?)",newvlink,3,"",suburl)
+			newvlink="http://content.viki.com/%s/%s_high_360p_%s.mp4" % (vidid,vidid,idpart[0])
+			addLinkSub("360p(?)",newvlink,3,"",suburl)
+		
                  
 
 def playVideo(suburl,videoId):
