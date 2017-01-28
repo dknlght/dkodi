@@ -381,7 +381,28 @@ def Episodes(url,name):
 
     #except: pass
 
-
+def GetContent2(url,referr, cj):
+    if cj is None:
+        cj = cookielib.LWPCookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    opener.addheaders = [(
+        'Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
+        ('Accept-Encoding', 'gzip, deflate'),
+        ('Referer', referr),
+        ('Content-Type', 'application/x-www-form-urlencoded'),
+        ('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0'),
+        ('Connection', 'keep-alive'),
+        ('Accept-Language', 'en-us,en;q=0.5'),
+        ('Pragma', 'no-cache')]
+    usock = opener.open(url)
+    if usock.info().get('Content-Encoding') == 'gzip':
+        buf = StringIO.StringIO(usock.read())
+        f = gzip.GzipFile(fileobj=buf)
+        response = f.read()
+    else:
+        response = usock.read()
+    usock.close()
+    return (cj, response)
 
 def GetContent(url):
     try:
@@ -482,8 +503,12 @@ def loadPlaylist(url,name):
                 CreateList('dailymontion',vidlink)
            elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
                 docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
-                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                cj = cookielib.LWPCookieJar()
+                (cj,vidcontent) = GetContent2("https://docs.google.com/get_video_info?docid="+docid,"", cj) 
                 html = urllib2.unquote(vidcontent)
+                cookiestr=""
+                for cookie in cj:
+					cookiestr += '%s=%s;' % (cookie.name, cookie.value)
                 try:
 					html=html.encode("utf-8","ignore")
                 except: pass
@@ -503,7 +528,7 @@ def loadPlaylist(url,name):
 						downloadlink=soup.findAll('a', {"id" : "uc-download-link"})[0]
 						newlink2 ="https://docs.google.com" + downloadlink["href"]
 						vidlink=GetDirVideoUrl(newlink2,cj) 
-                CreateList('googledocs',vidlink)
+                CreateList('googledocs',vidlink+ ('|Cookie=%s' % cookiestr))
            elif (newlink.find("video.google.com") > -1):
                 match=re.compile('http://video.google.com/videoplay.+?docid=(.+?)&.+?').findall(newlink)
                 glink=""
@@ -593,8 +618,12 @@ def loadVideos(url,name):
                 playVideo('dailymontion',vidlink)
            elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
                 docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
-                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                cj = cookielib.LWPCookieJar()
+                (cj,vidcontent) = GetContent2("https://docs.google.com/get_video_info?docid="+docid,"", cj) 
                 html = urllib2.unquote(vidcontent)
+                cookiestr=""
+                for cookie in cj:
+					cookiestr += '%s=%s;' % (cookie.name, cookie.value)
                 try:
 					html=html.encode("utf-8","ignore")
                 except: pass
@@ -614,7 +643,7 @@ def loadVideos(url,name):
 						downloadlink=soup.findAll('a', {"id" : "uc-download-link"})[0]
 						newlink2 ="https://docs.google.com" + downloadlink["href"]
 						vidlink=GetDirVideoUrl(newlink2,cj) 
-                playVideo('google',vidlink)
+                playVideo('google',vidlink+ ('|Cookie=%s' % cookiestr))
            elif (newlink.find("vimeo") > -1):
                 #
                 print "newlink|" + newlink

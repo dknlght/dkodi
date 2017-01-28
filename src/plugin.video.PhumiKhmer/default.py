@@ -546,8 +546,10 @@ def loadVideos(url,name):
                 d.ok('Not Implemented','Sorry 4Shared links',' not implemented yet')		
            elif (newlink.find("docs.google.com") > -1):  
                 docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
-                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                cj = cookielib.LWPCookieJar()
+                (cj,vidcontent) = GetContent2("https://docs.google.com/get_video_info?docid="+docid,"", cj) 
                 html = urllib2.unquote(vidcontent)
+                cookiestr=""
                 try:
 					html=html.encode("utf-8","ignore")
                 except: pass
@@ -567,7 +569,9 @@ def loadVideos(url,name):
 						downloadlink=soup.findAll('a', {"id" : "uc-download-link"})[0]
 						newlink2 ="https://docs.google.com" + downloadlink["href"]
 						url=GetDirVideoUrl(newlink2,cj) 
-                playVideo("direct",url)
+                for cookie in cj:
+					cookiestr += '%s=%s;' % (cookie.name, cookie.value)
+                playVideo("direct",url+ ('|Cookie=%s' % cookiestr) )
            elif (newlink.find("vimeo") > -1):
                 idmatch =re.compile("http://player.vimeo.com/video/([^\?&\"\'>]+)").findall(newlink)
                 if(len(idmatch) > 0):

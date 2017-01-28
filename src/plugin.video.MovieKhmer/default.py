@@ -375,16 +375,28 @@ def ParseSeparate(vcontent,namesearch,urlsearch):
                 return True
         return False
 					
-def GetContent2(url):
-    conn = httplib.HTTPConnection(host="moviekhmer.com",timeout=30)
-    req = url
-    try:
-        conn.request('GET',req)
-        content = conn.getresponse().read()
-    except:
-        print 'echec de connexion'
-    conn.close()
-    return content
+def GetContent2(url,referr, cj):
+    if cj is None:
+        cj = cookielib.LWPCookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    opener.addheaders = [(
+        'Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
+        ('Accept-Encoding', 'gzip, deflate'),
+        ('Referer', referr),
+        ('Content-Type', 'application/x-www-form-urlencoded'),
+        ('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0'),
+        ('Connection', 'keep-alive'),
+        ('Accept-Language', 'en-us,en;q=0.5'),
+        ('Pragma', 'no-cache')]
+    usock = opener.open(url)
+    if usock.info().get('Content-Encoding') == 'gzip':
+        buf = StringIO.StringIO(usock.read())
+        f = gzip.GzipFile(fileobj=buf)
+        response = f.read()
+    else:
+        response = usock.read()
+    usock.close()
+    return (cj, response)
 	
 def GetContent(url):
     try:
@@ -430,7 +442,7 @@ def playVideo(videoType,videoId):
 def loadVideos(url,name):
         #try:
            newlink=url
-           print newlink
+           print "newlink"+newlink
            xbmc.executebuiltin("XBMC.Notification(Please Wait!,Loading selected video)")
            if (newlink.find("dailymotion") > -1):
                 match=re.compile('(dailymotion\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink)
@@ -452,8 +464,12 @@ def loadVideos(url,name):
                 playVideo('dailymontion',urllib2.unquote(dm_low[0]).decode("utf8"))
            elif (newlink.find("docs.google.com") > -1):  
                 docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
-                vidcontent = GetContent("https://docs.google.com/get_video_info?docid="+docid) 
+                cj = cookielib.LWPCookieJar()
+                (cj,vidcontent) = GetContent2("https://docs.google.com/get_video_info?docid="+docid,"", cj) 
                 html = urllib2.unquote(vidcontent)
+                cookiestr=""
+                for cookie in cj:
+					cookiestr += '%s=%s;' % (cookie.name, cookie.value)
                 try:
 					html=html.encode("utf-8","ignore")
                 except: pass
@@ -464,7 +480,7 @@ def loadVideos(url,name):
 						 formatContentInfo = formatContent.split('|')
 						 qual = formatContentInfo[0]
 						 url = (formatContentInfo[1]).decode('unicode-escape')
-					playVideo("direct",url)
+					playVideo("direct",url+ ('|Cookie=%s' % cookiestr) )
            elif (newlink.find("4shared") > -1):
                 d = xbmcgui.Dialog()
                 d.ok('Not Implemented','Sorry 4Shared links',' not implemented yet')		

@@ -447,7 +447,7 @@
 
 <addon
   id="plugin.video.KhmerAvenue"
-  version="1.0.36"
+  version="1.0.37"
   name="KhmerAvenue"
   provider-name="Dknight">
   <requires>
@@ -615,7 +615,7 @@
 
 <addon
   id="plugin.video.MovieKhmer"
-  version="1.0.29"
+  version="1.0.30"
   name="MovieKhmer"
   provider-name="Dknight">
   <requires>
@@ -744,7 +744,7 @@
 
 <addon
   id="plugin.video.PhumiKhmer"
-  version="1.0.33"
+  version="1.0.34"
   name="PhumiKhmer"
   provider-name="Dknight">
   <requires>
@@ -855,7 +855,7 @@
 
 <addon
   id="plugin.video.video4Khmer"
-  version="1.0.34"
+  version="1.0.35"
   name="video4Khmer"
   provider-name="Dknight">
   <requires>
