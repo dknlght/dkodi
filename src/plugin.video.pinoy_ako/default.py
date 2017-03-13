@@ -34,7 +34,7 @@ VERSION = "1.0.9" #<---- PLUGIN VERSION
 
 
 strdomain ='http://www.pinoy-tv.ws/'
-strdomain2="http://www.lambingan.me/"
+strdomain2="http://www.lambingan.su/"
 
 if not os.path.exists(datapath):
         os.makedirs(datapath)
