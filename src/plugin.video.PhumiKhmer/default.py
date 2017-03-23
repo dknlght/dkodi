@@ -12,6 +12,7 @@ import datetime
 from BeautifulSoup import BeautifulSoup
 from BeautifulSoup import BeautifulStoneSoup
 from BeautifulSoup import SoupStrainer
+import urlresolver
 
 import time
 ADDON = xbmcaddon.Addon(id='plugin.video.PhumiKhmer')
@@ -23,10 +24,9 @@ PATH = "PhumiKhmer"  #<---- PLUGIN NAME MINUS THE "plugin.video"
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.4" #<---- PLUGIN VERSION
 
-strdomain ='http://www.phumikhmer9.com/'
+strdomain ='http://phumikhmer.media/'
 def HOME():
         addDir('Search',strdomain+'search/label/Khmer%20Movies?&max-results=18',4,'')
-        addDir('Thai Lakorn',strdomain+"search?max-results=16&PageNo=1",2,'')
         GetMenu(strdomain)
 
 			
@@ -36,17 +36,18 @@ def GetMenu(url):
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
-        menuhead = SoupStrainer('ul', {"class" : "dropdown-menu"})
-        soup = BeautifulStoneSoup(newlink, parseOnlyThese=menuhead,convertEntities=BeautifulSoup.XML_ENTITIES)
-        for item in soup.findAll('li'):
-			if(item.a!=None and item.a.has_key("href")):
-				link = item.a['href'].encode('utf-8', 'ignore')
-				if(item.ul==None):
-					vname="---"+str(item.a.contents[0]).strip()
-				else:
-					vname=str(item.a.contents[0]).strip()
-				if(vname.strip().find("</i>") == -1 and vname.strip().find("Top Rate") == -1 and link.find(strdomain) ==-1):
-					addDir(vname,strdomain+link+"&PageNo=1",2,"")
+        soup = BeautifulSoup(newlink)
+        listcontent=soup.findAll('div', {"class" : "td-mobile-content"})
+        if(len(listcontent)>0):
+			for item in listcontent[0].findAll('li'):
+				if(item.a!=None and item.a.has_key("href")):
+					link = item.a['href'].encode('utf-8', 'ignore')
+					if(item.ul==None):
+						vname="---"+str(item.a.contents[0]).strip()
+					else:
+						vname=str(item.a.contents[0]).strip()
+					if(vname.strip().find("</i>") == -1 and vname.strip().find("Home") == -1 and link.find(strdomain) !=-1):
+						addDir(vname,link,2,"")
 				
 def Shows():
         addDir('Pak Mee','http://www.dramakhmer.com/search/label/Parkmi%20%28%E1%9E%96%E1%9E%B6%E1%9E%80%E1%9F%8B%E1%9E%98%E1%9E%B8%29?&max-results=18',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
@@ -224,42 +225,47 @@ def SEARCH():
         #searchText = '01'
         if (keyb.isConfirmed()):
                 searchText = urllib.quote_plus(keyb.getText())
-        url = strdomain+'search?q='+searchText
+        url = strdomain+'?s='+searchText
         INDEX(url)
     except: pass
 	
 def INDEX(url):
     #try:
+        print url + "| in index"
         link = GetContent(url)
         try:
             link =link.encode("UTF-8")
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        listcontent=soup.findAll('div', {"id" : "main"})
-        for item in listcontent[0].findAll('div', {"class" : "cutter"}):
+        listcontent=soup.findAll('div', {"class" : "td-ss-main-content"})
+        for item in listcontent[0].findAll('div', {"class" : "td-module-image"}):
 			vname=item.a["title"]
 			vurl=item.a["href"]
 			vimg=item.a.img["src"]
 			addDir(vname.encode('utf-8', 'ignore'),vurl,5,vimg)
-        label=""#re.compile("/label/(.+?)\?").findall(url)[0]
-        pagenum=re.compile("PageNo=(.+?)").findall(url)
-        prev="0"
-        if(len(pagenum)>0):
-              prev=str(int(pagenum[0])-1)
-              pagenum=str(int(pagenum[0])+1)
+        pagecontent=soup.findAll('div', {"class" : re.compile("page-nav*")})
+        if(len(pagecontent)>0):
+			for item in pagecontent[0].findAll('a', {"class" : ["page", "last"]}):
+				addDir("page " + item.contents[0],item["href"],2,"")
+        # label=""#re.compile("/label/(.+?)\?").findall(url)[0]
+        # pagenum=re.compile("PageNo=(.+?)").findall(url)
+        # prev="0"
+        # if(len(pagenum)>0):
+              # prev=str(int(pagenum[0])-1)
+              # pagenum=str(int(pagenum[0])+1)
 
-        else:
-              pagenum="2"
-        nexurl=buildNextPage(pagenum,label)
+        # else:
+              # pagenum="2"
+        # nexurl=buildNextPage(pagenum,label)
 
-        if(int(pagenum)>2 and prev=="1"):
-              urlhome=url.split("?")[0]+"?"
-              addDir("<< Previous",urlhome,2,"")
-        elif(int(pagenum)>2):
-              addDir("<< Previous",buildNextPage(prev,label),2,"")
-        if(nexurl!=""):
-              addDir("Next >>",nexurl,2,"")
+        # if(int(pagenum)>2 and prev=="1"):
+              # urlhome=url.split("?")[0]+"?"
+              # addDir("<< Previous",urlhome,2,"")
+        # elif(int(pagenum)>2):
+              # addDir("<< Previous",buildNextPage(prev,label),2,"")
+        # if(nexurl!=""):
+              # addDir("Next >>",nexurl,2,"")
     #except: pass
 
 def buildNextPage(pagenum,label):
@@ -523,6 +529,7 @@ def loadVideos(url,name):
            newlink=url
            xbmc.executebuiltin("XBMC.Notification(Please Wait!,Loading selected video)")
            print newlink
+           playtype="direct"
            if (newlink.find("dailymotion") > -1):
                 match=re.compile('(dailymotion\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink)
                 lastmatch = match[0][len(match[0])-1]
@@ -540,11 +547,11 @@ def loadVideos(url,name):
                 	imgSrc=re.compile('/jpeg" href="(.+?)"').findall(link)
                 dm_low=re.compile('"sdURL":"(.+?)"').findall(newseqeunce)
                 dm_high=re.compile('"hqURL":"(.+?)"').findall(newseqeunce)
-                playVideo('dailymontion',urllib2.unquote(dm_low[0]).decode("utf8"))
+                vidlink=urllib2.unquote(dm_low[0]).decode("utf8")
            elif (newlink.find("4shared") > -1):
                 d = xbmcgui.Dialog()
                 d.ok('Not Implemented','Sorry 4Shared links',' not implemented yet')		
-           elif (newlink.find("docs.google.com") > -1):  
+           elif (newlink.find("docs.google.com") > -1 or newlink.find("drive.google.com") > -1):  
                 docid=re.compile('/d/(.+?)/preview').findall(newlink)[0]
                 cj = cookielib.LWPCookieJar()
                 (cj,vidcontent) = GetContent2("https://docs.google.com/get_video_info?docid="+docid,"", cj) 
@@ -571,28 +578,44 @@ def loadVideos(url,name):
 						url=GetDirVideoUrl(newlink2,cj) 
                 for cookie in cj:
 					cookiestr += '%s=%s;' % (cookie.name, cookie.value)
-                playVideo("direct",url+ ('|Cookie=%s' % cookiestr) )
+                vidlink=url+ ('|Cookie=%s' % cookiestr)
            elif (newlink.find("vimeo") > -1):
                 idmatch =re.compile("http://player.vimeo.com/video/([^\?&\"\'>]+)").findall(newlink)
                 if(len(idmatch) > 0):
                         playVideo('vimeo',idmatch[0])
-           else:
-                if (newlink.find("linksend.net") > -1):
-                     d = xbmcgui.Dialog()
-                     d.ok('Not Implemented','Sorry videos on linksend.net does not work','Site seem to not exist')		
-                newlink1 = urllib2.unquote(newlink).decode("utf8")+'&dk;'
-                print 'NEW url = '+ newlink1
-                match=re.compile('(youtu\.be\/|youtube-nocookie\.com\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink1)
+           elif (newlink.find("youtube") > -1) and (newlink.find("playlists") > -1):
+                playlistid=re.compile('playlists/(.+?)\?v').findall(newlink)
+                vidlink="plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0]
+           elif (newlink.find("youtube") > -1) and (newlink.find("list=") > -1):
+                playlistid=re.compile('videoseries\?list=(.+?)&').findall(newlink+"&")
+                vidlink="plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0]
+           elif (newlink.find("youtube") > -1) and (newlink.find("/p/") > -1):
+                playlistid=re.compile('/p/(.+?)\?').findall(newlink)
+                vidlink="plugin://plugin.video.youtube?path=/root/video&action=play_all&playlist="+playlistid[0]
+           elif (newlink.find("youtube") > -1) and (newlink.find("/embed/") > -1):
+                playlistid=re.compile('/embed/(.+?)\?').findall(newlink+"?")
+                vidlink=getYoutube(playlistid[0])
+           elif (newlink.find("youtube") > -1):
+                match=re.compile('(youtu\.be\/|youtube-nocookie\.com\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v|user)\/))([^\?&"\'>]+)').findall(newlink)
                 if(len(match) == 0):
                     match=re.compile('http://www.youtube.com/watch\?v=(.+?)&dk;').findall(newlink1)
                 if(len(match) > 0):
                     lastmatch = match[0][len(match[0])-1].replace('v/','')
-                    #d = xbmcgui.Dialog()
-                    #d.ok('mode 2',str(lastmatch),'launching yout')
-                    playVideo('youtube',lastmatch)
+                print "in youtube" + lastmatch[0]
+                vidlink=lastmatch
+                playtype="youtube"
+           else:
+                sources = []
+                label=name
+                hosted_media = urlresolver.HostedMediaFile(url=newlink, title=label)
+                sources.append(hosted_media)
+                source = urlresolver.choose_source(sources)
+                print "inresolver=" + newlink
+                if source:
+                        vidlink = source.resolve()
                 else:
-                    playVideo('moviekhmer',urllib2.unquote(newlink).decode("utf8"))
-        #except: pass
+                        vidlink =""
+           playVideo(playtype,vidlink )
         
 def OtherContent():
     net = Net()

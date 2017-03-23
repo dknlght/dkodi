@@ -744,7 +744,7 @@
 
 <addon
   id="plugin.video.PhumiKhmer"
-  version="1.0.34"
+  version="1.0.35"
   name="PhumiKhmer"
   provider-name="Dknight">
   <requires>
