@@ -145,7 +145,7 @@ def ListMirrors(url):
         soup = BeautifulSoup(newlink)
         for item in soup.findAll('p'):
 			divcontent=str(item)
-			if(item.a != None):
+			if(item.a != None and item.strong != None):
 				#print item.a["href"].encode('utf-8', 'ignore')
 				addLink(item.strong.contents[0].encode('utf-8', 'ignore').replace("&#8211;","-"),item.a["href"].encode('utf-8', 'ignore'),3,"")
 			if(item.embed != None):
