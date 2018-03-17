@@ -399,12 +399,17 @@ def Videosresolve(url,name):
                # http://videobug.se/vid-a/g2S5k34-MoC2293iUaa9Hw
                json_data = re.findall(r"json_data = '(.+)';", content)
                if json_data:
-                   strdecode = lambda s: base64.b64decode(urllib.unquote(s)[::-1])
                    try:
+                       url_source = []
+                       video_url = []
                        hashes = json.loads(json_data[0])
                        exclude = ['Subtitles', 'image', 'JS', 'ADV']
                        videos = [h for h in hashes if h['s'] not in exclude]
-                       vidlink = [(strdecode(h['u']), h['s']) for h in videos]
+                       for i, video in enumerate(videos):
+                          #print base64.b64decode(video.get('u'))
+                          url_source.append( video.get('s'))
+                          video_url.append(base64.b64decode(video.get('u')))
+                       vidlink = zip(video_url,url_source)
                    except Exception:
                        pass
 
