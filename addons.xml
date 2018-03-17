@@ -447,7 +447,7 @@
 
 <addon
   id="plugin.video.KhmerAvenue"
-  version="1.0.37"
+  version="1.0.38"
   name="KhmerAvenue"
   provider-name="Dknight">
   <requires>
@@ -535,7 +535,7 @@
 
 <addon
   id="plugin.video.KhmerTv"
-  version="1.0.31"
+  version="1.0.33"
   name="KhmerTv"
   provider-name="Dknight">
   <requires>
@@ -596,7 +596,7 @@
 
 <addon
   id="plugin.video.Mega_Khmer_Addon"
-  version="0.0.3"
+  version="0.0.6"
   name="[B][COLOR fff5f5dc]Mega_[/COLOR][COLOR ffffd700]Khmer_Addon[/COLOR][/B]"
   provider-name="Price">
   <requires>
@@ -855,7 +855,7 @@
 
 <addon
   id="plugin.video.video4Khmer"
-  version="1.0.35"
+  version="1.0.36"
   name="video4Khmer"
   provider-name="Dknight">
   <requires>

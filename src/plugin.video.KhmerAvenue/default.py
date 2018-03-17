@@ -40,8 +40,8 @@ def HOME():
 		addDir('Modern Thai','http://www.merlkon.net/genre/modern-thai/',2,'http://www.merlkon.net/wp-content/uploads/2015/07/lidow_2015729211154504-150x150.jpg')
 		addDir('Boran Thai','http://www.merlkon.net/genre/thai-boran/',2,'http://www.merlkon.net/wp-content/uploads/2014/10/kkk-150x150.jpg')
 		addDir('Horror Thai','http://www.merlkon.net/genre/horror/',2,'http://www.merlkon.net/wp-content/uploads/2013/06/wed-150x150.jpg')
-		addDir('Philippines Videos','http://www.merlkon.net/genre/philippines-videos/',2,'http://www.merlkon.net/wp-content/uploads/2013/09/mkj-150x150.jpg')
-		addDir('Bollywood Videos','http://www.merlkon.net/genre/bollywood-videos/',2,'http://www.merlkon.net/wp-content/uploads/2013/01/santosima-150x150.jpg')
+		addDir('Philippines Videos','http://www.merlkon.net/genre/philippines/',2,'http://www.merlkon.net/wp-content/uploads/2013/09/mkj-150x150.jpg')
+		addDir('Bollywood Videos','http://www.merlkon.net/genre/bollywood/',2,'http://www.merlkon.net/wp-content/uploads/2013/01/santosima-150x150.jpg')
 		addDir('Modern Chinese (KS)','http://www.khmerstream.net/genre/modern-chinese/',2,'http://www.khmerstream.net/wp-content/uploads/2015/05/be-home-for-dinner-2011-s-150x150.jpg')
 		addDir('Ancent Chinese (KS)','http://www.khmerstream.net/genre/ancient-chinese/',2,'http://www.khmerstream.net/wp-content/uploads/2015/08/wulin-150x150.jpg')
 		
@@ -149,18 +149,20 @@ def INDEX(url):
         try:
             link =link.encode("UTF-8")
         except: pass
-        newlink = ''.join(link.splitlines()).replace('\t','')
-        match=re.compile('<div class="widget-background-wrapper" id="enhancedtextwidget-17-background-wrapper">(.+?)<div class=\'loop\'>').findall(newlink)
-        match=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>(.+?)</a>').findall(match[0])
-        for vurl,vcontent in match:
-            imgmatch=re.compile('<img src="(.+?)" alt="(.+?)"').findall(vcontent)[0]
-            (vimage,vname)=imgmatch
-            addDir(vname,vurl,5,vimage)
-        match5=re.compile("<div class='wp-pagenavi'>(.+?)</div>").findall(newlink)
+        soup = BeautifulSoup(link.decode('utf-8'))
+        div_index = soup('div',{'class':"image view overlay"})
+
+        for alink in div_index:
+            vLink = BeautifulSoup(str(alink))('a')[0]['href']
+            vTitle = BeautifulSoup(str(alink))('span')[0].h3.contents[0]
+            vImage = BeautifulSoup(str(alink))('img')[0]['src']
+            addDir(vTitle,vLink,5,vImage)
+        match5=re.compile('<div class=\'wp-pagenavi\'>\n(.+?)\n</div>').findall(link)
         if(len(match5)):
-			pagelist=re.compile('<a class="page larger" [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>(.+?)</a>').findall(match5[0])
-			for vurl,vcontent in pagelist:
-				addDir("page "+vcontent,vurl,2,"")
+            pages=re.compile('<a class=".+?" href="(.+?)">(.+?)</a>').findall(match5[0])
+            for pageurl,pagenum in pages:
+                addDir(" Page " + pagenum,pageurl.encode("utf-8"),2,"")
+
     #except: pass
 
 def SEARCH():
@@ -358,26 +360,26 @@ def getVimeoVideourl(videoid,currentdomain):
 
 def Episodes(url,name):
     #try:
+        print url
         link = GetContent(url)
         try:
             link =link.encode("UTF-8")
         except: pass
-        newlink = ''.join(link.splitlines()).replace('\t','')
-        soup = BeautifulSoup(newlink)
-        listcontent=soup.findAll('div', {"id" : "enhancedtextwidget-11"})
-        addLink(name.encode("utf-8"),url,3,'')
         counter = 1
         videolist =url+";#"
         vidPerGroup = 5
-        itemmatch=listcontent[0].findAll('a')
-        for item in itemmatch:
-			if(item.span != None ):
-				counter += 1
-				addLink(item.span.contents[0],item["href"],3,'')
-				videolist=videolist+item["href"]+";#"
-				if(counter%vidPerGroup==0 or counter==len(itemmatch)+1):
+        soup = BeautifulSoup(link.decode('utf-8'))
+        epi_index = soup('button',{'class':"btn btn-episode"})
+        for alink in epi_index:
+			counter += 1
+			vLinkName=alink.contents[0]
+			vLink=alink.parent['href']
+			addLink(vLinkName,vLink,3,'')
+			videolist=videolist+vLink+";#"
+			if(counter%vidPerGroup==0 or counter==len(epi_index)+1):
 					addLink("-------Play the "+ str(len(videolist.split(';#'))-1)+" videos above--------",videolist,8,"")
 					videolist =""
+
 
     #except: pass
 
@@ -594,7 +596,7 @@ def loadVideos(url,name):
            link=GetContent(url)
            newlink = ''.join(link.encode("utf-8").splitlines()).replace('\t','')
            vidurl=""
-           match=re.compile("'file':\s*'(.+?)',").findall(newlink)
+           match=re.compile('"file":\s*"(.+?)",').findall(newlink)
            if(len(match) == 0):
                    match=re.compile('<div class="video_main">\s*<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(newlink)
                    if(len(match)==0):

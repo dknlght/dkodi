@@ -402,6 +402,7 @@ def GetXMLChannel():
         xmlcontent=xml.dom.minidom.parseString(text)
         items=xmlcontent.getElementsByTagName('channel')
         addDir("Khmer Songs","",4,"")
+        addLink("[B][COLOR orange]Also available on Roku: add private channel[/B][/COLOR] [B][COLOR red]khmertvfree[/B][/COLOR]","",0,"")
         for channelitem in items:
                 vname=channelitem.getElementsByTagName('name')[0].childNodes[0].data.strip()
                 addDir(vname,"",2,"")

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon
   id="plugin.video.KhmerAvenue"
-  version="1.0.37"
+  version="1.0.38"
   name="KhmerAvenue"
   provider-name="Dknight">
   <requires>

@@ -13,7 +13,7 @@ from BeautifulSoup import BeautifulSoup
 from BeautifulSoup import BeautifulStoneSoup
 from BeautifulSoup import SoupStrainer
 
-strDomain ='http://www.video4khmer5.com/'
+strDomain ='http://www.video4khmer19.com'
 
 
 ADDON = xbmcaddon.Addon(id='plugin.video.video4Khmer')
@@ -25,30 +25,30 @@ PATH = "video4khmer"  #<---- PLUGIN NAME MINUS THE "plugin.video"
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.10" #<---- PLUGIN VERSION
 def HOME():
-        addDir('Search','http://www.video4khmers.com/',4,'http://www.video4khmers.com/templates/3column/images/header/logo.png')
-        addDir('Thai Lakorns','http://www.video4khmers.com/khmer-movie-category/thai-lakorn-drama-watch-online-free-catalogue-537-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/03/lbach-sneah-prea-kai-180x135.jpg')
-        addDir('Thai Movies','http://www.video4khmers.com/khmer-movie-category/thai-movie-watch-online-free-catalogue-525-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/03/lbach-sneah-prea-kai-180x135.jpg')
-        addDir('Korean Videos','http://www.video4khmers.com/khmer-movie-category/korean-drama-watch-online-free-catalogue-507-page-1.html',2,'http://www.khmeravenue.com/wp-content/uploads/2012/04/lietome.jpg')
-        #addDir('Korean Movies','http://www.video4khmers.com/browse-khmer-korean-movie-videos-1-date.html',2,'http://www.khmeravenue.com/wp-content/uploads/2012/04/lietome.jpg')
-        addDir('Chinese Drama','http://www.video4khmers.com/khmer-movie-category/chinese-series-drama-watch-online-free-catalogue-506-page-1.html',2,'http://www.khmeravenue.com/wp-content/uploads/2012/05/rosemartial.jpg')
-        addDir('Chinese Movies','http://www.video4khmers.com/khmer-movie-category/chinese-movie-watch-online-free-catalogue-505-page-1.html',2,'http://www.khmeravenue.com/wp-content/uploads/2012/05/rosemartial.jpg')
-        addDir('Khmer Videos','http://www.video4khmers.com/khmer-movie-category/khmer-drama-watch-online-free-catalogue-504-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Khmer Movies','http://www.video4khmers.com/khmer-movie-category/khmer-movies-watch-online-free-catalogue-503-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Khmer Comedy','http://www.video4khmers.com/khmer-movie-category/khmer-comedy-watch-online-free-catalogue-502-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('phleng production','http://www.video4khmers.com/khmer-movie-category/phleng-production-khmer-video-karaoke-catalogue-2845-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Hang Meas Karaoke','http://www.video4khmers.com/khmer-movie-category/hang-meas-khmer-video-karaoke-catalogue-509-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Sunday Khmer Karaoke','http://www.video4khmers.com/khmer-movie-category/sunday-khmer-video-karaoke-catalogue-510-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Town Production Karaoke','http://www.video4khmers.com/khmer-movie-category/town-production-khmer-video-karaoke-catalogue-514-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Big Man Khmer Karaoke','http://www.video4khmers.com/khmer-movie-category/big-man-khmer-video-karaoke-catalogue-512-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('M Production Karaoke','http://www.video4khmers.com/khmer-movie-category/m-production-khmer-video-karaoke-catalogue-511-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Rock Production Karaoke','http://www.video4khmers.com/khmer-movie-category/rock-production-khmer-video-karaoke-catalogue-513-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Spark Production Karaoke','http://www.video4khmers.com/khmer-movie-category/spark-production-khmer-video-karaoke-catalogue-516-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Chenla Brother Karaoke','http://www.video4khmers.com/khmer-movie-category/chenla-brother-khmer-video-karaoke-catalogue-518-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Khmer Radio','http://www.video4khmers.com/khmerradio.php?rname=rfi',9,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Khmer video clip','http://www.video4khmers.com/khmer-movie-category/khmer-clips-watch-online-free-catalogue-1366-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        #addDir('MISC','http://www.video4khmers.com/browse-this-and-that-accident-society-misc-videos-1-date.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        addDir('Khmer Tv show','http://www.video4khmers.com/khmer-movie-category/watch-cambodia-tv-shows-online-catalogue-1278-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
-        #addDir('Funney Videos','http://www.video4khmers.com/browse-funny-video-clips-videos-1-date.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')		
+        addDir('Search','/',4,'/templates/3column/images/header/logo.png')
+        addDir('Thai Lakorns',strDomain+'/khmer-movie-category/thai-lakorn-drama-watch-online-free-catalogue-537-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/03/lbach-sneah-prea-kai-180x135.jpg')
+        addDir('Thai Movies',strDomain+'/khmer-movie-category/thai-movie-watch-online-free-catalogue-525-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/03/lbach-sneah-prea-kai-180x135.jpg')
+        addDir('Korean Videos',strDomain+'/khmer-movie-category/korean-drama-watch-online-free-catalogue-507-page-1.html',2,'http://www.khmeravenue.com/wp-content/uploads/2012/04/lietome.jpg')
+        #addDir('Korean Movies','/browse-khmer-korean-movie-videos-1-date.html',2,'http://www.khmeravenue.com/wp-content/uploads/2012/04/lietome.jpg')
+        addDir('Chinese Drama',strDomain+'/khmer-movie-category/chinese-series-drama-watch-online-free-catalogue-506-page-1.html',2,'http://www.khmeravenue.com/wp-content/uploads/2012/05/rosemartial.jpg')
+        addDir('Chinese Movies',strDomain+'/khmer-movie-category/chinese-movie-watch-online-free-catalogue-505-page-1.html',2,'http://www.khmeravenue.com/wp-content/uploads/2012/05/rosemartial.jpg')
+        addDir('Khmer Videos',strDomain+'/khmer-movie-category/khmer-drama-watch-online-free-catalogue-504-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Khmer Movies',strDomain+'/khmer-movie-category/khmer-movies-watch-online-free-catalogue-503-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Khmer Comedy',strDomain+'/khmer-movie-category/khmer-comedy-watch-online-free-catalogue-502-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('phleng production',strDomain+'/khmer-movie-category/phleng-production-khmer-video-karaoke-catalogue-2845-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Hang Meas Karaoke',strDomain+'/khmer-movie-category/hang-meas-khmer-video-karaoke-catalogue-509-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Sunday Khmer Karaoke',strDomain+'/khmer-movie-category/sunday-khmer-video-karaoke-catalogue-510-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Town Production Karaoke',strDomain+'/khmer-movie-category/town-production-khmer-video-karaoke-catalogue-514-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Big Man Khmer Karaoke',strDomain+'/khmer-movie-category/big-man-khmer-video-karaoke-catalogue-512-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('M Production Karaoke',strDomain+'/khmer-movie-category/m-production-khmer-video-karaoke-catalogue-511-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Rock Production Karaoke',strDomain+'/khmer-movie-category/rock-production-khmer-video-karaoke-catalogue-513-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Spark Production Karaoke',strDomain+'/khmer-movie-category/spark-production-khmer-video-karaoke-catalogue-516-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Chenla Brother Karaoke',strDomain+'/khmer-movie-category/chenla-brother-khmer-video-karaoke-catalogue-518-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Khmer Radio',strDomain+'/khmerradio.php?rname=rfi',9,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Khmer video clip',strDomain+'/khmer-movie-category/khmer-clips-watch-online-free-catalogue-1366-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        #addDir('MISC','/browse-this-and-that-accident-society-misc-videos-1-date.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        addDir('Khmer Tv show','/khmer-movie-category/watch-cambodia-tv-shows-online-catalogue-1278-page-1.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')
+        #addDir('Funney Videos','/browse-funny-video-clips-videos-1-date.html',2,'http://moviekhmer.com/wp-content/uploads/2012/04/Khmer-Movie-Korng-Kam-Korng-Keo-180x135.jpg')		
 def INDEX(url):
     #try:
         link = GetContent(url)
@@ -71,13 +71,13 @@ def INDEX(url):
 				addDir("Page " + pagenum,pageurl,2,"")
     #except: pass
 def KhmerRadio():
-        addDir('RADIO FRANCE INTERNATIONALE','http://www.video4khmers.com/khmerradio.php?rname=rfi',10,'http://www.video4khmers.com/images/radio/small/rfi.gif')
-        addDir('RADIO FREE ASIA','http://www.video4khmers.com/khmerradio.php?rname=rfa',10,'http://www.video4khmers.com/images/radio/small/rfa.gif')
-        addDir('ABC RADIO AUSTRALIA','http://www.video4khmers.com/khmerradio.php?rname=abc',10,'http://www.video4khmers.com/images/radio/big/abc.png')
-        addDir('VOICE OF AMERICA','http://www.video4khmers.com/khmerradio.php?rname=voa',10,'http://www.video4khmers.com/images/radio/big/voa.png')
-        addDir('Latest New Khmer mp3','http://www.video4khmers.com/khmer-mp3/latest-new-khmer-mp3-1-1.html',10,'http://www.video4khmers.com/templates/3column/images/menu/new_mp3_play.png')
-        addDir('Khmer Oldies Male Singers mp3','http://www.video4khmers.com/khmer-mp3/khmer-oldies-male-singers-from-50s-60s-70s-mp3-2-1.html',10,'http://www.video4khmers.com/templates/3column/images/menu/old_mp3.png')
-        addDir('Khmer Oldies Male and FeMale Singers mp3','http://www.video4khmers.com/khmer-mp3/khmer-oldies-male-and-female-singers-from-50s-60s-70s-mp3-3-1.html',10,'http://www.video4khmers.com/templates/3column/images/menu/old_mp3_feat.png')
+        addDir('RADIO FRANCE INTERNATIONALE',strDomain+'/khmerradio.php?rname=rfi',10,'/images/radio/small/rfi.gif')
+        addDir('RADIO FREE ASIA',strDomain+'/khmerradio.php?rname=rfa',10,'/images/radio/small/rfa.gif')
+        addDir('ABC RADIO AUSTRALIA',strDomain+'/khmerradio.php?rname=abc',10,'/images/radio/big/abc.png')
+        addDir('VOICE OF AMERICA',strDomain+'/khmerradio.php?rname=voa',10,'/images/radio/big/voa.png')
+        addDir('Latest New Khmer mp3',strDomain+'/khmer-mp3/latest-new-khmer-mp3-1-1.html',10,'/templates/3column/images/menu/new_mp3_play.png')
+        addDir('Khmer Oldies Male Singers mp3',strDomain+'/khmer-mp3/khmer-oldies-male-singers-from-50s-60s-70s-mp3-2-1.html',10,'/templates/3column/images/menu/old_mp3.png')
+        addDir('Khmer Oldies Male and FeMale Singers mp3',strDomain+'/khmer-mp3/khmer-oldies-male-and-female-singers-from-50s-60s-70s-mp3-3-1.html',10,'/templates/3column/images/menu/old_mp3_feat.png')
 
 def RadioList(url):
         link = GetContent(url)
@@ -94,7 +94,7 @@ def SEARCH():
         #searchText = '01'
         if (keyb.isConfirmed()):
                 searchText = urllib.quote_plus(keyb.getText())
-        url = 'http://www.video4khmers.com/search.php?keywords='+ searchText +'&btn=Search'
+        url = '/search.php?keywords='+ searchText +'&btn=Search'
         INDEX(url)
         
 def SearchResults(url):
@@ -130,11 +130,11 @@ def Episodes_old(url,name):
                 vidseries=vidseries[0]
                 addLink(name,url,3,"")
         try:
-                lastvidseries = ParseXml("http://www.video4khmers.com/relatedclips.php?vid=" + vidseries)
+                lastvidseries = ParseXml("/relatedclips.php?vid=" + vidseries)
                 if(len(lastvidseries)):
-                        lastvidseries = ParseXml("http://www.video4khmers.com/relatedclips.php?vid=" + lastvidseries)
+                        lastvidseries = ParseXml("/relatedclips.php?vid=" + lastvidseries)
                         if(len(lastvidseries)):
-                                addDir("Next >>","http://www.video4khmers.com/relatedclips.php?vid=" + lastvidseries,7,"")
+                                addDir("Next >>","/relatedclips.php?vid=" + lastvidseries,7,"")
                 else:
                         raise Exception("Didn't fine listing")
         except:
@@ -617,14 +617,18 @@ def parseVideos(url,name):
         url = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(url)
         playercontent=soup.findAll('div', {"id" : "Playerholder"})
-        if(len(playercontent)>0):
-			viditem=playercontent[0].findAll('iframe')
+        viditem=playercontent[0].findAll('iframe')
+        if(len(viditem)>0):
+
 			newlink=viditem[0]["src"]
 			print newlink
 			loadVideos(newlink,name)
         else:
-			match=re.compile("'file':\s*'(.+?)'").findall(url)
-			loadVideos(match[0],name)
+			playercontent=soup.findAll('head')
+			match=re.compile('"src":\s*"(.+?)"').findall(str(playercontent[0]))
+			if(len(match)>0):
+			#loadVideos(match[0],name)
+				playVideo("google",match[0])
 		
 def loadVideos(newlink,name):
         try:
@@ -1051,7 +1055,7 @@ def addLink(name,url,mode,iconimage):
 def addNext(formvar,url,mode,iconimage):
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&formvar="+str(formvar)+"&name="+urllib.quote_plus('Next >')
         ok=True
-        liz=xbmcgui.ListItem('Next >', iconImage="http://www.video4khmers.com/templates/3column/images/header/logo.png", thumbnailImage=iconimage)
+        liz=xbmcgui.ListItem('Next >', iconImage="/templates/3column/images/header/logo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": 'Next >' } )
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
@@ -1062,7 +1066,7 @@ def addDir(name,url,mode,iconimage):
         except: pass
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
         ok=True
-        liz=xbmcgui.ListItem(name, iconImage="http://www.video4khmers.com/templates/3column/images/header/logo.png", thumbnailImage=iconimage)
+        liz=xbmcgui.ListItem(name, iconImage="/templates/3column/images/header/logo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
