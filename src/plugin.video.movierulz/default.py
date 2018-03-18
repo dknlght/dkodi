@@ -126,11 +126,12 @@ def ListMovies(url):
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        for divitem in soup.findAll('div', {"class" : "boxed film"}):
+        maincontent=soup.findAll('div', {"id" : "main"})
+        for divitem in maincontent[0].findAll('div', {"class" : "boxed film"}):
 			item=divitem.div
 			vlink=item.a['href']
 			vimg=item.a.img["src"]
-			vname=item.a.img["alt"]
+			vname=item.a["title"]
 			addDir(vname.encode("UTF-8","ignore"),vlink,8,vimg)
         navigation = soup.findAll('nav', {"id" : "posts-nav"})
         for item in navigation[0].findAll('a'):
@@ -143,9 +144,10 @@ def ListMirrors(url):
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        for item in soup.findAll('p'):
+        maincontent=soup.findAll('div', {"id" : "main"})
+        for item in maincontent[0].findAll('p'):
 			divcontent=str(item)
-			if(item.a != None and item.strong != None):
+			if(item.a != None and item.strong!=None):
 				#print item.a["href"].encode('utf-8', 'ignore')
 				addLink(item.strong.contents[0].encode('utf-8', 'ignore').replace("&#8211;","-"),item.a["href"].encode('utf-8', 'ignore'),3,"")
 			if(item.embed != None):
@@ -1463,16 +1465,16 @@ def ParseVideoLink(url):
 def loadVideos(url,name):
         #try:
            xbmc.executebuiltin("XBMC.Notification(Please Wait!,Loading selected video)")
-           if(url.find("fullmovie-hd.com") > -1 or url.find("movembed.com") > -1):
+           if(url.find("fullmovie-hd.com") > -1 or url.find("movembed.com") > -1 or url.find("escr.to") > -1):
 			   link = GetContent(url)
 			   try:
 				   link =link.encode("UTF-8")
 			   except: pass
 			   link = ''.join(link.splitlines()).replace('\t','')
-			   vidcontent=re.compile('<div class="content-area">(.+?)<footer').findall(link)[0]
-			   match=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(vidcontent.lower())
+			   #vidcontent=re.compile('<div class="content-area">(.+?)<footer').findall(link)[0]
+			   match=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower())
 			   if(len(match)==0):
-					match=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(vidcontent.lower())
+					match=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>').findall(link.lower())
 			   newlink=urllib.unquote_plus(match[0])
            else:
                newlink = url

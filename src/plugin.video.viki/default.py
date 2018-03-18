@@ -107,7 +107,7 @@ def GetContent2(url, useProxy=False):
     hostn= urlparse.urlparse(url).hostname
     conn = httplib.HTTPConnection(host=hostn,timeout=30)
     req = url.replace(url.split(hostn)[0]+hostn,'')
-    headers = {"User-Agent":"Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)"} 
+    headers = {"User-Agent":"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0"} 
     try:
         conn.request('GET',req,headers)
     except:
@@ -139,7 +139,7 @@ def GetContent(url, useProxy=False):
         if(response!=None):
            connection.close()
         req = urllib2.Request(url)
-        req.add_unredirected_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)')
+        req.add_unredirected_header('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0')
         response = urllib2.urlopen(req)
         strresult=response.read()
         response.close()
@@ -338,7 +338,7 @@ def UpdatedVideos(url,name):
         ctr=0
         listcontent=soup.findAll('div', {"class" : "thumbnail col-inline s6 m6 l3 js-follow-status js-express-player"})
         if(len(listcontent) >0):
-			
+
 			if(enableTrans):
 				for divcotent in listcontent:
 					if(divcotent.a.img!=None):
@@ -350,9 +350,10 @@ def UpdatedVideos(url,name):
 			for divcotent in listcontent:
 				vname=""
 				vimg=""
-				if(divcotent.a.img!=None):
-					vimg=divcotent.a.img["src"]
-					vname=divcotent.a.img["alt"]
+				if(divcotent("img")!=None):
+					img=divcotent("img")[0]
+					vimg=img["src"]
+					vname=img["alt"]
 					if(len(namelist)>0):
 						vname=namelist[ctr]
 						vname=vname
@@ -710,20 +711,17 @@ def expires():
     return int(time.time())
 
 def sign_request(vidid,vtype):
-    from hashlib import sha1
-    import hmac
-    import binascii
+		from hashlib import sha1
+		import hmac
+		import binascii
 
-    # If you dont have a token yet, the key should be only "CONSUMER_SECRET&"
-    key = "-$iJ}@p7!G@SyU/je1bEyWg}upLu-6V6-Lg9VD(]siH,r.,m-r|ulZ,U4LC/SeR)"
-    ts=str(expires())
-    # The Base String as specified here: 
-    rawtxt = "/v4/videos/"+vidid+vtype+"?app=65535a&t="+ts+"&site=www.viki.com" # as specified by oauth
+		timestamp = str(int(time.time()))
+		key = 'MM_d*yP@`&1@]@!AVrXf_o-HVEnoTnm$O-ti4[G~$JDI/Dc-&piU&z&5.;:}95=Iad'
+		rawtxt = '/v4/videos/'+vidid+vtype+'?app=100005a&t='+timestamp+'&site=www.viki.com'
+		hashed = hmac.new(key, rawtxt, sha1)
+		fullurl = 'https://api.viki.io' + rawtxt+'&sig='+binascii.hexlify(hashed.digest())
+		return fullurl
 
-    hashed = hmac.new(key, rawtxt, sha1)
-    fullurl = "https://api.viki.io" + rawtxt+"&sig="+binascii.hexlify(hashed.digest())
-    # The signature
-    return fullurl
 	
 def getVidQuality(vidid,name,filename,checkvideo):
   GA("Playing",name)
@@ -731,6 +729,7 @@ def getVidQuality(vidid,name,filename,checkvideo):
   useProxy=(enableProxy=="true")
   commenturl="http://api.viki.io/v4/videos/"+vidid+"/timed_comments/en.json?app=65535a&t=1470614411&site=www.viki.com"
   pardata=None
+  data=None
   try:
 	os.remove(filename)
 	os.remove(filename.replace(".srt",".ass"))
@@ -751,9 +750,10 @@ def getVidQuality(vidid,name,filename,checkvideo):
           vidurl = sign_request(vidid,"/streams.json")
   
   print vidurl
-  data = json.loads(GetContent(vidurl))
-  print data
-  if(len(data) == 0):
+  try:
+	data = json.loads(GetContent(vidurl))
+  except: pass
+  if(data!=None and len(data) == 0):
           if(useProxy):
                 vidurl=proxyurl.replace("*url*",urllib.quote_plus(sign_request(vidid+"v","/streams")))
           else:
@@ -780,7 +780,7 @@ def getVidQuality(vidid,name,filename,checkvideo):
 	srt2ass.main(filename,json.loads(GetContent(commenturl)))
   #movies = data["movies"]["url"]["api"]
   show720p=(name.find("(HD)") > -1)
-  if data.has_key("vcode")!=True:
+  if data!=None and data.has_key("vcode")!=True:
 	  for i, item in enumerate(data):
 			  strQual=str(item)
 			  #print data
@@ -809,6 +809,7 @@ def getVidQuality(vidid,name,filename,checkvideo):
   else:
 		vidata = json.loads(GetContent(sign_request(vidid,".json")))
 		posterurl= vidata["images"]["poster"]["url"]
+		print posterurl
 		idpart=re.compile(vidid+'_(.+?)_').findall(posterurl)
 		if(len(idpart)>0):
 			newvlink="http://content.viki.com/%s/%s_high_720p_%s.mp4" % (vidid,vidid,idpart[0])
@@ -835,7 +836,7 @@ def playVideo(suburl,videoId):
         win.setProperty('1ch.playing.episode', str(4))
         xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(videoId)
-        for i in range(100):
+        for i in range(400):
 			if(xbmcPlayer.isPlaying()):
 				print "Subtitle is delaying:"+ str(i*50)+" ms"
 				break

@@ -570,15 +570,12 @@ rest=None)
 	return newcookie
 	
 def GetContent2(url):
-    conn = httplib.HTTPConnection(host="pinoy-ako.re",timeout=30)
-    req = url
-    try:
-        conn.request('GET',req)
-        content = conn.getresponse().read()
-    except:
-        print 'echec de connexion'
-    conn.close()
-    return content
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.72 Safari/537.3')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    return link 
 	
 
 def GetContent(url,html='',strReferer="http://www.lambingan.ru/"):
@@ -1005,6 +1002,11 @@ def loadVideos(url,name):
                 	match=re.compile('www.dailymotion.com/embed/video/(.+?)\?').findall(newlink.replace("$","?"))
                 print match
                 vidlink=getDailyMotionUrl(match[0])
+           elif (newlink.find("libangan") > -1):
+				pcontent=GetContent(newlink)
+				pcontent=''.join(pcontent.splitlines()).replace('\'','"')
+				urlcode = re.compile('<a href="(.+?)" rel=').findall(pcontent)[0]
+				vidlink=loadVideos(urlcode,name)
            elif (newlink.find("cloudy") > -1):
                 pcontent=GetContent(newlink)
                 pcontent=''.join(pcontent.splitlines()).replace('\'','"')
@@ -1138,21 +1140,22 @@ def loadVideos(url,name):
         #except: pass
 		
 def getDailyMotionUrl(id):
-    content = GetContent("http://www.dailymotion.com/embed/video/"+id)
-    if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
-        xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
-        return ""
-    
-    else:
-        get_json_code = re.compile(r'var config\s=\s(.+?);\s*window.playerV5').findall(''.join(content.splitlines()))[0]
-        #print len(get_json_code)
-        cc= json.loads(get_json_code)['metadata']['stream_chromecast_url']  #['380'][0]['url']
-        vidqal = GetContent(cc)
-        vidlist= re.compile('http(.+?).m3u8').findall(''.join(vidqal.splitlines()))
-        vidlink=""
-        for item in vidlist:
-			vidlink='http%s.m3u8' % item
-        return vidlink
+		vlink = 'https://www.dailymotion.com/embed/video/' + str(id)
+		content = GetContent2(vlink)
+		if content.find('"statusCode":410') > 0 or content.find('"statusCode":403') > 0:
+			xbmc.executebuiltin('XBMC.Notification(Info:,'+translation(30022)+' (DailyMotion)!,5000)')
+			return ""
+		
+		else:
+			get_json_code = re.compile(r'var config\s=\s(.+?);\s*window.playerV5').findall(''.join(content.splitlines()))[0]
+			#print len(get_json_code)
+			cc= json.loads(get_json_code)['metadata']['stream_chromecast_url']  #['380'][0]['url']
+			vidqal = GetContent2(cc)
+			vidlist= re.compile('http(.+?).m3u8').findall(''.join(vidqal.splitlines()))
+			vidlink=""
+			for item in vidlist:
+				vidlink='http%s.m3u8' % item
+			return vidlink
 			
 def extractFlashVars(data):
     found=False

@@ -637,7 +637,7 @@
 
 <addon
   id="plugin.video.movierulz"
-  version="1.0.9"
+  version="1.0.10"
   name="movierulz"
   provider-name="Dknight">
   <requires>
@@ -766,7 +766,7 @@
 
 <addon
   id="plugin.video.pinoy_ako"
-  version="1.0.39"
+  version="1.0.40"
   name="pinoy_ako"
   provider-name="Dknight">
   <requires>
@@ -920,7 +920,7 @@
 
 <addon
   id="plugin.video.viki"
-  version="1.1.44"
+  version="1.1.45"
   name="Viki"
   provider-name="Dknight">
   <requires>

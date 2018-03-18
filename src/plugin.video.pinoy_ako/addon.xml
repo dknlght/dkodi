@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon
   id="plugin.video.pinoy_ako"
-  version="1.0.39"
+  version="1.0.40"
   name="pinoy_ako"
   provider-name="Dknight">
   <requires>
