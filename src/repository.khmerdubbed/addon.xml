@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.khmerdubbed" name="Khmer Dubbed Repo" version="2.02" provider-name="goupon">
+	<extension point="xbmc.addon.repository" name="Khmer Dubbed Repo">
+		<info compressed="false">http://raw.githubusercontent.com/goupon/file/master/addons.xml</info>
+		<checksum>http://raw.githubusercontent.com/goupon/file/master/addons.xml.md5</checksum>
+		<datadir zip="true">http://raw.githubusercontent.com/goupon/file/master/</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>The best Khmer Dubbed addons by Dknlght and Price.  Updated by goupon</summary>
+		<description>https://forum.kodi.tv/showthread.php?tid=130566</description>
+		<platform>all</platform>
+	</extension>
+</addon>
