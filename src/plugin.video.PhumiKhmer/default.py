@@ -37,7 +37,7 @@ def GetMenu(url):
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        listcontent=soup.findAll('div', {"class" : "td-mobile-content"})
+        listcontent=soup.findAll('div', {"class" : "menu-main-one-container"})
         if(len(listcontent)>0):
 			for item in listcontent[0].findAll('li'):
 				if(item.a!=None and item.a.has_key("href")):
@@ -46,6 +46,7 @@ def GetMenu(url):
 						vname="---"+str(item.a.contents[0]).strip()
 					else:
 						vname=str(item.a.contents[0]).strip()
+					link=link.replace("https:","http:")
 					if(vname.strip().find("</i>") == -1 and vname.strip().find("Home") == -1 and link.find(strdomain) !=-1):
 						addDir(vname,link,2,"")
 				
