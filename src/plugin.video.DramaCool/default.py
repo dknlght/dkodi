@@ -89,15 +89,15 @@ def Index_co(url):
 				#print item
 				vname=item.a["title"]
 				vurl=item.a["href"]
-				print "vurl:"+vurl
 				vimg=item.a.img["data-original"]
 				addDir(vname.encode('utf-8', 'ignore'),vurl,10,vimg)
 			pagingList=menucontent[0].findAll('div', {"class" : "nav-links"})
 			if(len(pagingList) >0):
 				for item in pagingList[0].findAll('a',{"class" : "page-numbers"}):
-					#print item
 					vname="Page "+ item.contents[0]
-					vurl=url+item["href"]
+					vurl=item["href"]
+					if(vurl.find(strdomain2)==-1):
+						vurl=strdomain2+item["href"]
 					addDir(vname.encode('utf-8', 'ignore'),vurl,9,"")
 					
 				
