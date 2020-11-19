@@ -1,95 +1,81 @@
-'''
-playwire urlresolver plugin
-Copyright (C) 2013 icharania
+"""
+    OVERALL CREDIT TO:
+        t0mm0, Eldorado, VOINAGE, BSTRDMKR, tknorris, smokdpi, TheHighway
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+    Plugin for UrlResolver
+    Copyright (C) 2011 t0mm0
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-'''
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-import os
-import xbmc
-from t0mm0.common.net import Net
-from urlresolver.plugnplay.interfaces import UrlResolver
-from urlresolver.plugnplay.interfaces import PluginSettings
-from urlresolver.plugnplay import Plugin
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import re
-import urllib2, urllib
-from urlresolver import common
-import xml.etree.ElementTree as ET
+import json
+from urlresolver.plugins.lib import helpers
+from urlresolver.resolver import UrlResolver, ResolverError
 
-logo=os.path.join(common.addon_path, 'resources', 'images', 'redx.png')
 
-class PlaywireResolver(Plugin, UrlResolver, PluginSettings):
-    implements = [UrlResolver, PluginSettings]
+class PlayWireResolver(UrlResolver):
     name = "playwire"
-    domains = [ "playwire.com" ]
-
-    def __init__(self):
-        p = self.get_setting('priority') or 100
-        self.priority = int(p)
-        self.net = Net()
+    domains = ["playwire.com"]
+    pattern = r'(?://|\.)(config\.playwire\.com)/(.+?)/(?:zeus|player)\.json'
+    pattern2 = r'(?://|\.)(cdn\.playwire\.com.+?\d+)/(?:config|embed)/(\d+)'
 
     def get_media_url(self, host, media_id):
+        web_url = self.get_url(host, media_id)
+        response = self.net.http_GET(web_url)
+        html = response.content
+
         try:
-            web_url = self.get_url(host, media_id)
-            link = self.net.http_GET(web_url).content
+            if 'config.playwire.com' in host:
+                response = json.loads(html)['content']['media']['f4m']
+            elif 'v2' not in host:
+                response = re.findall(r'<src>(.+?)</src>', html)[0]
+            else:
+                response = json.loads(html)['src']
+                return response
 
-            if web_url.endswith('xml'): # xml source
-                root = ET.fromstring(link)
-                stream = root.find('src')
-                if stream is not None:
-                    return stream.text
-                else:
-                    accessdenied = root.find('Message')
-                    if accessdenied is not None:
-                        err_title = 'Access Denied'
-                        err_message = 'You do not have permission to view this content'
-                        common.addon.log_error(self.name + ' - fetching %s - %s - %s ' % (web_url,err_title,err_message))
-                        xbmc.executebuiltin('XBMC.Notification([B][COLOR white]'+__name__+'[/COLOR][/B] - '+err_title+',[COLOR red]'+err_message+'[/COLOR],8000,'+logo+')')
-                        return self.unresolvable(1, err_message)
+            response = self.net.http_GET(response).content
+            baseURL = re.findall(r'<baseURL>\s*(.+)\s*</baseURL>', response)[0]
+            media = re.findall(r'<media\s*url="(\S+mp4)".+?height="(\d+)"', response)
+            media.sort(key=lambda x: x[1], reverse=True)
+            sources = [(i[1], '{0}/{1}'.format(baseURL, i[0])) for i in media]
+            source = helpers.pick_source(sources)
+            source = source.encode('utf-8') if helpers.PY2 else source
+            return source
 
-                    return self.unresolvable(0, 'No playable video found.')
-            else: # json source
-                r = re.search('"src":"(.+?)"',link) 
-                if r:
-                    return r.group(1)
-                else:
-                    return self.unresolvable(0, 'No playable video found.')
-        except urllib2.URLError, e:
-            return self.unresolvable(3, str(e))
-        except Exception, e:
-            return self.unresolvable(0, str(e))
+        except:
+            raise ResolverError('Unable to resolve url.')
 
+        raise ResolverError('No playable video found.')
 
     def get_url(self, host, media_id):
-        if not 'v2' in host:
+        if 'config.playwire.com' in host:
+            return 'http://%s/%s/zeus.json' % (host, media_id)
+        elif 'v2' not in host:
             return 'http://%s/embed/%s.xml' % (host, media_id)
         else:
             return 'http://%s/config/%s.json' % (host, media_id)
 
     def get_host_and_id(self, url):
-        r = re.search('//(.+?/\d+)/embed/(\d+)\.html', url)
-        if not r:
-            r = re.search('//(.+?/\d+)/config/(\d+)\.json', url)
-        return r.groups()
+        if 'config.playwire.com' in url:
+            r = re.search(self.pattern, url)
+        else:
+            r = re.search(self.pattern2, url)
+        if r:
+            return r.groups()
+        else:
+            return False
 
     def valid_url(self, url, host):
-        if self.get_setting('enabled') == 'false': return False
-        return re.match('http://(www\.)?cdn.playwire.com/\d+/embed/\d+\.html', url) or \
-               re.match('http://(www\.)?cdn.playwire.com/v2/\d+/config/\d+\.json', url) or \
-               self.name in host
-
-    #PluginSettings methods
-    def get_settings_xml(self):
-        xml = PluginSettings.get_settings_xml(self)
-        return xml
+        return re.search(self.pattern, url) or re.search(self.pattern2, url) or self.name in host

@@ -1,5 +1,5 @@
 """
-    urlresolver XBMC Addon
+    Plugin for URLResolver
     Copyright (C) 2011 t0mm0
 
     This program is free software: you can redistribute it and/or modify
@@ -16,64 +16,45 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from t0mm0.common.net import Net
-from urlresolver.plugnplay.interfaces import UrlResolver
-from urlresolver.plugnplay.interfaces import PluginSettings
-from urlresolver.plugnplay import Plugin
-import urllib,urllib2
+import re
+import base64
+from six.moves import urllib_parse
 from urlresolver import common
-import re,xbmc
+from urlresolver.plugins.lib import helpers
+from urlresolver.resolver import UrlResolver, ResolverError
 
-class FilenukeResolver(Plugin, UrlResolver, PluginSettings):
-    implements = [UrlResolver, PluginSettings]
-    name = "trollvid.net"
-    domains = [ "trollvid.net" ]
-    
-    def __init__(self):
-        p = self.get_setting('priority') or 100
-        self.priority = int(p)
-        self.net = Net()
-        self.pattern = 'http://((?:sv\d*.)?trollvid.net)/embed.php.file=([0-9a-zA-Z]+)' # http://sv3.trollvid.net/embed.php?file=([0-9a-zA-Z]+)&
-    
-    def get_url(self, host, media_id):
-            return 'http://sv3.trollvid.net/embed.php?file=%s&w=800&h=600&bg=' % (media_id)
-    
-    def get_host_and_id(self, url):
-        r = re.search(self.pattern, url)
-        if r: return r.groups()
-        else: return False
-    
-    def valid_url(self, url, host):
-        if self.get_setting('enabled') == 'false': return False
-        return re.match(self.pattern, url) or self.name in host
-    
+
+class TrollVidResolver(UrlResolver):
+    name = 'trollvid.net'
+    domains = ['trollvid.net', 'trollvid.io', 'mp4edge.com']
+    pattern = r'(?://|\.)(trollvid(?:\.net|\.io)|mp4edge\.com)/(?:embed\.php.file=|embed/|stream/)([0-9a-zA-Z]+)'
+
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
-        post_url = web_url
-        hostname = self.name
-        common.addon.log(media_id)
-        common.addon.log(web_url)
+        headers = {'User-Agent': common.FF_USER_AGENT}
+        html = self.net.http_GET(web_url, headers=headers).content
+        stream_url = None
         try:
-            resp = self.net.http_GET(web_url)
-            html = resp.content
-        except urllib2.URLError, e:
-            common.addon.log_error(hostname+': got http error %d fetching 1st url %s' % (e.code, web_url))
-            return self.unresolvable(code=3, msg='Exception: %s' % e) #return False
-        
-        #try:
-        #	data = {}; r = re.findall(r'type="hidden" name="(.+?)"\s* value="?(.+?)">', html); data['usr_login']=''
-        #	for name, value in r: data[name] = value
-        #	data['imhuman']='Proceed to video'; data['btn_download']='Proceed to video'
-        #	xbmc.sleep(2000)
-        #	html = self.net.http_POST(post_url, data).content
-        #except urllib2.URLError, e:
-        #    common.addon.log_error(hostname+': got http error %d fetching 2nd url %s' % (e.code, web_url))
-        #    return self.unresolvable(code=3, msg='Exception: %s' % e) #return False
-        
-        r = re.search('clip\s*:\s*\n*\s*{\s*\n*\s*\n*\s*\n*\s*url\s*:\s*"(http.+?)"', html)
-        if r:
-            stream_url = urllib.unquote_plus(r.group(1))
-        else:
-            common.addon.log_error(hostname+': stream url not found')
-            return self.unresolvable(code=0, msg='no file located') #return False
-        return stream_url
+            stream_url = re.search(r'url\s*:\s*"(http.+?)"', html).group(1)
+        except:
+            pass
+
+        if not stream_url:
+            try:
+                stream_url = re.search(r'unescape\(\'(http.+?)\'', html).group(1)
+            except:
+                pass
+
+        if not stream_url:
+            try:
+                stream_url = base64.b64decode(re.search(r'atob\(\'(.+?)\'', html).group(1))
+            except:
+                pass
+
+        if not stream_url:
+            raise ResolverError('File not found')
+
+        return urllib_parse.unquote_plus(stream_url) + helpers.append_headers(headers)
+
+    def get_url(self, host, media_id):
+        return 'http://trollvid.net/embed/%s' % media_id

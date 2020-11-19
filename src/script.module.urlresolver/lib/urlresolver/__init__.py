@@ -1,115 +1,163 @@
-#    urlresolver XBMC Addon
-#    Copyright (C) 2011 t0mm0
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+    URLResolver Addon for Kodi
+    Copyright (C) 2016 t0mm0, tknorris
 
-'''
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 This module provides the main API for accessing the urlresolver features.
 
-For most cases you probably want to use :func:`urlresolver.resolve` or 
+For most cases you probably want to use :func:`urlresolver.resolve` or
 :func:`urlresolver.choose_source`.
 
 .. seealso::
-    
+
     :class:`HostedMediaFile`
 
 
-'''
-
-import os,xml.dom.minidom
-import common
-import plugnplay
-from types import HostedMediaFile
-from plugnplay.interfaces import UrlResolver,UrlWrapper
-from plugnplay.interfaces import PluginSettings
-from plugnplay.interfaces import SiteAuth
+"""
+import re
+from six.moves import urllib_parse
+import six
+import sys
+import xbmcvfs
 import xbmcgui
+from urlresolver import common
+from urlresolver.hmf import HostedMediaFile
+from urlresolver.resolver import UrlResolver
+from urlresolver.plugins.__generic_resolver__ import GenericResolver
+from urlresolver.plugins import *  # NOQA
 
-#load all available plugins
-common.addon.log('Initializing URLResolver version: %s' % common.addon_version)
-plugnplay.set_plugin_dirs(common.plugins_path)
-
+common.logger.log_debug('Initializing URLResolver version: %s' % common.addon_version)
 MAX_SETTINGS = 75
 
-def lazy_plugin_scan():
-    if not UrlResolver.implementors():
-        plugnplay.scan_plugins(UrlWrapper)
+PLUGIN_DIRS = []
+host_cache = {}
+
+
+def add_plugin_dirs(dirs):
+    global PLUGIN_DIRS
+    if isinstance(dirs, six.string_types):
+        PLUGIN_DIRS.append(dirs)
+    else:
+        PLUGIN_DIRS += dirs
+
+
+def load_external_plugins():
+    for d in PLUGIN_DIRS:
+        common.logger.log_debug('Adding plugin path: %s' % d)
+        sys.path.insert(0, d)
+        for filename in xbmcvfs.listdir(d)[1]:
+            if not filename.startswith('__') and filename.endswith('.py'):
+                mod_name = filename[:-3]
+                imp = __import__(mod_name, globals(), locals())
+                sys.modules[mod_name] = imp
+                common.logger.log_debug('Loaded %s as %s from %s' % (imp, mod_name, filename))
+
+
+def relevant_resolvers(domain=None, include_universal=None, include_popups=None, include_external=False, include_disabled=False, order_matters=False):
+    if include_external:
+        load_external_plugins()
+
+    if isinstance(domain, six.string_types):
+        domain = domain.lower()
+
+    if include_universal is None:
+        include_universal = common.get_setting('allow_universal') == "true"
+
+    if include_popups is None:
+        include_popups = common.get_setting('allow_popups') == "true"
+    if include_popups is False:
+        common.logger.log_debug('Resolvers that require popups have been disabled')
+
+    classes = UrlResolver.__class__.__subclasses__(UrlResolver) + UrlResolver.__class__.__subclasses__(GenericResolver)
+    relevant = []
+    for resolver in classes:
+        if include_disabled or resolver._is_enabled():
+            if (include_universal or not resolver.isUniversal()) and (include_popups or not resolver.isPopup()):
+                if domain is None or ((domain and any(domain in res_domain.lower() for res_domain in resolver.domains)) or '*' in resolver.domains):
+                    relevant.append(resolver)
+
+    if order_matters:
+        relevant.sort(key=lambda x: x._get_priority())
+
+    common.logger.log_debug('Relevant Resolvers: %s' % relevant)
+    return relevant
+
 
 def resolve(web_url):
-    '''
+    """
     Resolve a web page to a media stream.
-    
-    It is usually as simple as::
-        
-        import urlresolver
-        media_url = urlresolver.resolve(web_url) 
-        
-    where ``web_url`` is the address of a web page which is associated with a 
-    media file and ``media_url`` is the direct URL to the media. 
 
-    Behind the scenes, :mod:`urlresolver` will check each of the available 
-    resolver plugins to see if they accept the ``web_url`` in priority order 
-    (lowest priotity number first). When it finds a plugin willing to resolve 
-    the URL, it passes the ``web_url`` to the plugin and returns the direct URL 
+    It is usually as simple as::
+
+        import urlresolver
+        media_url = urlresolver.resolve(web_url)
+
+    where ``web_url`` is the address of a web page which is associated with a
+    media file and ``media_url`` is the direct URL to the media.
+
+    Behind the scenes, :mod:`urlresolver` will check each of the available
+    resolver plugins to see if they accept the ``web_url`` in priority order
+    (lowest priotity number first). When it finds a plugin willing to resolve
+    the URL, it passes the ``web_url`` to the plugin and returns the direct URL
     to the media file, or ``False`` if it was not possible to resolve.
-    
+
     .. seealso::
-        
+
         :class:`HostedMediaFile`
 
     Args:
         web_url (str): A URL to a web page associated with a piece of media
         content.
-        
+
     Returns:
-        If the ``web_url`` could be resolved, a string containing the direct 
-        URL to the media file, if not, returns ``False``.    
-    '''
-    lazy_plugin_scan()
+        If the ``web_url`` could be resolved, a string containing the direct
+        URL to the media file, if not, returns ``False``.
+    """
     source = HostedMediaFile(url=web_url)
     return source.resolve()
 
+
 def filter_source_list(source_list):
-    '''
-    Takes a list of :class:`HostedMediaFile`s representing web pages that are 
-    thought to be associated with media content. If no resolver plugins exist 
-    to resolve a :class:`HostedMediaFile` to a link to a media file it is 
+    """
+    Takes a list of :class:`HostedMediaFile`s representing web pages that are
+    thought to be associated with media content. If no resolver plugins exist
+    to resolve a :class:`HostedMediaFile` to a link to a media file it is
     removed from the list.
-    
+
     Args:
-        urls (list of :class:`HostedMediaFile`): A list of 
-        :class:`HostedMediaFiles` representing web pages that are thought to be 
+        source_list (list of :class:`HostedMediaFile`): A list of
+        :class:`HostedMediaFiles` representing web pages that are thought to be
         associated with media content.
-        
+
     Returns:
-        The same list of :class:`HostedMediaFile` but with any that can't be 
+        The same list of :class:`HostedMediaFile` but with any that can't be
         resolved by a resolver plugin removed.
-    
-    '''
-    lazy_plugin_scan()
+
+    """
     return [source for source in source_list if source]
 
 
 def choose_source(sources):
-    '''
-    Given a list of :class:`HostedMediaFile` representing web pages that are 
-    thought to be associated with media content this function checks which are 
-    playable and if there are more than one it pops up a dialog box displaying 
+    """
+    Given a list of :class:`HostedMediaFile` representing web pages that are
+    thought to be associated with media content this function checks which are
+    playable and if there are more than one it pops up a dialog box displaying
     the choices.
-    
+
     Example::
-    
+
         sources = [HostedMediaFile(url='http://youtu.be/VIDEOID', title='Youtube [verified] (20 views)'),
                    HostedMediaFile(url='http://putlocker.com/file/VIDEOID', title='Putlocker (3 views)')]
         source = urlresolver.choose_source(sources)
@@ -120,111 +168,162 @@ def choose_source(sources):
             addon.resolve_url(False)
 
     Args:
-        sources (list): A list of :class:`HostedMediaFile` representing web 
+        sources (list): A list of :class:`HostedMediaFile` representing web
         pages that are thought to be associated with media content.
-        
+
     Returns:
-        The chosen :class:`HostedMediaFile` or ``False`` if the dialog is 
-        cancelled or none of the :class:`HostedMediaFile` are resolvable.    
-        
-    '''
-    lazy_plugin_scan()
-    #get rid of sources with no resolver plugin
+        The chosen :class:`HostedMediaFile` or ``False`` if the dialog is
+        cancelled or none of the :class:`HostedMediaFile` are resolvable.
+
+    """
     sources = filter_source_list(sources)
-    
-    #show dialog to choose source
-    if len(sources) > 1:
+    if not sources:
+        common.logger.log_warning('no playable streams found')
+        return False
+    elif len(sources) == 1:
+        return sources[0]
+    else:
         dialog = xbmcgui.Dialog()
-        titles = []
-        for source in sources:
-            titles.append(source.title)
-        index = dialog.select('Choose your stream', titles)
+        index = dialog.select('Choose your stream', [source.title for source in sources])
         if index > -1:
             return sources[index]
         else:
             return False
-    
-    #only one playable source so just play it
-    elif len(sources) == 1:
-        return sources[0]    
-    
-    #no playable sources available
-    else:
-        common.addon.log_error('no playable streams found')
-        return False
-    
-        
+
+
+def scrape_supported(html, regex=None, host_only=False):
+    """
+    returns a list of links scraped from the html that are supported by urlresolver
+
+    args:
+        html: the html to be scraped
+        regex: an optional argument to override the default regex which is: href *= *["']([^'"]+
+        host_only: an optional argument if true to do only host validation vs full url validation (default False)
+
+    Returns:
+        a list of links scraped from the html that passed validation
+
+    """
+    if regex is None:
+        regex = r'''href\s*=\s*['"]([^'"]+)'''
+    links = []
+    for match in re.finditer(regex, html):
+        stream_url = match.group(1)
+        host = urllib_parse.urlparse(stream_url).hostname
+        if host_only:
+            if host is None:
+                continue
+
+            if host in host_cache:
+                if host_cache[host]:
+                    links.append(stream_url)
+                continue
+            else:
+                hmf = HostedMediaFile(host=host, media_id='dummy')  # use dummy media_id to allow host validation
+        else:
+            hmf = HostedMediaFile(url=stream_url)
+
+        is_valid = hmf.valid_url()
+        host_cache[host] = is_valid
+        if is_valid:
+            links.append(stream_url)
+    return links
+
+
 def display_settings():
-    '''
+    """
     Opens the settings dialog for :mod:`urlresolver` and its plugins.
-    
-    This can be called from your addon to provide access to global 
-    :mod:`urlresolver` settings. Each resolver plugin is also capable of 
+
+    This can be called from your addon to provide access to global
+    :mod:`urlresolver` settings. Each resolver plugin is also capable of
     exposing settings.
-    
+
     .. note::
-    
-        All changes made to these setting by the user are global and will 
+
+        All changes made to these setting by the user are global and will
         affect any addon that uses :mod:`urlresolver` and its plugins.
-    '''
-    lazy_plugin_scan()
-    plugnplay.load_plugins()
+    """
     _update_settings_xml()
-    common.addon.show_settings()
+    common.open_settings()
+
 
 def _update_settings_xml():
-    '''
+    """
     This function writes a new ``resources/settings.xml`` file which contains
     all settings for this addon and its plugins.
-    '''
-    lazy_plugin_scan()
-    plugnplay.load_plugins()
-    
+    """
     try:
-        os.makedirs(os.path.dirname(common.settings_file))
+        xbmcvfs.mkdirs(common.settings_path)
     except OSError:
         pass
 
-    xml_text = "<settings>"
-    for imp in sorted(PluginSettings.implementors(),key=lambda x:x.name.upper()):
-        xml_text += '<setting label="' + imp.name + '" type="lsep"/>'
-        xml_text += imp.get_settings_xml()
-    xml_text += "</settings>"
-    
+    new_xml = [
+        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
+        '<settings>',
+        '\t<category label="URLResolver">',
+        '\t\t<setting default="true" id="allow_universal" label="%s" type="bool"/>' % (common.i18n('enable_universal')),
+        '\t\t<setting default="true" id="allow_popups" label="%s" type="bool"/>' % (common.i18n('enable_popups')),
+        '\t\t<setting default="true" id="auto_pick" label="%s" type="bool"/>' % (common.i18n('auto_pick')),
+        '\t\t<setting default="true" id="use_cache" label="%s" type="bool"/>' % (common.i18n('use_function_cache')),
+        '\t\t<setting id="reset_cache" type="action" label="%s" action="RunPlugin(plugin://script.module.urlresolver/?mode=reset_cache)"/>' % (common.i18n('reset_function_cache')),
+        '\t\t<setting id="personal_nid" label="Your NID" type="text" visible="false" default=""/>',
+        '\t\t<setting id="last_ua_create" label="last_ua_create" type="number" visible="false" default="0"/>',
+        '\t\t<setting id="current_ua" label="current_ua" type="text" visible="false" default=""/>',
+        '\t\t<setting id="addon_debug" label="addon_debug" type="bool" visible="false" default="false"/>',
+        '\t</category>',
+        '\t<category label="%s">' % (common.i18n('universal_resolvers'))]
+
+    resolvers = relevant_resolvers(include_universal=True, include_disabled=True)
+    resolvers = sorted(resolvers, key=lambda x: x.name.upper())
+    for resolver in resolvers:
+        if resolver.isUniversal():
+            new_xml.append('\t\t<setting label="%s" type="lsep"/>' % resolver.name)
+            new_xml += ['\t\t' + line for line in resolver.get_settings_xml()]
+    new_xml.append('\t</category>')
+    new_xml.append('\t<category label="%s 1">' % (common.i18n('resolvers')))
+
+    i = 0
+    cat_count = 2
+    for resolver in resolvers:
+        if not resolver.isUniversal():
+            if i > MAX_SETTINGS:
+                new_xml.append('\t</category>')
+                new_xml.append('\t<category label="%s %s">' % (common.i18n('resolvers'), cat_count))
+                cat_count += 1
+                i = 0
+            new_xml.append('\t\t<setting label="%s" type="lsep"/>' % resolver.name)
+            res_xml = resolver.get_settings_xml()
+            new_xml += ['\t\t' + line for line in res_xml]
+            i += len(res_xml) + 1
+
+    new_xml.append('\t</category>')
+    new_xml.append('</settings>')
+
     try:
-        with open(common.settings_file, 'w') as f:
-            f.write('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-            f.write("<settings>\n")
-            f.write("<category label=\"URLResolver\">\n")
-            f.write("\t<setting default=\"true\" ")
-            f.write("id=\"allow_universal\" ")
-            f.write("label=\"Enable Universal Resolvers\" type=\"bool\"/>\n")
-            f.write("\t<setting default=\"0.0.0\" ")
-            f.write("id=\"addon_version\" visible=\"false\" ")
-            f.write("label=\"URLResolver version\" type=\"text\"/>\n")
-            f.write("</category>\n")
-            f.write('<category label="Resolvers 1">\n')
+        if six.PY3:
+            with open(common.settings_file, 'r', encoding='utf-8') as f:
+                old_xml = f.read()
+        else:
+            with open(common.settings_file, 'r') as f:
+                old_xml = f.read()
+    except:
+        old_xml = u''
+    old_xml = six.ensure_text(old_xml)
 
-            i=0
-            cat_count = 2
-            settings_xml = xml.dom.minidom.parseString(xml_text)
-            elements = settings_xml.getElementsByTagName('setting')
-            for element in elements:
-                if i>MAX_SETTINGS and element.getAttribute('type')=='lsep':
-                    f.write('</category>\n')
-                    f.write('<category label="Resolvers %s">\n' % (cat_count))
-                    cat_count += 1
-                    i=0
-                    
-                element.writexml(f, indent='\t', newl='\n')
-                i += 1
-            f.write('</category>\n')
-            f.write('</settings>\n')
-    except IOError:
-        common.addon.log_error('error writing ' + common.settings_file)
+    new_xml = six.ensure_text('\n'.join(new_xml))
+    if old_xml != new_xml:
+        common.logger.log_debug('Updating Settings XML')
+        try:
+            if six.PY3:
+                with open(common.settings_file, 'w', encoding='utf-8') as f:
+                    f.write(new_xml)
+            else:
+                with open(common.settings_file, 'w') as f:
+                    f.write(new_xml.encode('utf8'))
+        except:
+            raise
+    else:
+        common.logger.log_debug('No Settings Update Needed')
 
-#Update settings.xml if newer plugin version
-if common.addon.get_setting('addon_version') != common.addon.get_version():
-    common.addon.log_notice("Update settings from %s to %s " % (common.addon.get_setting('addon_version'), common.addon.get_version()))
-    _update_settings_xml()
-    common.addon.addon.setSetting('addon_version', common.addon.get_version())
+
+_update_settings_xml()

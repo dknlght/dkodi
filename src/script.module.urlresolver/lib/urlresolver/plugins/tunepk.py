@@ -1,103 +1,84 @@
-'''
-tunepk urlresolver plugin
-Copyright (C) 2013 icharania
+"""
+    Plugin for UrlResolver
+    Copyright (C) 2013 icharania
+    updated Copyright (C) 2019 cache-sk
+    updated Copyright (C) 2020 gujal
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+"""
 
-import os
-import xbmc
-from t0mm0.common.net import Net
-from urlresolver.plugnplay.interfaces import UrlResolver
-from urlresolver.plugnplay.interfaces import PluginSettings
-from urlresolver.plugnplay import Plugin
-import re
-import urllib2, urllib
+import base64
+import hashlib
+import json
+import time
+from urlresolver.plugins.lib import helpers
 from urlresolver import common
+from urlresolver.resolver import UrlResolver, ResolverError
 
-logo=os.path.join(common.addon_path, 'resources', 'images', 'redx.png')
 
-class TunePkResolver(Plugin, UrlResolver, PluginSettings):
-    implements = [UrlResolver, PluginSettings]
+class TunePkResolver(UrlResolver):
     name = "tune.pk"
-    domains = [ "tune.pk" ]
-
-    def __init__(self):
-        p = self.get_setting('priority') or 100
-        self.priority = int(p)
-        self.net = Net()
-        self.pattern = '(.+tune.pk)/(?:player|video|play)/(?:[\w\.\?]+=)?(\d+)'
+    domains = ["tune.pk", "tune.video"]
+    pattern = r'(?://|\.)(tune\.(?:video|pk))/(?:player|video|play)/(?:[\w\.\?]+=)?(\d+)'
 
     def get_media_url(self, host, media_id):
-        try:
-            web_url = self.get_url(host, media_id)
-            link = repr(self.net.http_GET(web_url).content)
+        web_url = self.get_url(host, media_id)
+        apiurl = 'https://api.tune.pk/v3/videos/{}'.format(media_id)
+        currentTime = time.time()
+        x_req_time = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(currentTime))
+        tunestring = 'videos/{} . {} . KH42JVbO'.format(media_id, int(currentTime))
+        token = hashlib.sha1(tunestring.encode('ascii')).hexdigest()
+        headers = {'Content-Type': 'application/json; charset=utf-8',
+                   'User-Agent': common.FF_USER_AGENT,
+                   'X-KEY': '777750fea4d3bd585bf47dc1873619fc',
+                   'X-REQ-TIME': x_req_time,
+                   'X-REQ-TOKEN': token}
+        response = self.net.http_GET(apiurl, headers=headers)
+        jdata = json.loads(response.content)
+        if jdata['message'] == 'OK':
+            vids = jdata['data']['videos']['files']
+            sources = []
+            for key in list(vids.keys()):
+                sources.append((vids[key]['label'], vids[key]['file']))
 
-            if link.find('404 Not Found') >= 0:
-                err_title = 'Content not available.'
-                err_message = 'The requested video was not found.'
-                common.addon.log_error(self.name + ' - fetching %s - %s - %s ' % (web_url,err_title,err_message))
-                xbmc.executebuiltin('XBMC.Notification([B][COLOR white]'+__name__+'[/COLOR][/B] - '+err_title+',[COLOR red]'+err_message+'[/COLOR],8000,'+logo+')')
-                return self.unresolvable(1, err_message)
+            if sources:
+                video_url = helpers.pick_source(sources)
+                serverTime = int(jdata['timestamp']) + (int(time.time()) - int(currentTime))
+                hashLifeDuration = int(jdata['data']['duration']) * 5
+                if hashLifeDuration < 3600:
+                    hashLifeDuration = 3600
+                expiryTime = serverTime + hashLifeDuration
+                try:
+                    startOfPathUrl = video_url.index('/files/videos/')
+                    pathUrl = video_url[startOfPathUrl:None]
+                except ValueError:
+                    try:
+                        startOfPathUrl = video_url.index('/files/streams/')
+                        pathUrl = video_url[startOfPathUrl:None]
+                    except ValueError:
+                        raise ResolverError('This video cannot be played.')
 
-            videoUrl = []
-            # borrowed from AJ's turtle-x
-            html = link.replace('\n\r', '').replace('\r', '').replace('\n', '').replace('\\', '')
-            sources = re.compile("{(.+?)}").findall(re.compile("sources (.+?)]").findall(html)[0])
-            for source in sources:
-                video_link = str(re.compile('"file":"(.*?)"').findall(source)[0])
-                videoUrl.append(video_link)
+                htoken = hashlib.md5((str(expiryTime) + pathUrl + ' ' + 'c@ntr@lw3biutun3cb').encode('ascii')).digest()
+                htoken = base64.urlsafe_b64encode(htoken).decode('ascii').replace('=', '').replace('\n', '')
+                video_url = video_url + '?h=' + htoken + '&ttl=' + str(expiryTime)
 
+                headers = {'Referer': web_url,
+                           'User-Agent': common.FF_USER_AGENT}
 
-            vUrl = ''
-            vUrlsCount = len(videoUrl)
-            if vUrlsCount > 0:
-                q = self.get_setting('quality')
-                if q == '0':
-                    # Highest Quality
-                    vUrl = videoUrl[0]
-                elif q == '1':
-                    # Medium Quality
-                    vUrl = videoUrl[(int)(vUrlsCount / 2)]
-                elif q == '2':
-                    # Lowest Quality
-                    vUrl = videoUrl[vUrlsCount - 1]
+                return video_url + helpers.append_headers(headers)
 
-                return vUrl
-
-            else:
-                return self.unresolvable(0, 'No playable video found.')
-        except urllib2.URLError, e:
-            return self.unresolvable(3, str(e))
-        except Exception, e:
-            return self.unresolvable(0, str(e))
-
+        raise ResolverError('This video has been removed due to a copyright claim.')
 
     def get_url(self, host, media_id):
-        return 'http://embed.tune.pk/play/%s' % media_id
-
-    def get_host_and_id(self, url):
-        r = re.search(self.pattern, url)
-        return r.groups()
-
-    def valid_url(self, url, host):
-        if self.get_setting('enabled') == 'false': return False
-        return re.match(self.pattern, url) or self.name in host
-
-    #PluginSettings methods
-    def get_settings_xml(self):
-        xml = PluginSettings.get_settings_xml(self)
-        xml += '<setting label="Video Quality" id="%s_quality" ' % self.__class__.__name__
-        xml += 'type="enum" values="High|Medium|Low" default="0" />\n'
-        return xml
+        return self._default_get_url(host, media_id, template='https://tune.pk/video/{media_id}/')

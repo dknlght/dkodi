@@ -1,6 +1,6 @@
 """
-    urlresolver XBMC Addon
-    Copyright (C) 2011 anilkuj
+    Plugin for UrlResolver
+    Copyright (C) 2020 gujal
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,76 +16,51 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import re
-from t0mm0.common.net import Net
-import urllib2, os
+import json
+from six.moves import urllib_error, urllib_request
+from urlresolver.plugins.lib import helpers
 from urlresolver import common
-from urlresolver.plugnplay.interfaces import UrlResolver
-from urlresolver.plugnplay.interfaces import PluginSettings
-from urlresolver.plugnplay import Plugin
+from urlresolver.resolver import UrlResolver, ResolverError
 
-class VeohResolver(Plugin, UrlResolver, PluginSettings):
-    implements = [UrlResolver, PluginSettings]
+
+class VeohResolver(UrlResolver):
     name = "veoh"
-    domains = [ "veoh.com" ]
-
-    def __init__(self):
-        p = self.get_setting('priority') or 100
-        self.priority = int(p)
-        self.net = Net()
+    domains = ["veoh.com"]
+    pattern = r'(?://|\.)(veoh\.com)/(?:watch/|.+?permalinkId=)?([0-9a-zA-Z/]+)'
 
     def get_media_url(self, host, media_id):
-        html = self.net.http_GET("http://www.veoh.com/iphone/views/watch.php?id=" + media_id + "&__async=true&__source=waBrowse").content
-        try:
-            if not re.search('This video is not available on mobile', html):
-                r = re.compile("watchNow\('(.+?)'").findall(html)
-                if (len(r) > 0 ):
-                    return r[0]
+        web_url = self.get_url(host, media_id)
+        headers = {'User-Agent': common.CHROME_USER_AGENT, 'Referer': web_url}
+        html = self.net.http_GET(web_url, headers=headers).content
+        _data = json.loads(html)
+        if 'video' in _data and 'src' in _data.get('video', ''):
+            sources = []
+            _src = _data['video']['src']
+            if 'HQ' in _src:
+                sources.append(('HQ', _src['HQ']))
+            if 'Regular' in _src:
+                sources.append(('RQ', _src['Regular']))
 
-            url = 'http://www.veoh.com/rest/video/'+media_id+'/details'
-            html = self.net.http_GET(url).content
-            file = re.compile('fullPreviewHashPath="(.+?)"').findall(html)
+            if len(sources) > 0:
+                return self._redirect_test(helpers.pick_source(sources)) + helpers.append_headers(headers)
 
-            if len(file) == 0:
-                raise Exception ('File Not Found or removed')
-
-            return file[0]
-        except urllib2.URLError, e:
-            common.addon.log_error(self.name + ': got http error %d fetching %s' %
-                                   (e.code, web_url))
-            common.addon.show_small_popup('Error','Http error: '+str(e), 8000, error_logo)
-            return self.unresolvable(code=3, msg=e)
-        except Exception, e:
-            common.addon.log('**** Veoh Error occured: %s' % e)
-            common.addon.show_small_popup(title='[B][COLOR white]VEOH[/COLOR][/B]', msg='[COLOR red]%s[/COLOR]' % e, delay=5000, image=error_logo)
-            return self.unresolvable(code=0, msg=e)
+        raise ResolverError('Unable to locate video')
 
     def get_url(self, host, media_id):
-        return 'http://veoh.com/watch/%s' % media_id
+        return self._default_get_url(host, media_id, template='https://www.{host}/watch/getVideo/{media_id}')
 
-
-    def get_host_and_id(self, url):
-        r = None
-        video_id = None
-        if re.search('permalinkId=', url):
-            r = re.compile('veoh.com.+?permalinkId=(\w+)&*.*$').findall(url)
-        elif re.search('watch/', url):
-            r = re.compile('watch/(.+)').findall(url)
-            
-        if r is not None and len(r) > 0:
-            video_id = r[0]
-        if video_id:
-            return ('veoh.com', video_id)
-        else:
-            common.addon.log_error('veoh: video id not found')
-            return False
-
-    def valid_url(self, url, host):
-        if self.get_setting('enabled') == 'false': return False
-        return re.search('www.veoh.com/watch/.+',url) or re.search('www.veoh.com/.+?permalinkId=.+',url) or 'veoh' in host
-
-    def get_settings_xml(self):
-        xml = PluginSettings.get_settings_xml(self)
-        xml += '<setting label="This plugin calls the veoh addon - '
-        xml += 'change settings there." type="lsep" />\n'
-        return xml
+    def _redirect_test(self, url):
+        opener = urllib_request.build_opener()
+        opener.addheaders = [('User-agent', common.CHROME_USER_AGENT),
+                             ('Referer', 'https://www.veoh.com/')]
+        try:
+            resp = opener.open(url)
+            if url != resp.geturl():
+                return resp.geturl()
+            else:
+                return url
+        except urllib_error.HTTPError as e:
+            if e.code == 403:
+                if url != e.geturl():
+                    return e.geturl()
+            raise ResolverError('File not found')

@@ -1,6 +1,6 @@
 """
-    urlresolver XBMC Addon
-    Copyright (C) 2011 t0mm0
+    Plugin for UrlResolver
+    Copyright (C) 2020 gujal
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,52 +16,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
-import re
-from t0mm0.common.net import Net
-import urllib2
+from urlresolver.plugins.lib import helpers
 from urlresolver import common
-from urlresolver.plugnplay.interfaces import UrlResolver
-from urlresolver.plugnplay.interfaces import PluginSettings
-from urlresolver.plugnplay import Plugin
-import xbmcgui
+from urlresolver.resolver import UrlResolver, ResolverError
 
-class Mp4uploadResolver(Plugin, UrlResolver, PluginSettings):
-	implements = [UrlResolver, PluginSettings]
-	name = "mp4upload"
-	domains = [ "mp4upload.com" ]
 
-	def __init__(self):
-		p = self.get_setting('priority') or 100
-		self.priority = int(p)
-		self.net = Net()
-		
-		
-	def get_media_url(self, host, media_id):
-		web_url = self.get_url(host, media_id)
-		try:
-			link = self.net.http_GET(web_url).content
-		except urllib2.URLError, e:
-			common.addon.log_error(self.name + '- got http error %d fetching %s' % (e.code, web_url))
-			return False
-		
-		link = ''.join(link.splitlines()).replace('\t','')
-		videoUrl = re.compile('\'file\': \'(.+?)\'').findall(link)[0]
-		
-		return videoUrl
-		
-		
-	def get_url(self, host, media_id):
-		return 'http://www.mp4upload.com/embed-%s.html' % media_id
-		
-		
-	def get_host_and_id(self, url):
-		r = re.search('//(.+?)/embed-(.+?)\.', url)
-		if r:
-			return r.groups()
-		else:
-			return False
-			
-			
-	def valid_url(self, url, host):
-		return 'mp4upload.com' in url or self.name in host
+class Mp4uploadResolver(UrlResolver):
+    name = "mp4upload"
+    domains = ["mp4upload.com"]
+    pattern = r'(?://|\.)(mp4upload\.com)/(?:embed-)?([0-9a-zA-Z]+)'
+
+    def get_media_url(self, host, media_id):
+        web_url = self.get_url(host, media_id)
+        headers = {'User-Agent': common.FF_USER_AGENT,
+                   'Referer': web_url}
+        html = self.net.http_GET(web_url, headers=headers).content
+        sources = helpers.scrape_sources(html, patterns=[r'src\("(?P<url>[^"]+)'])
+        if sources:
+            headers.update({'verifypeer': 'false'})
+            return helpers.pick_source(sources) + helpers.append_headers(headers)
+        raise ResolverError('Video cannot be located.')
+
+    def get_url(self, host, media_id):
+        return self._default_get_url(host, media_id, template='https://www.{host}/embed-{media_id}.html')

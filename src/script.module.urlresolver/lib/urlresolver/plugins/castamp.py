@@ -1,5 +1,5 @@
 """
-    urlresolver XBMC Addon
+    Plugin for URLResolver
     Copyright (C) 2011 t0mm0
 
     This program is free software: you can redistribute it and/or modify
@@ -16,60 +16,34 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import random
-
-from t0mm0.common.net import Net
-import math
-from urlresolver.plugnplay.interfaces import UrlResolver
-from urlresolver.plugnplay.interfaces import PluginSettings
-from urlresolver.plugnplay import Plugin
-import urllib2
-from urlresolver import common
-import os
-
-# Custom imports
 import re
+import math
+from urlresolver import common
+from urlresolver.resolver import UrlResolver, ResolverError  # @UnusedImport ResolverError
 
-error_logo = os.path.join(common.addon_path, 'resources', 'images', 'redx.png')
 
-
-class CastampResolver(Plugin, UrlResolver, PluginSettings):
-    implements = [UrlResolver, PluginSettings]
+class CastampResolver(UrlResolver):
     name = "castamp"
-    domains = [ "castamp.com" ]
-
-    def __init__(self):
-        p = self.get_setting('priority') or 100
-        self.priority = int(p)
-        self.net = Net()
-        self.pattern =  r"""(http://(?:www\.|)castamp\.com)/embed\.php\?c=(.*?)&"""
-
+    domains = ["castamp.com"]
+    pattern = r'(?://|\.)(castamp\.com)/embed\.php\?c=(.*?)&'
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
-        try:
-            html = self.net.http_GET(web_url).content
-        except urllib2.URLError, e:
-            common.addon.log_error(self.name + ': got http error %d fetching %s' % (e.code, web_url))
-            common.addon.show_small_popup('Error','Http error: '+str(e), 8000, error_logo)
-            return self.unresolvable(code=3, msg='Exception: %s' % e) 
-        except Exception, e:
-            common.addon.log('**** Castamp Error occured: %s' % e)
-            common.addon.show_small_popup(title='[B][COLOR white]CASTAMP[/COLOR][/B]', msg='[COLOR red]%s[/COLOR]' % e, delay=5000, image=error_logo)
-            return self.unresolvable(code=0, msg='Exception: %s' % e) 
+        html = self.net.http_GET(web_url).content
 
         streamer = ""
         flashplayer = ""
         file = ""
 
-        common.addon.log("*******************************************")
-        common.addon.log("web_url: " + web_url)
+        common.logger.log("*******************************************")
+        common.logger.log("web_url: " + web_url)
 
         pattern_flashplayer = r"""'flashplayer': \"(.*?)\""""
         r = re.search(pattern_flashplayer, html)
         if r:
             flashplayer = r.group(1)
 
-        pattern_streamer  = r"""'streamer': '(.*?)'"""
+        pattern_streamer = r"""'streamer': '(.*?)'"""
         r = re.search(pattern_streamer, html)
         if r:
             streamer = r.group(1)
@@ -88,19 +62,8 @@ class CastampResolver(Plugin, UrlResolver, PluginSettings):
         chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz"
         string_length = 8
         randomstring = ''
-        for x in range(0, string_length):
+        for _x in range(0, string_length):
             rnum = int(math.floor(random.random() * len(chars)))
-            randomstring += chars[rnum:rnum+1]
+            randomstring += chars[rnum:rnum + 1]
         domainsa = randomstring
         return 'http://www.castamp.com/embed.php?c=%s&tk=%s' % (media_id, domainsa)
-
-    def get_host_and_id(self, url):
-        r = re.search(self.pattern, url)
-        if r:
-            return r.groups()
-        else:
-            return False
-
-    def valid_url(self, url, host):
-        if self.get_setting('enabled') == 'false': return False
-        return re.match(self.pattern, url)
