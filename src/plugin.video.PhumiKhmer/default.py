@@ -24,7 +24,7 @@ PATH = "PhumiKhmer"  #<---- PLUGIN NAME MINUS THE "plugin.video"
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.4" #<---- PLUGIN VERSION
 
-strdomain ='http://phumikhmer.media/'
+strdomain ='https://phumimedia.com/'
 def HOME():
         addDir('Search',strdomain+'search/label/Khmer%20Movies?&max-results=18',4,'')
         GetMenu(strdomain)
@@ -37,7 +37,7 @@ def GetMenu(url):
         except: pass
         newlink = ''.join(link.splitlines()).replace('\t','')
         soup = BeautifulSoup(newlink)
-        listcontent=soup.findAll('div', {"class" : "menu-main-one-container"})
+        listcontent=soup.findAll('div', {"role" : "navigation"})
         if(len(listcontent)>0):
 			for item in listcontent[0].findAll('li'):
 				if(item.a!=None and item.a.has_key("href")):
@@ -47,7 +47,7 @@ def GetMenu(url):
 					else:
 						vname=str(item.a.contents[0]).strip()
 					link=link.replace("https:","http:")
-					if(vname.strip().find("</i>") == -1 and vname.strip().find("Home") == -1 and link.find(strdomain) !=-1):
+					if(vname.strip().find("</i>") == -1 and vname.strip().find("Home") == -1 ):
 						addDir(vname,link,2,"")
 				
 def Shows():

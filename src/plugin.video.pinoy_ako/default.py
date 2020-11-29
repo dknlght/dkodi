@@ -33,7 +33,7 @@ VERSION = "1.0.9" #<---- PLUGIN VERSION
 
 
 
-strdomain ='http://www.pinoy-tv.ws/'
+strdomain ='https://pinoylambingantambayan.net'
 strdomain2="http://www.lambingan.su/"
 
 if not os.path.exists(datapath):
@@ -45,21 +45,21 @@ if not os.path.exists(cookie_path):
 def HOME():
         addDir('Search',strdomain,8,'')
         addDir('Latest Videos',strdomain,6,'')
-        addDir('Pinoy Movies','http://www.fullpinoymovies.com',15,'')
-        addDir('lambingan Latest',strdomain2,13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
+        #addDir('Pinoy Movies','http://www.fullpinoymovies.com',15,'')
+        #addDir('lambingan Latest',strdomain2,13,'http://img687.imageshack.us/img687/5412/abscbntvshows.jpg')
         #addDir('GMA 7 shows on lambingan',strdomain2+'Gma7/',13,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
         #addDir('GMA Kapuso',strdomain2+'/category/Gma7/',13,'')
         ###addDir('GMA 7 Old Shows','http://www.pinoy-ako.info/index.php?option=com_content&view=article&id=11671:watch-old-gma-7-kapuso-tv-shows',2,'http://img198.imageshack.us/img198/7536/gmatvshows.jpg')
-        addDir('TV5 Episode List',strdomain+'tv-5/',6,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
+       # addDir('TV5 Episode List',strdomain+'tv-5/',6,'http://img29.imageshack.us/img29/2499/tv5tvshows.jpg')
 
         #addDir('Eat Bulaga',strdomain,18,'')
-        EatHD()
-        addDir('GMA on Demand',strdomain+'/kapuso/',6,'')
-        addDir('PBA on Demand',strdomain+'/sports/pba/',6,'')
-        addDir('Boxing on Demand',strdomain+'/sports/boxing/',6,'')
-        addDir('Pinoy Recipes',strdomain+'/pinoy-recipes/',6,'')
-        addDir('Viral Videos',strdomain+'/viral/',6,'')
-        addDir('Trending Videos',strdomain+'/trending/',6,'')
+       # EatHD()
+       # addDir('GMA on Demand',strdomain+'/kapuso/',6,'')
+       # addDir('PBA on Demand',strdomain+'/sports/pba/',6,'')
+       # addDir('Boxing on Demand',strdomain+'/sports/boxing/',6,'')
+       # addDir('Pinoy Recipes',strdomain+'/pinoy-recipes/',6,'')
+       # addDir('Viral Videos',strdomain+'/viral/',6,'')
+       # addDir('Trending Videos',strdomain+'/trending/',6,'')
 
 def AllTV(url):
         link = GetContent(url)
@@ -149,34 +149,23 @@ def INDEX2(url):
 		except:pass
 		link = ''.join(link.splitlines()).replace('\t','')
 		soup = BeautifulSoup(link)
-		vidcontent=soup.findAll('div', {"id" : "archive-posts"})
-		
-		if(len(vidcontent)==0):
-			vidcontent=soup.findAll('div', {"id" : "content"})
-		viditems=vidcontent[0].findAll('div', {"class" : "entry-thumbnails"})
-		if(len(viditems)>0):
-			for item in viditems:
-				vimg=""
-				if(len(item('a'))>0):
-					linkobj=item('a')[0]
-					if(linkobj.img!=None):
-						vimg=linkobj.img["src"]
-						vname=linkobj.img["title"]
-					vurl=linkobj["href"]
-					try:
-						vname=vname.encode("utf-8","ignore")
-					except: pass
-					addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg.replace("http://","//").replace("//","http://"))
-		else:
-			for item in vidcontent[0].findAll('li'):
-				vimg=""
-				linkobj=item('a')[0]
-				vname=linkobj.contents[0].encode("utf-8","ignore")
-				vurl=linkobj["href"]
-				try:
-					vname=vname.encode("utf-8","ignore")
-				except: pass
-				addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg.replace("http://","//").replace("//","http://"))
+		vidcontent=soup.findAll('div', {"id" : "content_box_inner"})
+		if(len(vidcontent)>0):
+			viditems=vidcontent[0].findAll('a', {"class" : "post-image post-image-left"})
+			if(len(viditems)>0):
+				for item in viditems:
+						vimg=""
+					#if(len(item('a'))>0):
+						linkobj=item
+						img=item.findAll('img')
+						if(len(img)>0):
+							vimg=img[0]["src"]
+						vname=linkobj["title"]
+						vurl=linkobj["href"]
+						try:
+							vname=vname.encode("utf-8","ignore")
+						except: pass
+						addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg)
 		pagenavcontent=soup.findAll('div', {"class" : "navigation clearfix"})
 		if(len(pagenavcontent)>0):
 			for item in pagenavcontent[0].findAll('a'):
@@ -262,7 +251,7 @@ def GetVideoLinkslamb(url):
             link=link.encode("UTF-8")
         except: pass
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"id" : "post-content"})
+        vidcontent=soup.findAll('div', {"class" : "post-single-content box mark-links entry-content"})
         #vidcontent=re.compile('<input type="text" name="s" id="searchbar"(.+?)<div id="sidebar">').findall(link)
         frmsrc1=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(str(vidcontent[0]))
         lnksrc1=re.compile('<a [^>]*href=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(str(vidcontent[0]))
@@ -305,10 +294,8 @@ def GetVideoLinks(url):
         try:
             link=link.encode("UTF-8")
         except: pass
-        print url
         soup = BeautifulSoup(link)
-        vidcontent=soup.findAll('div', {"id" :"content"})[0]
-        tabvids=re.compile('<div class="(blitzer|tabbertab|jwts_tabber|smoothness)">(.+?)</div>').findall(str(vidcontent))
+        vidcontent=soup.findAll('div', {"class" : "post-single-content box mark-links entry-content"})[0]
         mirrorcnt = 0
         partcnt=0
         embsrc=vidcontent.findAll('embed')
@@ -375,50 +362,7 @@ def GetVideoLinks(url):
 			if partcnt==0:
 					mirrorcnt=mirrorcnt-1
 
-        for tmp, divcotent in tabvids:
-                mirrorcnt=mirrorcnt+1
-                embsrc=re.compile('<embed [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(divcotent)
-                partcnt=0
-                for embvid in embsrc:
-                        vname = embvid.replace("http://","").replace("https://","").split(".")
-                        if(vname[1].find("/") > -1):
-                                      vname=vname[0]
-                        else:
-                                      vname=vname[1]
-                        partcnt=partcnt+1
-                        if(len(embsrc) == 1):
-                                      vname="mirror "+str(mirrorcnt)+" "+ vname + " full "
-                        else:
-                                      vname="mirror "+str(mirrorcnt)+" "+ vname + " part " + str(partcnt)
-                        addLink(vname,embvid,3,"")
-                frmsrc=re.compile('<iframe [^>]*src=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(divcotent)
-                for frmvid in frmsrc:
-                        vname = frmvid.replace("http://","").replace("https://","").split(".")
-                        if(vname[1].find("/") > -1):
-                                      vname=vname[0]
-                        else:
-                                      vname=vname[1]
-                        partcnt=partcnt+1
-                        if(len(tabvids) == 1):
-                                      vname="mirror "+ vname + " full "
-                        else:
-                                      vname="mirror "+ vname + " part " + str(mirrorcnt)
-                        addLink(vname,frmvid,3,"")
-                objsrc=re.compile('<object [^>]*data=["\']?([^>^"^\']+)["\']?[^>]*>', re.IGNORECASE).findall(divcotent)
-                for objvid in objsrc:
-                        vname = objvid.replace("http://","").replace("https://","").split(".")
-                        if(vname[1].find("/") > -1):
-                                      vname=vname[0]
-                        else:
-                                      vname=vname[1]
-                        partcnt=partcnt+1
-                        if(len(frmsrc) == 1):
-                                      vname="mirror "+str(mirrorcnt)+" "+ vname + " full "
-                        else:
-                                      vname="mirror "+str(mirrorcnt)+" "+ vname + " part " + str(partcnt)
-                        addLink(vname,urllib.unquote_plus(objvid.replace("&amp;","&")),3,"")
-                if partcnt==0:
-                        mirrorcnt=mirrorcnt-1
+
 						
 def Episodes(url):
         link = GetContent(url)
@@ -1057,6 +1001,24 @@ def loadVideos(url,name):
                 xmlUrl=re.compile('"playlist=(.+?)&').findall(unpacked)[0]
                 vidcontent = postContent2(xmlUrl,None,url)
                 vidlink=re.compile('<file>(.+?)</file>').findall(vidcontent)[0]
+           elif (newlink.find("siliptv") > -1):
+				link = GetContent(newlink)
+				soup = BeautifulSoup(link)
+				vidcontent=soup.findAll('body')
+				vidlink=""
+				if(len(vidcontent)>0):
+					scriptitems=vidcontent[0].findAll('script')
+					for item in scriptitems:
+						if len(item.contents)>0 and item.contents[0].find("function(p,a,c,k,e,d)") >-1:
+							packed = item.contents[0]
+							unpacked=""
+							try:
+								unpacked = unpackjs4(packed)
+							except: pass
+							if unpacked=="":
+								unpacked = unpackjs3(packed,tipoclaves=2)
+							unpacked = unpacked.replace("\\","")
+							vidlink = re.compile('sources:\[\{file:\s*"(.+?)"').findall(unpacked)[0]
            elif (newlink.find("uploadpluz") > -1):
                 videoid=  re.compile('http://nosvideo.com/embed/(.+?)/').findall(newlink)
                 if(len(videoid)>0):
