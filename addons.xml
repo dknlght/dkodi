@@ -659,7 +659,7 @@
 
 <addon
   id="plugin.video.movierulz"
-  version="1.0.10"
+  version="1.0.11"
   name="movierulz"
   provider-name="Dknight">
   <requires>

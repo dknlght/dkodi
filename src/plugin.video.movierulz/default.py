@@ -25,7 +25,7 @@ ADDON = xbmcaddon.Addon(id='plugin.video.movierulz')
 showadult = ADDON.getSetting('use-adult') == 'true'
 
 AZ_DIRECTORIES = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y', 'Z']
-strdomain ='http://www.movierulz.com/'
+strdomain ='https://4movierulz.pe/'
 
 class youkuDecoder:
     def __init__( self ):
@@ -97,10 +97,10 @@ class youkuDecoder:
         return base64.b64encode(new_ep), token, sid
 		
 def HOME():
-        GetMenu("http://www.movierulz.com/category/kannada-movie/")
-        addDir("Kannada Movie","http://www.movierulz.com/category/kannada-movie/",6,"")
+        GetMenu(strdomain)
+        #addDir("Kannada Movie","http://www.movierulz.com/category/kannada-movie/",6,"")
         if(showadult):
-			addDir("Adult Movies","http://www.movierulz.com/category/adult-movie/",6,"")
+			addDir("Adult Movies",strdomain+"category/adult-movie/",6,"")
 
 		
 def ListAZ(url):
