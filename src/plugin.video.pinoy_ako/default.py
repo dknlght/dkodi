@@ -149,7 +149,7 @@ def INDEX2(url):
 		except:pass
 		link = ''.join(link.splitlines()).replace('\t','')
 		soup = BeautifulSoup(link)
-		vidcontent=soup.findAll('div', {"id" : "content_box_inner"})
+		vidcontent=soup.findAll('div', {"id" :re.compile('content_box*')})
 		if(len(vidcontent)>0):
 			viditems=vidcontent[0].findAll('a', {"class" : "post-image post-image-left"})
 			if(len(viditems)>0):
@@ -166,19 +166,20 @@ def INDEX2(url):
 							vname=vname.encode("utf-8","ignore")
 						except: pass
 						addDir(vname.replace("&#8211;","-").replace("&#8217;","'"),vurl,4,vimg)
-		pagenavcontent=soup.findAll('div', {"class" : "navigation clearfix"})
+		pagenavcontent=soup.findAll('div', {"class" : "nav-links"})
 		if(len(pagenavcontent)>0):
 			for item in pagenavcontent[0].findAll('a'):
-				pagenum=item.contents[0]
-				pageurl=item["href"]
-				addDir('page '+ pagenum.replace("&raquo;",">>"),pageurl,6,'')
+				if(len(item.contents)>0):
+					pagenum=item.contents[0]
+					pageurl=item["href"]
+					if(item.i!=None):
+						if(item["class"].find("next")>-1):
+							addDir('page >>',pageurl,6,'')
+						else:
+							addDir('page <<',pageurl,6,'')
+					else:
+						addDir('page '+ pagenum,pageurl,6,'')
 
-		pagenavcontent=soup.findAll('div', {"class" : "wp-pagenavi"})
-		if(len(pagenavcontent)>0):
-			for item in pagenavcontent[0].findAll('a'):
-				pagenum=item.contents[0]
-				pageurl=item["href"]
-				addDir('page '+ pagenum.replace("&raquo;",">>"),pageurl,6,'')
 
 def SEARCH():
         keyb = xbmc.Keyboard('', 'Enter search text')
