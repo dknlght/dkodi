@@ -67,7 +67,8 @@ def _create_cookie(the_file):
 if not _is_cookie_file(_cookie_file):
     _cookie_file = _create_cookie(_cookie_file)
 
-strdomain ="https://lookmovie.ag"
+partdomain ="lookmovie.io"
+strdomain ="https://"+partdomain
 AZ_DIRECTORIES = ['0-9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y', 'Z']
 GENRE_DIRECTORIES = ['action'
                                 ,'adventure'
@@ -117,7 +118,7 @@ def GetContent(url,referr=None):
                          'Connection':'keep-alive',
                          'Accept-Language':'en-us,en;q=0.5',
                          'Pragma':'no-cache',
-                         'Host':'lookmovie.ag'
+                         'Host':partdomain
 	}
     resp = net2.http_GET(url,headers=headers,compression=True)
     net2.save_cookies(_cookie_file)
@@ -161,7 +162,7 @@ def GetContent2(url,cookievalue=None,referer=None):
 		arcookie=cookievalue.split("=")
 		new_cookie = cookielib.Cookie(
 			version=0, name=arcookie[0], value=arcookie[1], port=None, port_specified=False,
-			domain='lookmovie.ag', domain_specified=False, domain_initial_dot=False,
+			domain=partdomain, domain_specified=False, domain_initial_dot=False,
 			path='/', path_specified=True, secure=False, expires=None, discard=True,
 			comment=None, comment_url=None, rest={'HttpOnly': None}, rfc2109=False)
 		cj.set_cookie(new_cookie)
@@ -174,7 +175,7 @@ def GetContent2(url,cookievalue=None,referer=None):
                          ('Connection','keep-alive'),
                          #('Cookie',cookievalue),
                          #('X-Requested-With','XMLHttpRequest'),
-                         ('Host','lookmovie.ag')]
+                         ('Host',partdomain)]
     usock=opener.open(url)
     if usock.info().get('Content-Encoding') == 'gzip':
         buf = StringIO.StringIO(usock.read())
@@ -708,11 +709,11 @@ def ParseVideoLink(url,name,movieinfo):
     media_url = re.compile('id_movie:\s*(.+?),').findall(link)
     #print str(link)
     if(len(media_url)>0):
-		infolink="https://false-promise.lookmovie.ag/api/v1/storage/movies?id_movie="+media_url[0]
+		infolink="https://false-promise."+partdomain+"/api/v1/storage/movies?id_movie="+media_url[0]
 		print infolink
 		srclink=""
 		srclink =GetJSON(infolink,srclink,strdomain)
-		vidsrc="https://lookmovie.ag/manifests/movies/json/"+str(media_url[0])+"/"+str(srclink["data"]["expires"])+"/"+str(srclink["data"]["accessToken"])+"/master.m3u8"
+		vidsrc=strdomain+"/manifests/movies/json/"+str(media_url[0])+"/"+str(srclink["data"]["expires"])+"/"+str(srclink["data"]["accessToken"])+"/master.m3u8"
 		srclink =GetJSON2(vidsrc,srclink,strdomain)
 		if(srclink.has_key("1080p" ==True) and srclink["1080p"].find("index.m3u8") > -1):
 			return srclink["1080p"]
