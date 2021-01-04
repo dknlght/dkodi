@@ -245,7 +245,7 @@
 
 <addon
   id="plugin.video.DramaCool"
-  version="1.0.1"
+  version="1.0.2"
   name="DramaCool"
   provider-name="Dknight">
   <requires>
@@ -745,7 +745,7 @@
 
 <addon
   id="plugin.video.onemovies"
-  version="1.0.13"
+  version="1.0.14"
   name="onemovies"
   provider-name="Dknight">
   <requires>
@@ -789,7 +789,7 @@
 
 <addon
   id="plugin.video.PhumiKhmer"
-  version="1.0.38"
+  version="1.0.39"
   name="PhumiKhmer"
   provider-name="Dknight">
   <requires>

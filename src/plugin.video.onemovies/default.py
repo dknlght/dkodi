@@ -18,6 +18,7 @@ import commands
 import jsunpack
 import math,random
 import MyNet
+from collections import OrderedDict
 __settings__ = xbmcaddon.Addon(id='plugin.video.onemovies')
 addon_profile_path = xbmc.translatePath(os.path.join(xbmc.translatePath('special://profile'), 'addon_data', 'plugin.video.onemovies'))
 home = __settings__.getAddonInfo('path')
@@ -127,7 +128,7 @@ def GetContent(url,referr=None):
     # opener.addheaders = 
     # usock=opener.open(url)
     # if usock.info().get('Content-Encoding') == 'gzip':
-        # buf = StringIO.StringIO(usock.read())
+        # buf = StringIO.StringIO(usock.read()) 
         # f = gzip.GzipFile(fileobj=buf)
         # response = f.read()
     # else:
@@ -407,7 +408,15 @@ def SEARCH():
         searchText = ''
         if (keyb.isConfirmed()):
                 searchText = keyb.getText()
-        ListShows(strdomain+"/movies/search/?q="+urllib.quote_plus(searchText),name)
+        ListMovies(strdomain+"/movies/search/?q="+urllib.quote_plus(searchText),name)
+
+def SEARCHShow():
+        keyb = xbmc.Keyboard('', 'Enter search text')
+        keyb.doModal()
+        searchText = ''
+        if (keyb.isConfirmed()):
+                searchText = keyb.getText()
+        ListShows(strdomain+"/shows/search/?q="+urllib.quote_plus(searchText),name)
 		
 def ListAZ():
         for character in AZ_DIRECTORIES:
@@ -422,30 +431,32 @@ def YEAR(vidtype):
                         addDir('[B][COLOR white]%s[/COLOR][/B]' %iyear,url2,18,'')
                         
            else:
-                        url2 = strdomain + '/movie/filter/movie/latest/all/all/'+url2+'/all/all'
-                        addDir('[B][COLOR white]%s[/COLOR][/B]' %iyear,url2,18,'')
+                        url2 = strdomain + '/shows/filter?y[]='+iyear
+                        addDir('[B][COLOR white]%s[/COLOR][/B]' %iyear,url2,27,'')
                         
 
 						
 def TV():
-        addDir('[B][COLOR white]Most Favorite[/COLOR][/B]',strdomain+'/movie/filter/series/favorite/all/all/all/all/all',18,'')
-        addDir('[B][COLOR white]Most Ratings[/COLOR][/B]',strdomain+'/movie/filter/series/rating/all/all/all/all/all',18,'')
-        addDir('[B][COLOR white]Most Viewed[/COLOR][/B]',strdomain+'/movie/filter/series/view/all/all/all/all/all',18,'')
-        addDir('[B][COLOR white]Top IMDB[/COLOR][/B]',strdomain+'/movie/filter/series/imdb_mark/all/all/all/all/all',18,'')
+        #addDir('[B][COLOR white]Most Favorite[/COLOR][/B]',strdomain+'/movie/filter/series/favorite/all/all/all/all/all',18,'')
+        #addDir('[B][COLOR white]Most Ratings[/COLOR][/B]',strdomain+'/movie/filter/series/rating/all/all/all/all/all',18,'')
+        #addDir('[B][COLOR white]Most Viewed[/COLOR][/B]',strdomain+'/movie/filter/series/view/all/all/all/all/all',18,'')
+        #addDir('[B][COLOR white]Top IMDB[/COLOR][/B]',strdomain+'/movie/filter/series/imdb_mark/all/all/all/all/all',18,'')
         #addDir('[B][COLOR white]Country[/COLOR][/B]',strdomain+'/movie/filter/series',18,'')
-        addDir('[B][COLOR white]Latest[/COLOR][/B]',strdomain+'/shows',18,'')
-        addDir('[B][COLOR white]Year[/COLOR][/B]',strdomain+'/movie/filter/series',11,'')
+        addDir("Search Shows",strdomain,10,"")
+        addDir('[B][COLOR white]Latest Episodes[/COLOR][/B]',strdomain+'/shows',12,'')
+        addDir('[B][COLOR white]Year[/COLOR][/B]','shows',11,'')
+        addDir('[B][COLOR white]Genre[/COLOR][/B]','shows',6,'')
         #addDir('[B][COLOR white]Genre[/COLOR][/B]',strdomain+'/movie/filter/series',18,'')
         #addDir('[B][COLOR white]Year[/COLOR][/B]',strdomain+'/movie/filter/series',18,'')
 		
 def HOME():
-		addDir("Search",strdomain,9,"")
+		addDir("Search Movies",strdomain,9,"")
 		#addDir("A-Z List",strdomain,16,"")
-		#addDir("TV",strdomain,26,"")
+		addDir('[B][COLOR white]TV[/COLOR][/B]',strdomain+'/shows',26,'')
 		addDir('[B][COLOR white]Latest Movies[/COLOR][/B]',strdomain+'/movies',18,'')
 		# addDir('[B][COLOR white]Top IMDB[/COLOR][/B]',strdomain+'/movie/filter/movie/imdb_mark/all/all/all/all/all',18,'')
 		addDir('[B][COLOR white]Year[/COLOR][/B]','movie',11,'')
-		addDir('[B][COLOR white]Genre[/COLOR][/B]','movie',6,'')
+		addDir('[B][COLOR white]Genre[/COLOR][/B]','movies',6,'')
 		#addDir("Favorites","type",25,"")
 
 		#addDir("TV Shows",strdomain+"movie/filter/series",18,"")
@@ -466,7 +477,7 @@ def GetSubMenu(MenuTitle):
 				vname=str(item.a.contents[0]).strip()
 				addDir(vname,link,18,"")
 					
-def ListShows(url,name):
+def ListMovies(url,name):
 	link = GetContent(url)
 	try:
 		link =link.encode("UTF-8")
@@ -494,7 +505,72 @@ def ListShows(url,name):
 				vlink="https:"+item["href"]
 				vname=item.contents[0].encode('utf-8', 'ignore')
 				addDir("Page "+vname.strip(),vlink,18,'')
+				
+def ListShows(url,name):
+	link = GetContent(url)
+	try:
+		link =link.encode("UTF-8")
+	except: pass
+	newlink = ''.join(link.splitlines()).replace('\t','')
+	soup  = BeautifulSoup(newlink)
+	subcontent=soup.findAll('div', {"class" : "flex-wrap-movielist"})
+	if len(subcontent)> 0:
+		sublist = subcontent[0]
+		for item in sublist.findAll('a'):
+			vimg = item.img
+			if(vimg!=None and vimg.has_key("alt")):
+				vlink = strdomain+item['href'].encode('utf-8', 'ignore')
+				vname=vimg["alt"]
+				try:
+					vname =vname.encode("UTF-8")
+				except: pass
+				imgurl = strdomain+vimg["data-src"]
+				#addDirContext(vname,vlink,8,imgurl,"","type")
+				addDir(vname,vlink,8,imgurl)
+	pagecontent=soup.findAll('ul', {"class" : "pagination"})
+	if len(pagecontent)> 0:
+		for item in pagecontent[0].findAll('a'):
+			if(item.has_key("class")==False and item.parent.has_key("class")==False):
+				vlink="https:"+item["href"]
+				vname=item.contents[0].encode('utf-8', 'ignore')
+				addDir("Page "+vname.strip(),vlink,27,'')
+				
+def ListLatestEpisode(url,name):
+	link = GetContent(url)
+	try:
+		link =link.encode("UTF-8")
+	except: pass
+	newlink = ''.join(link.splitlines()).replace('\t','')
+	soup  = BeautifulSoup(newlink)
+	subcontent=soup.findAll('div', {"class" : "tv-episodes-list"})
 
+	if len(subcontent)> 0:
+		sublist = subcontent[0]
+		for item in sublist.findAll('div', {"class" : "movie-item-style-2 movie-item-style-list episode-item"}):
+			print str(item)
+			vimg = item.findAll('img')
+			print vimg
+			if(len(vimg)>0):
+				if( vimg[0].has_key("alt")):
+					vimg=vimg[0]
+					vlink = strdomain+item.a['href'].encode('utf-8', 'ignore')
+					vname=vimg["alt"]
+					try:
+						vname =vname.encode("UTF-8")
+					except: pass
+					imgurl = strdomain+vimg["data-src"]
+					#addDirContext(vname,vlink,8,imgurl,"","type")
+					epiData=item.findAll('h5')
+					if(len(epiData)>0):
+						vname=vname+"-"+epiData[0].contents[0]
+					addLink(vname,vlink,33,imgurl,"","") 
+	pagecontent=soup.findAll('ul', {"class" : "pagination"})
+	if len(pagecontent)> 0:
+		for item in pagecontent[0].findAll('a'):
+			if(item.has_key("class")==False and item.parent.has_key("class")==False):
+				vlink="https:"+item["href"]
+				vname=item.contents[0].encode('utf-8', 'ignore')
+				addDir("Page "+vname.strip(),vlink,12,'')
 				
 def AZIndex(url):
 	link = GetContent(url)
@@ -526,55 +602,18 @@ def AZIndex(url):
 			
 	
 				
-def Episodes(mediaid,name):
-	print "media_url|" + mediaid
-	showid=mediaid.split("-")[-1].replace("/","")
-	showname=mediaid.replace("-"+showid+"/","").split("/")[-1]
-	#cookieurl ="https://hdonline.to/asset/images/"+showname
-	#cookieval=GetContent(cookieurl,mediaid)
-	link = GetContent2(strdomain+"ajax/movie_episodes/"+showid,None,mediaid)
+def Episodes(url,name):
+	epiContent = GetContent(url)
 	try:
-		link =link.encode("UTF-8")
+		epiList = re.compile("window.seasons='(.+?)';").findall(epiContent)[0]
+		epiList=epiList.replace('\\"','"').replace("\\'","'").replace("\\\\","\\")
 	except: pass
-	data = json.loads(link)
-	soup  = BeautifulSoup(data["html"])
-	ServerList=soup.findAll('div', {"class" : re.compile("le-server server-item*")})
-	for item in ServerList:
-		
-		srvname=item.findAll('strong')[0].contents[0].strip()
-		addLink(srvname,"",0,"")
-		if (srvname.lower().find("openload") > -1):
-			mode=34
-		else:
-			mode=4
-		mediatype="movie"
-		episodenum=0
-		season=1
-		tvtitle=name
-		ServerList=soup.findAll('div', {"class" : "les-content"})
-		for epItem in ServerList[0].findAll('a'):
-			if(epItem.has_key("data-id")):
-				epID=epItem["data-id"]
-				vLinkName=epItem.contents[0].strip()
-				try:
-					vLinkName=vLinkName.encode("UTF-8")
-				except: pass
-				#addDir("--"+vLinkName,epID,mode,'')
-				epiname=vLinkName
-				if (vLinkName.lower().find("episode") > -1):
-					try:
-						eparry= vLinkName.split(':')
-						epiname= eparry[-1].strip()
-						episodenum=int(eparry[0].lower().replace("episode","").strip())
-						mediatype="episode"
-						seasonarry=name.lower().split('- season')
-						season=int(seasonarry[-1].strip())
-						tvtitle=seasonarry[0].strip()
-					except: pass
-				else:
-					epiname=tvtitle
-				meta = {'tvshowtitle': tvtitle, 'title': epiname, 'mediatype': mediatype,'episode':episodenum,'season':season,'mirrorid':showid}
-				addDirMeta("--"+vLinkName,epID,mode,'',meta)
+	data = json.loads(epiList,object_pairs_hook=OrderedDict)
+	for item in data.items():
+		addLink("[B][COLOR orange]Season "+str(item[0])+"[/B][/COLOR]","",0,"")
+		for episode in item[1]["episodes"].items():
+			addLink(" --Episode "+ str(episode[0]),episode[1]["id_episode"],7,"","","")
+
 				
 def Mirrors(epid,name,strMeta):
 	meta={}
@@ -1414,9 +1453,13 @@ def postContent(url,data,referr):
     usock.close()
     return response
 	
-def GenreList(mode):
+def GenreList(vtype):
+        if(vtype=="movies"):
+			mode=18
+        else:
+			mode=27
         for genre in GENRE_DIRECTORIES:
-			addDir(genre,strdomain+"/movies/genre/"+genre,mode,"")
+			addDir(genre,strdomain+"/"+vtype+"/genre/"+genre,mode,"")
 					
 
 
@@ -1459,7 +1502,61 @@ def playVideo(url,name,playtype,movieinfo,strMeta):
 					print "subtitle timeout error"
 			print "loading sub|" +movieinfo
 			xbmcPlayer.setSubtitles(movieinfo) 
+
+def playShowVideo(url,name,playtype,movieinfo,strMeta):
+		meta={}
+		if(strMeta!=""):
+			meta = json.loads(strMeta)
+			print meta
+
+		if(playtype=="slug"):
+			eparry=url.replace(strdomain+"/shows/view/","").split("/")
+			slug=eparry[0]
+			epID =eparry[-1].split("-")[-1]
+			infolink=strdomain+"/api/v1/security/show-access?slug="+slug+"&sk=null&step=1"
+			srclink=""
+			srclink =GetJSON(infolink,srclink,strdomain)
+			vidsrc=strdomain+"/manifests/shows/json/"+str(srclink["data"]["accessToken"])+"/"+str(srclink["data"]["expires"])+"/" +epID+"/master.m3u8"
+			srclink =GetJSON2(vidsrc,srclink,strdomain)
+			if(srclink.has_key("1080" ==True) and srclink["1080"].find("index.m3u8") > -1):
+				vidurl= srclink["1080"]
+			elif (srclink.has_key("720")==True and srclink["720"].find("index.m3u8") > -1):
+				vidurl= srclink["720"]
+			elif (srclink.has_key("480")==True and srclink["480"].find("index.m3u8") > -1):
+				vidurl= srclink["480"]
+		elif(playtype!="direct"):
+			epiInfo =GetJSON(strdomain+"/api/v1/shows/episode-subtitles/?id_episode="+url,"",strdomain)
+			infolink=strdomain+"/api/v1/security/show-access?slug="+epiInfo[0]["storagePath"].replace("shows/","").split("/")[0]+"&sk=null&step=1"
+			srclink=""
+			srclink =GetJSON(infolink,srclink,strdomain)
+			vidsrc=strdomain+"/manifests/shows/json/"+str(srclink["data"]["accessToken"])+"/"+str(srclink["data"]["expires"])+"/" +url+"/master.m3u8"
+			srclink =GetJSON2(vidsrc,srclink,strdomain)
+			if(srclink.has_key("1080" ==True) and srclink["1080"].find("index.m3u8") > -1):
+				vidurl= srclink["1080"]
+			elif (srclink.has_key("720")==True and srclink["720"].find("index.m3u8") > -1):
+				vidurl= srclink["720"]
+			elif (srclink.has_key("480")==True and srclink["480"].find("index.m3u8") > -1):
+				vidurl= srclink["480"]
+		else:
+			vidurl=url;
 		
+		xbmcPlayer = xbmc.Player()
+		liz = xbmcgui.ListItem(name, iconImage='DefaultVideo.png', thumbnailImage="")
+		liz.setInfo(type='Video', infoLabels=meta)
+		liz.setProperty("IsPlayable","true")
+		liz.setPath(vidurl)
+		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz) 
+		if(movieinfo!=None and movieinfo!=""):
+			for i in range(500):
+				if(xbmcPlayer.isPlaying()):
+					print "Subtitle is delaying:"+ str(i*50)+" ms"
+					break
+				xbmc.sleep(50)
+			else:
+					print "subtitle timeout error"
+			print "loading sub|" +movieinfo
+			xbmcPlayer.setSubtitles(movieinfo) 
+			
 def RemoveHTML(strhtml):
             html_re = re.compile(r'<[^>]+>')
             strhtml=html_re.sub('', strhtml)
@@ -1589,26 +1686,32 @@ elif mode==3:
         playVideo(url,name,"direct",movieinfo,metainfo)
 elif mode==34:
         playVideo(url,name,"",movieinfo,"")
+elif mode==33:
+        playShowVideo(url,name,"slug",movieinfo,metainfo)
+elif mode==7:
+        playShowVideo(url,name,"show",movieinfo,metainfo)
 elif mode==4:
         Mirrors(url,name,metainfo) 
 elif mode==5:
         GetSubMenu(name)
 elif mode==6:
-        GenreList(18)
+        GenreList(url)
 elif mode==8:
         Episodes(url,name)
 elif mode==9:
         SEARCH()
 elif mode==10:
-        News()
+        SEARCHShow()
 elif mode==11:
 		YEAR(url)
+elif mode==12:
+        ListLatestEpisode(url,name)
 elif mode==16:
         ListAZ()
 elif mode==17:
         AZIndex(url)
 elif mode==18:
-        ListShows(url,name)
+        ListMovies(url,name)
 elif mode==22:
         SaveFav(vidtype, name, url, imageurl)
 elif mode==23:
@@ -1621,7 +1724,7 @@ elif mode==26:
         TV()
         #testcontent()
 elif mode==27:
-        ListShows("name","tv",url,name,8)
+        ListShows(url,name)
 elif mode==28:
         PLAYLIST_VIDEOLINKS(url,name)
 

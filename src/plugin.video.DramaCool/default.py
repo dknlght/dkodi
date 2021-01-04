@@ -476,11 +476,11 @@ def postContent(url,data,referr):
 	
 def playVideo(videoType,videoId):
     url = ""
-    print videoType + '=' + videoId
+    print str(videoType) + '=' + str(videoId)
     win = xbmcgui.Window(10000)
-    win.setProperty('1ch.playing.title', videoId)
-    win.setProperty('1ch.playing.season', str(3))
-    win.setProperty('1ch.playing.episode', str(4))
+    #win.setProperty('1ch.playing.title', videoId)
+    #win.setProperty('1ch.playing.season', str(3))
+    #win.setProperty('1ch.playing.episode', str(4))
     if (videoType == "youtube"):
         try:
                 url = getYoutube(videoId)
@@ -496,8 +496,12 @@ def playVideo(videoType,videoId):
     elif (videoType == "tudou"):
         url = 'plugin://plugin.video.tudou/?mode=3&url=' + videoId	
     else:
-        xbmcPlayer = xbmc.Player()
-        xbmcPlayer.play(videoId)
+		xbmcPlayer = xbmc.Player()
+		liz = xbmcgui.ListItem(name, iconImage='DefaultVideo.png', thumbnailImage="")
+		liz.setInfo(type='Video', infoLabels={ "Title": videoType })
+		liz.setProperty("IsPlayable","true")
+		liz.setPath(videoId)
+		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz) 
 		
 def GetDirVideoUrl(url, cj):
     if cj is None:
@@ -614,10 +618,13 @@ def loadVideos(url,name):
                 sources.append(hosted_media)
                 source = urlresolver.choose_source(sources)
                 print "inresolver=" + newlink
+                print source
                 if source:
                         vidlink = source.resolve()
                 else:
                         vidlink =""
+                print "done getting link"
+                print vidlink
            playVideo(playtype,vidlink )
         
 def OtherContent():
@@ -942,6 +949,7 @@ def addLink(name,url,mode,iconimage):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
+        liz.setProperty("IsPlayable","true")
         contextMenuItems = []
         liz.addContextMenuItems(contextMenuItems, replaceItems=True)
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
