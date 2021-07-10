@@ -245,14 +245,15 @@
 
 <addon
   id="plugin.video.DramaCool"
-  version="1.0.2"
+  version="1.0.3"
   name="DramaCool"
   provider-name="Dknight">
   <requires>
 		<import addon="script.module.simplejson" />
-		<import addon="script.module.beautifulsoup" version="3.0.8"/>
+		<import addon="script.module.beautifulsoup4" version="1.0.0"/>
 		<import addon="script.module.urlresolver"  version="0.0.1"/>
 		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+		<import addon="script.module.requests" version="2.22.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource"
             library="default.py">
