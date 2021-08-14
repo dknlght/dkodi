@@ -623,17 +623,17 @@ def loadVideos(url,name):
 		else:
 				sources = []
 				label=name
-				hosted_media = urlresolver.HostedMediaFile(url=newlink, title=label)
+				hosted_media = resolveurl.HostedMediaFile(url=newlink, title=label)
 				sources.append(hosted_media)
-				source = urlresolver.choose_source(sources)
+				source = resolveurl.choose_source(sources)
 				print("inresolver=" + newlink)
 				print(source)
 				if source:
 						vidlink = source.resolve()
 				else:
-						hosted_media = resolveurl.HostedMediaFile(url=newlink, title=label)
+						hosted_media = urlresolver.HostedMediaFile(url=newlink, title=label)
 						sources.append(hosted_media)
-						source = resolveurl.choose_source(sources)
+						source = urlresolver.choose_source(sources)
 						vidlink = source.resolve()
 				print("done getting link")
 				print (vidlink)
