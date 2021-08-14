@@ -18,10 +18,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 import json
-import codecs
 from six.moves import urllib_parse
 from urlresolver.plugins.lib import helpers
-from urlresolver.plugins.lib.jscrypto import jscrypto
 from urlresolver import common
 from urlresolver.resolver import UrlResolver, ResolverError
 
@@ -33,23 +31,13 @@ class NinjaStreamResolver(UrlResolver):
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
-        headers = {'User-Agent': common.RAND_UA,
-                   'Referer': web_url,
-                   'Origin': 'https://{0}'.format(host),
-                   'X-Requested-With': 'XMLHttpRequest'}
-        data = {'id': media_id}
-        api_url = 'https://{0}/api/video/get'.format(host)
-        html = self.net.http_POST(api_url, data, headers=headers, jdata=True).content
-        r = json.loads(html).get('result').get('playlist')
+        headers = {'User-Agent': common.RAND_UA}
+        html = self.net.http_GET(web_url, headers=headers).content
+
+        r = re.search(r'v-bind:stream="([^"]+)', html)
         if r:
-            if '{' in r:
-                data = json.loads(r)
-                ct = data.get('ct', False)
-                salt = codecs.decode(data.get('s'), 'hex')
-                murl = json.loads(jscrypto.decode(ct, '2021', salt))
-            else:
-                murl = r
-            headers.pop('X-Requested-With')
+            data = json.loads(r.group(1).replace('&quot;', '"'))
+            murl = data.get('host') + data.get('hash') + '/index.m3u8'
             html = self.net.http_GET(murl, headers=headers).content
             sources = re.findall(r'RESOLUTION=\d+x(?P<label>[\d]+).*\n(?!#)(?P<url>[^\n]+)', html, re.IGNORECASE)
             if sources:

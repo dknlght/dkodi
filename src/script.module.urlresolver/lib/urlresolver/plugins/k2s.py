@@ -40,10 +40,7 @@ class K2SResolver(UrlResolver):
         access_token = json.loads(t).get('access_token')
         headers.update({'Authorization': 'Bearer {0}'.format(access_token)})
         s = self.net.http_GET('{0}/files/{1}?embed=permanentAbuse'.format(api_base, media_id), headers=headers).content
-        s = json.loads(s)
-        if 'video' not in s.get('contentType'):
-            raise ResolverError('The requested file is not a video file.')
-        videourl = s.get('videoPreview', {}).get('video')
+        videourl = json.loads(s).get('videoPreview').get('video')
         if videourl:
             headers.pop('Authorization')
             return videourl + helpers.append_headers(headers)

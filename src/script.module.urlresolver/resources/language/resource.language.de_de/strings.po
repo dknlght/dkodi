@@ -283,11 +283,3 @@ msgstr "Protokoll"
 msgctxt "#33067"
 msgid "hours"
 msgstr "Std"
-
-msgctxt "#33068"
-msgid "Uptobox Authorisation Reset"
-msgstr "Uptobox Autorisierung zurücksetzen"
-
-msgctxt "#33069"
-msgid "Uptobox Resolver Authorised"
-msgstr "Uptobox Resolver autorisiert"

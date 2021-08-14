@@ -21,7 +21,7 @@ import gzip
 import re
 import json
 import six
-from six.moves import urllib_request, urllib_parse, urllib_error
+from six.moves import urllib_request, urllib_parse
 import socket
 import time
 from urlresolver.lib import kodi
@@ -160,7 +160,7 @@ class Net:
         """Returns user agent string."""
         return self._user_agent
 
-    def _update_opener(self, drop_tls_level=False):
+    def _update_opener(self):
         """
         Builds and installs a new opener to be used by all future calls to
         :func:`urllib2.urlopen`.
@@ -187,17 +187,6 @@ class Net:
                 ctx = ssl.create_default_context()
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
-                if self._http_debug:
-                    handlers += [urllib_request.HTTPSHandler(context=ctx, debuglevel=1)]
-                else:
-                    handlers += [urllib_request.HTTPSHandler(context=ctx)]
-            except:
-                pass
-
-        if drop_tls_level:
-            try:
-                import ssl
-                ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
                 if self._http_debug:
                     handlers += [urllib_request.HTTPSHandler(context=ctx, debuglevel=1)]
                 else:
@@ -336,13 +325,7 @@ class Net:
             req.add_header('Content-Type', 'application/json')
         host = req.host if six.PY3 else req.get_host()
         req.add_unredirected_header('Host', host)
-        try:
-            response = urllib_request.urlopen(req, timeout=15)
-        except urllib_error.HTTPError as e:
-            if e.code == 403:
-                self._update_opener(drop_tls_level=True)
-            response = urllib_request.urlopen(req, timeout=15)
-
+        response = urllib_request.urlopen(req, timeout=15)
         return HttpResponse(response)
 
 
