@@ -33,6 +33,7 @@ from bs4 import BeautifulStoneSoup
 from bs4 import SoupStrainer
 from requests import Session
 import urlresolver
+import resolveurl
 
 import time
 session = Session()
@@ -618,6 +619,7 @@ def loadVideos(url,name):
 				print("in youtube" + lastmatch[0])
 				vidlink=lastmatch
 				playtype="youtube"
+		
 		else:
 				sources = []
 				label=name
@@ -629,7 +631,10 @@ def loadVideos(url,name):
 				if source:
 						vidlink = source.resolve()
 				else:
-						vidlink =""
+						hosted_media = resolveurl.HostedMediaFile(url=newlink, title=label)
+						sources.append(hosted_media)
+						source = resolveurl.choose_source(sources)
+						vidlink = source.resolve()
 				print("done getting link")
 				print (vidlink)
 		playVideo(playtype,vidlink )

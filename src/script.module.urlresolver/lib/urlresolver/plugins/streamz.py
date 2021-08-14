@@ -16,16 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import re
 from urlresolver.plugins.lib import helpers
 from urlresolver import common
 from urlresolver.resolver import UrlResolver, ResolverError
-from six.moves import urllib_request, urllib_error
 
 
 class StreamzResolver(UrlResolver):
-    name = "streamz"
-    domains = ['streamz.cc', "streamz.vg"]
-    pattern = r'(?://|\.)(streamz\.(?:cc|vg))/([0-9a-zA-Z]+)'
+    name = 'streamz'
+    domains = ['streamz.cc', 'streamz.vg', 'streamzz.to', 'streamz.ws']
+    pattern = r'(?://|\.)(streamzz?\.(?:cc|vg|to|ws))/([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
 
@@ -33,30 +33,19 @@ class StreamzResolver(UrlResolver):
         headers = {'User-Agent': common.CHROME_USER_AGENT}
         html = self.net.http_GET(web_url, headers=headers).content
 
-        html += helpers.get_packed_data(html)
-        sources = helpers.scrape_sources(html)
+        if '<b>File not found, sorry!</b>' not in html:
+            html += helpers.get_packed_data(html)
+            sources = helpers.scrape_sources(html)
 
-        if sources:
-            headers.update({'Referer': web_url})
-            return self._redirect_test(helpers.pick_source(sources)) + helpers.append_headers(headers)
-        else:
-            raise ResolverError("Video not found")
+            if sources:
+                headers.update({'Referer': web_url})
+                vurl = helpers.pick_source(sources)
+                vurl = re.sub('get[a-zA-Z]{4}-', 'getlink-', vurl)
+                vurl = re.sub('get[a-zA-Z]{5}-', 'getlink-', vurl)
+                return helpers.get_redirect_url(vurl, headers) + helpers.append_headers(headers)
+
+        raise ResolverError('Video not found or removed')
 
     def get_url(self, host, media_id):
 
-        return self._default_get_url(host, media_id, template='https://{host}/{media_id}')
-
-    def _redirect_test(self, url):
-        opener = urllib_request.build_opener()
-        opener.addheaders = [('User-agent', common.CHROME_USER_AGENT)]
-        try:
-            resp = opener.open(url)
-            if url != resp.geturl():
-                return resp.geturl()
-            else:
-                return url
-        except urllib_error.HTTPError as e:
-            if e.code == 403:
-                if url != e.geturl():
-                    return e.geturl()
-            raise ResolverError('File not found')
+        return self._default_get_url(host, media_id, template='https://streamz.vg/{media_id}')

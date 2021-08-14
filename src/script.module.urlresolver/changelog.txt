@@ -1,3 +1,204 @@
+Version 6.1.04 (July 22, 2021)
+- Code Base Changes:
+    - none
+- Resolvers Added:
+    - upvideo
+    - vupload
+- Resolvers Fixed/Updated:
+    - clicknupload
+    - cocoscope
+    - doodstream
+    - lbry
+    - steamcommunity
+    - streamsb
+    - uptobox
+    - userload
+- Resolvers Removed
+    - sbembed
+- Languages Added/Updated
+    - none
+
+Version 6.1.03 (June 10, 2021)
+- Code Base Changes:
+    - drop to tls1.1 if necessary for cloudflaressl
+- Resolvers Added:
+    - itemfix
+    - steamcommunity
+    - vidmx
+- Resolvers Fixed/Updated:
+    - clicknupload
+    - cocoscope
+    - daxab
+    - doodstream
+    - k2s
+    - lbry
+    - playtube
+- Resolvers Removed
+    - liveleak
+- Languages Added/Updated
+    - none
+
+Version 6.1.02 (May 24, 2021)
+- Code Base Changes:
+    - helpers update
+- Resolvers Added:
+    - none
+- Resolvers Fixed/Updated:
+    - cocoscope
+    - daxab
+    - googlevideo
+    - lbry
+    - playtube
+    - sbembed
+- Resolvers Removed
+    - none
+- Languages Added/Updated
+    - none
+
+Version 6.1.00 (May 4, 2021)
+- Code Base Changes:
+    - update jsunpack to handle non ascii strings
+    - update user agents
+- Resolvers Added:
+    - sendfox
+    - sbembed
+    - rumble
+    - userload
+- Resolvers Fixed/Updated:
+    - userload
+    - aparat
+    - clipwatching
+    - cocoscope
+    - hdvid
+    - lbry
+    - mixdrop
+    - ninjastream
+    - streamz
+    - videobin
+- Resolvers Removed
+    - none
+- Languages Added/Updated
+    - none
+
+Version 6.0.01 (April 6, 2021)
+- Code Base Changes:
+    - HostedMediaFile add __bool__ for python 3
+- Resolvers Added:
+    - none
+- Resolvers Fixed/Updated:
+    - cocoscope
+    - fembed
+    - lbry
+- Resolvers Removed
+    - none
+- Languages Added/Updated
+    - none
+
+Version 6.0.00 (March 25, 2021)
+- Code Base Changes:
+    - none
+- Resolvers Added:
+    - cocoscope
+    - lbry
+    - megaupnet
+    - streamoupload
+    - vidmojo
+- Resolvers Fixed/Updated:
+    - debrid_link
+    - evoload
+    - fembed
+    - gofile
+    - ninjastream
+    - streamz
+    - tvlogy
+    - voesx
+    - youtube
+- Resolvers Removed
+    - none
+- Languages Added/Updated
+    - none
+
+Version 5.1.22 (January 21, 2021)
+- Code Base Changes:
+    - recaptcha fix
+- Resolvers Added:
+    - abcvideo
+    - evoload
+    - gamovideo
+    - speedostream
+    - vidcloud
+    - videossh
+- Resolvers Fixed/Updated:
+    - doodstream
+    - jetload
+    - speedwatch
+    - voesx
+- Resolvers Removed
+    - vidup
+- Languages Added/Updated
+    - none
+
+Version 5.1.20 (January 11, 2021)
+- Code Base Changes:
+    - net
+- Resolvers Added:
+    - k2s
+- Resolvers Fixed/Updated:
+    - streamtape
+    - streamz
+    - tvlogy
+- Resolvers Removed
+    - none
+- Languages Added/Updated
+    - none
+
+Version 5.1.18 (December 25, 2020)
+- Code Base Changes:
+    - none
+- Resolvers Added:
+    - none
+- Resolvers Fixed/Updated:
+    - hdvid
+    - playtube
+    - streamz
+    - upstream
+- Resolvers Removed
+    - none
+- Languages Added/Updated
+    - none
+
+Version 5.1.17 (December 17, 2020)
+- Code Base Changes:
+    - regression error with PY2
+- Resolvers Added:
+    - none
+- Resolvers Fixed/Updated:
+    - dailymotion
+    - fembed
+    - letsupload
+    - vidlox
+    - youdbox
+- Resolvers Removed
+    - none
+- Languages Added/Updated
+    - none
+
+Version 5.1.15 (November 30, 2020)
+- Code Base Changes:
+    - handle HEAD not allowed
+- Resolvers Added:
+    - videoseyred
+    - ninjastream
+- Resolvers Fixed/Updated:
+    - vidcloud9
+    - mystream
+    - alldebrid
+    - debridlink
+- Resolvers Removed
+    - vidnode
+- Languages Added/Updated
+    - none
+
 Version 5.1.13 (November 9, 2020)
 - Code Base Changes:
     - captcha_lib improvements

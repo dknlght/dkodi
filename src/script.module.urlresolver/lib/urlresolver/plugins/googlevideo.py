@@ -20,8 +20,7 @@ from urlresolver import common, hmf
 from urlresolver.resolver import UrlResolver, ResolverError
 from urlresolver.plugins.lib import helpers
 import re
-from kodi_six import xbmc, xbmcaddon
-import xbmcvfs
+from kodi_six import xbmc, xbmcaddon, xbmcvfs
 import json
 from six.moves import urllib_error, urllib_parse, urllib_request
 import six
@@ -228,8 +227,6 @@ class GoogleResolver(UrlResolver):
             quality = self.itag_map.get(_source_itag, 'Unknown Quality [%s]' % _source_itag)
             source_url = urllib_parse.unquote(source_url)
             urls.append((quality, source_url))
-        return urls
-
         return urls
 
     @staticmethod

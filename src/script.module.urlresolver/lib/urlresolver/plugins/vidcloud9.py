@@ -17,6 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
+import base64
 from urlresolver.plugins.lib import helpers
 from urlresolver import common
 from urlresolver.resolver import UrlResolver, ResolverError
@@ -24,8 +25,8 @@ from urlresolver.resolver import UrlResolver, ResolverError
 
 class VidCloud9Resolver(UrlResolver):
     name = "vidcloud9.com"
-    domains = ['vidcloud9.com']
-    pattern = r'(?://|\.)(vidcloud9\.com)/streaming.php\?id=([0-9a-zA-Z]+)'
+    domains = ['vidcloud9.com', 'vidnode.net']
+    pattern = r'(?://|\.)((?:vidcloud9|vidnode)\.(?:com|net))/(?:streaming|load)\.php\?id=([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
@@ -37,8 +38,12 @@ class VidCloud9Resolver(UrlResolver):
         if sources:
             sources = [(source.get('label'), source.get('file')) for source in sources]
             headers.pop('X-Requested-With')
-            return helpers.pick_source(helpers.sort_sources_list(sources)) + helpers.append_headers(headers)
+            source = helpers.pick_source(helpers.sort_sources_list(sources))
+            if 'goto.php' in source:
+                source = source.split('url=')[1]
+                source = base64.b64decode(source[:10] + source[53:]).decode('ascii')
+            return source + helpers.append_headers(headers)
         raise ResolverError('Video not found')
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://{host}/ajax.php?id={media_id}')
+        return self._default_get_url(host, media_id, template='https://vidcloud9.com/ajax.php?id={media_id}')

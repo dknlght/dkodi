@@ -23,7 +23,7 @@ from urlresolver.resolver import UrlResolver, ResolverError
 
 class HDvidResolver(UrlResolver):
     name = 'HDvid'
-    domains = ['hdvid.tv']
+    domains = ['hdvid.tv', 'hdvid.fun']
     pattern = r'(?://|\.)(hdvid\.(?:tv|fun))/(?:embed-)?([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
@@ -32,6 +32,7 @@ class HDvidResolver(UrlResolver):
         html = self.net.http_GET(web_url, headers=headers).content
         sources = helpers.scrape_sources(html)
         if sources:
+            headers.update({'verifypeer': 'false'})
             return helpers.pick_source(sources) + helpers.append_headers(headers)
         raise ResolverError('Video cannot be located.')
 
