@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon
+  id="plugin.video.DramaCool"
+  version="1.0.5"
+  name="DramaCool"
+  provider-name="Dknight">
+  <requires>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.beautifulsoup4" version="1.0.0"/>
+		<import addon="script.module.urlresolver"  version="0.0.1"/>
+		<import addon="script.module.requests" version="2.22.0"/>
+		<import addon="script.module.resolveurl" version="5.1.18"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>DramaCool</summary>
+    <description>Watch DramaCool Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>

@@ -1,0 +1,7 @@
+1.0
+- Intial release
+
+1.0.1 - added more channels
+1.0.3 - added CTN channels
+1.0.4 - added Khmer Songs
+1.0.5 - added Hangmeas

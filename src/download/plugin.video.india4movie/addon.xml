@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.india4movie" name="India4movie" version="0.0.3" provider-name="Irfan Charania">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.xbmcswift2" version="2.4.0"/>
+    <import addon="script.module.beautifulsoup" version="3.0.8"/>
+    <import addon="script.module.urlresolver"/>
+    <import addon="script.module.requests"/>
+    <import addon="plugin.video.youtube" optional="true" />
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="addon.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary >India4movie addon scrapes movies from www.india4movie.com</summary>
+    <description>www.india4movie.com provides movies in the following categories: Dubbed, Pakistani, Hindi, Hollywood, Malayalam, Marathi, Punjabi, Tamil, Telegu</description>
+  </extension>
+</addon>

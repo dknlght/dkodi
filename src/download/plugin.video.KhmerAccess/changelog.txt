@@ -1,0 +1,5 @@
+
+1.0.1- got rid of youtube prompt used for debugging
+	Fix youtube video loading problem
+1.0
+- Intial release

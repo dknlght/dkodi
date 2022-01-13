@@ -24,7 +24,7 @@ PATH = "PhumiKhmer"  #<---- PLUGIN NAME MINUS THE "plugin.video"
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.4" #<---- PLUGIN VERSION
 
-strdomain ='https://phumimedia.com/'
+strdomain ='https://phumi8.com/'
 def HOME():
         addDir('Search',strdomain+'search/label/Khmer%20Movies?&max-results=18',4,'')
         GetMenu(strdomain)

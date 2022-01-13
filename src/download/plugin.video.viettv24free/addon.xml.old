@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon
+  id="plugin.video.viettv24free"
+  version="1.0.1"
+  name="viettv24free"
+  provider-name="dknight">
+  <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>VietTV24.com</summary>
+    <description>Watch hundreds of Vietnamesse and English channels</description>
+    <platform>all</platform>
+  </extension>
+</addon>

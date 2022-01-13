@@ -1,0 +1,4 @@
+1.0.1- added Live TV 
+1.0
+- Intial release
+
