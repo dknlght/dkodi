@@ -19,7 +19,7 @@ ADDON = xbmcaddon.Addon(id='plugin.video.PhumiKhmer')
 if ADDON.getSetting('ga_visitor')=='':
     from random import randint
     ADDON.setSetting('ga_visitor',str(randint(0, 0x7fffffff)))
-    
+continueview=(ADDON.getSetting('continueview')=="true")    
 PATH = "PhumiKhmer"  #<---- PLUGIN NAME MINUS THE "plugin.video"          
 UATRACK="UA-40129315-1" #<---- GOOGLE ANALYTICS UA NUMBER   
 VERSION = "1.0.4" #<---- PLUGIN VERSION
@@ -492,11 +492,14 @@ def playVideo(videoType,videoId):
         url = 'plugin://plugin.video.tudou/?mode=3&url=' + videoId	
     else:
 		xbmcPlayer = xbmc.Player()
-		liz = xbmcgui.ListItem(name, iconImage='DefaultVideo.png', thumbnailImage="")
-		liz.setInfo(type='Video', infoLabels={ "Title": videoType })
-		liz.setProperty("IsPlayable","true")
-		liz.setPath(videoId)
-		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz) 
+		if(continueview==True):
+                    liz = xbmcgui.ListItem(name, iconImage='DefaultVideo.png', thumbnailImage="")
+                    liz.setInfo(type='Video', infoLabels={ "Title": videoType })
+                    liz.setProperty("IsPlayable","true")
+                    liz.setPath(videoId)
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+                else:
+                    xbmcPlayer.play(videoId)
 def GetDirVideoUrl(url, cj):
     if cj is None:
         cj = cookielib.LWPCookieJar()
