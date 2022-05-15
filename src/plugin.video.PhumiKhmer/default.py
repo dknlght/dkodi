@@ -26,6 +26,10 @@ VERSION = "1.0.4" #<---- PLUGIN VERSION
 
 strdomain ='https://phumi8.com/'
 def HOME():
+        try:
+            tmp = GetContent(strdomain)
+        except:
+            strdomain ='https://phumimedia.com/'
         addDir('Search',strdomain+'search/label/Khmer%20Movies?&max-results=18',4,'')
         GetMenu(strdomain)
 
