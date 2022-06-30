@@ -1,0 +1,5 @@
+1.0
+- Intial release
+
+1.0.1 - added  traitravinh code for thegioiphim.eu videos
+1.0.2 - fixed episode error cause by site change

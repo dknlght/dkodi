@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.dk-xbmc-repaddon" name="dk-xbmc-repaddon Add-on Repository" version="1.0.5" provider-name="dk-xbmc-repaddon">
+	<extension point="xbmc.addon.repository" name="dk-xbmc-repaddon Add-on Repository">
+		<info compressed="false">http://raw.githubusercontent.com/dknlght/dkodi/master/addons.xml</info>
+		<checksum>http://raw.githubusercontent.com/dknlght/dkodi/master/addons.xml.md5</checksum>
+		<datadir zip="true">http://raw.githubusercontent.com/dknlght/dkodi/master/</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>Install Add-ons from dk Add-on Repository</summary>
+		<description>Video plug-ins for XBMC</description>
+		<disclaimer></disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>

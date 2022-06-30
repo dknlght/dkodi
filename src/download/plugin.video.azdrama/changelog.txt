@@ -1,0 +1,5 @@
+1.0
+- Intial release
+
+1.0.1 - added code to search for google video if not the first page loaded
+1.0.4 - fix encoding issue
