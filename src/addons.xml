@@ -264,7 +264,7 @@
 
 <addon
   id="plugin.video.DramaCool"
-  version="1.0.6"
+  version="1.0.5"
   name="DramaCool"
   provider-name="Dknight">
   <requires>
