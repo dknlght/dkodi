@@ -70,12 +70,11 @@ def GetMenu(url,menutype):
 			menuitem=listcontent[0].parent
 			for item in menuitem.findAll('li'):
 				if(item.a!=None and item.a.has_attr("href")):
-					link = strdomain2+str(item.a['href'].encode('utf-8', 'ignore'))
+					link = strdomain2+str(item.a['href'].encode('utf-8', 'ignore').decode('UTF-8'))
 					vname=str(item.a.contents[0]).strip()
 					addDir(vname,link,9,"")
 
 def IndexLatest(url):
-		print(url)
 		link = GetContent(url)
 		try:
 			link =link.encode("UTF-8")
@@ -94,9 +93,8 @@ def IndexLatest(url):
 		pagingList=soup.findAll('ul', {"class" : "pagination"})
 		if(pagingList!= None):
 			for item in pagingList[0].findAll('li'):
-				#print item
 				vname="Page "+ item.a["data-page"]
-				vurl=url+item.a["href"]
+				vurl=url.split("?")[0]+item.a["href"]
 				if(item.has_key("class")==False):
 					addDir(vname.encode('utf-8', 'ignore'),vurl,6,"")
 					
