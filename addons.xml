@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
 <addon id="plugin.program.indigo" version="99.0.20" name="Indigo" provider-name="tvaddons">
 	<requires>
@@ -35,6 +35,311 @@
   <extension point="xbmc.addon.metadata">
     <summary>Site to Site Backup</summary>
     <description>Backup videos to your cloud storage account</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.AsianHorror"
+  version="1.0.1"
+  name="AsianHorror"
+  provider-name="Dknight">
+  <requires>
+        <import addon="xbmc.python" version="2.1.0" optional="true" />
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+		<import addon="script.module.urlresolver" version="0.0.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Asian-Horror-Movies</summary>
+    <description>Watch Asian-Horror-Movies Videos
+	Note: This site has a lot of dead links please try all the mirror links.
+	</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.DKEvents"
+  version="1.0.4"
+  name="DKEvents"
+  provider-name="Dknight">
+  <requires>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>DKEvents</summary>
+    <description>Watch some events I might find</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.DramaCool"
+  version="1.0.6"
+  name="DramaCool"
+  provider-name="Dknight">
+  <requires>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.beautifulsoup4" version="1.0.0"/>
+		<import addon="script.module.urlresolver"  version="0.0.1"/>
+		<import addon="script.module.requests" version="2.22.0"/>
+		<import addon="script.module.resolveurl" version="5.1.18"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>DramaCool</summary>
+    <description>Watch DramaCool Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.KhmerAccess"
+  version="1.0.2"
+  name="KhmerAccess"
+  provider-name="Dknight">
+  <requires>
+        <import addon="xbmc.python" version="2.0"/>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+		<broken>deprecated</broken>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>KhmerAccess</summary>
+	<broken>deprecated</broken>
+    <description>Watch KhmerAccess Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.KhmerAvenue"
+  version="1.0.38"
+  name="KhmerAvenue"
+  provider-name="Dknight">
+  <requires>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+		<import addon="script.module.beautifulsoup" version="3.0.8"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>KhmerAvenue</summary>
+    <description>Watch KhmerAvenue Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.KhmerFever"
+  version="1.0.2"
+  name="KhmerFever"
+  provider-name="Dknight">
+  <requires>
+        <import addon="xbmc.python" version="2.0"/>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+		<broken>deprecated</broken>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>KhmerFever</summary>
+	<broken>deprecated</broken>
+    <description>Watch KhmerFever Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.KhmerPortal"
+  version="1.0.7"
+  name="KhmerPortal"
+  provider-name="Dknight">
+  <requires>
+        <import addon="xbmc.python" version="2.0"/>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.urlresolver"  version="0.0.1"/>
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>KhmerPortal</summary>
+    <description>Watch KhmerPortal Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.KhmerTv"
+  version="1.0.33"
+  name="KhmerTv"
+  provider-name="Dknight">
+  <requires>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+		<import addon="script.module.beautifulsoup" version="3.0.8"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>KhmerTv</summary>
+    <description>Watch Live Khmer Tv broadcasts</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.Mega_Khmer_Addon"
+  version="0.0.6"
+  name="[B][COLOR fff5f5dc]Mega_[/COLOR][COLOR ffffd700]Khmer_Addon[/COLOR][/B]"
+  provider-name="Price">
+  <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="ADDON.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Watch video in Khmer</summary>
+    <description>Watch Video in Khmer</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.MovieKhmer"
+  version="1.0.30"
+  name="MovieKhmer"
+  provider-name="Dknight">
+  <requires>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.beautifulsoup" version="3.0.8"/>
+		<import addon="script.module.urlresolver"  version="0.0.1"/>
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>MovieKhmer</summary>
+    <description>Watch MovieKhmer Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.MyDooTv"
+  version="1.1.7"
+  name="MyDooTv"
+  provider-name="Dknight">
+  <requires>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>MyDooTv</summary>
+    <description>Watch MyDooTv Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.MyPinoyTv"
+  version="1.0.1"
+  name="MyPinoyTv"
+  provider-name="Dknight">
+  <requires>
+        <import addon="xbmc.python" version="2.1.0" optional="true" />
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+		<import addon="script.module.cryptopy" version="1.2.5"/>
+		<import addon="script.module.beautifulsoup" version="3.0.8"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>MyPinoyTv</summary>
+    <description>Watch MyPinoyTv Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.NoobRoom"
+  version="1.0.29"
+  name="NoobRoom"
+  provider-name="Dknight">
+  <requires>
+        <import addon="xbmc.python" version="2.1.0" optional="true" />
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.t0mm0.common" version="1.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>NoobRoom</summary>
+    <description>Watch NoobRoom Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.PhumiKhmer"
+  version="1.0.44"
+  name="PhumiKhmer"
+  provider-name="Dknight">
+  <requires>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.beautifulsoup4" version="1.0.0"/>
+		<import addon="script.module.urlresolver"  version="0.0.1"/>
+		<import addon="script.module.requests" version="2.22.0"/>
+		<import addon="script.module.resolveurl" version="5.1.18"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>PhumiKhmer</summary>
+    <description>Watch PhumiKhmer Videos</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -100,30 +405,6 @@
   <extension point="xbmc.addon.metadata">
     <summary>animehere</summary>
     <description>Watch Anime Videos From AnimeHere.com</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.AsianHorror"
-  version="1.0.1"
-  name="AsianHorror"
-  provider-name="Dknight">
-  <requires>
-        <import addon="xbmc.python" version="2.1.0" optional="true" />
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-		<import addon="script.module.urlresolver" version="0.0.1"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Asian-Horror-Movies</summary>
-    <description>Watch Asian-Horror-Movies Videos
-	Note: This site has a lot of dead links please try all the mirror links.
-	</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -220,26 +501,6 @@
 </addon>
 
 <addon
-  id="plugin.video.DKEvents"
-  version="1.0.4"
-  name="DKEvents"
-  provider-name="Dknight">
-  <requires>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>DKEvents</summary>
-    <description>Watch some events I might find</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
   id="plugin.video.drama24h"
   version="1.0.9"
   name="drama24h"
@@ -258,29 +519,6 @@
   <extension point="xbmc.addon.metadata">
     <summary>drama24h</summary>
     <description>Watch drama24h (Chinese)Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.DramaCool"
-  version="1.0.6"
-  name="DramaCool"
-  provider-name="Dknight">
-  <requires>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.beautifulsoup4" version="1.0.0"/>
-		<import addon="script.module.urlresolver"  version="0.0.1"/>
-		<import addon="script.module.requests" version="2.22.0"/>
-		<import addon="script.module.resolveurl" version="5.1.18"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>DramaCool</summary>
-    <description>Watch DramaCool Videos</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -465,73 +703,6 @@
 </addon>
 
 <addon
-  id="plugin.video.KhmerAccess"
-  version="1.0.2"
-  name="KhmerAccess"
-  provider-name="Dknight">
-  <requires>
-        <import addon="xbmc.python" version="2.0"/>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-		<broken>deprecated</broken>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>KhmerAccess</summary>
-	<broken>deprecated</broken>
-    <description>Watch KhmerAccess Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.KhmerAvenue"
-  version="1.0.38"
-  name="KhmerAvenue"
-  provider-name="Dknight">
-  <requires>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-		<import addon="script.module.beautifulsoup" version="3.0.8"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>KhmerAvenue</summary>
-    <description>Watch KhmerAvenue Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.KhmerFever"
-  version="1.0.2"
-  name="KhmerFever"
-  provider-name="Dknight">
-  <requires>
-        <import addon="xbmc.python" version="2.0"/>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-		<broken>deprecated</broken>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>KhmerFever</summary>
-	<broken>deprecated</broken>
-    <description>Watch KhmerFever Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
   id="plugin.video.khmerkhmovie"
   version="1.0.0"
   name="khmerkhmovie"
@@ -549,49 +720,6 @@
   <extension point="xbmc.addon.metadata">
     <summary>khmerkh movie</summary>
     <description>Watch movies in English and Khmer</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.KhmerPortal"
-  version="1.0.7"
-  name="KhmerPortal"
-  provider-name="Dknight">
-  <requires>
-        <import addon="xbmc.python" version="2.0"/>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.urlresolver"  version="0.0.1"/>
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>KhmerPortal</summary>
-    <description>Watch KhmerPortal Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.KhmerTv"
-  version="1.0.33"
-  name="KhmerTv"
-  provider-name="Dknight">
-  <requires>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-		<import addon="script.module.beautifulsoup" version="3.0.8"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>KhmerTv</summary>
-    <description>Watch Live Khmer Tv broadcasts</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -637,47 +765,6 @@
 </addon>
 
 <addon
-  id="plugin.video.Mega_Khmer_Addon"
-  version="0.0.6"
-  name="[B][COLOR fff5f5dc]Mega_[/COLOR][COLOR ffffd700]Khmer_Addon[/COLOR][/B]"
-  provider-name="Price">
-  <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="ADDON.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Watch video in Khmer</summary>
-    <description>Watch Video in Khmer</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.MovieKhmer"
-  version="1.0.30"
-  name="MovieKhmer"
-  provider-name="Dknight">
-  <requires>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.beautifulsoup" version="3.0.8"/>
-		<import addon="script.module.urlresolver"  version="0.0.1"/>
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>MovieKhmer</summary>
-    <description>Watch MovieKhmer Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
   id="plugin.video.movierulz"
   version="1.0.11"
   name="movierulz"
@@ -695,70 +782,6 @@
   <extension point="xbmc.addon.metadata">
     <summary>movierulz</summary>
     <description>Watch movierulz (indian) Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.MyDooTv"
-  version="1.1.7"
-  name="MyDooTv"
-  provider-name="Dknight">
-  <requires>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>MyDooTv</summary>
-    <description>Watch MyDooTv Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.MyPinoyTv"
-  version="1.0.1"
-  name="MyPinoyTv"
-  provider-name="Dknight">
-  <requires>
-        <import addon="xbmc.python" version="2.1.0" optional="true" />
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-		<import addon="script.module.cryptopy" version="1.2.5"/>
-		<import addon="script.module.beautifulsoup" version="3.0.8"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>MyPinoyTv</summary>
-    <description>Watch MyPinoyTv Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.NoobRoom"
-  version="1.0.29"
-  name="NoobRoom"
-  provider-name="Dknight">
-  <requires>
-        <import addon="xbmc.python" version="2.1.0" optional="true" />
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>NoobRoom</summary>
-    <description>Watch NoobRoom Videos</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -803,28 +826,6 @@
   <extension point="xbmc.addon.metadata">
     <summary>phim47</summary>
     <description>Watch phim47 (Vietnamese)Videos</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon
-  id="plugin.video.PhumiKhmer"
-  version="1.0.43"
-  name="PhumiKhmer"
-  provider-name="Dknight">
-  <requires>
-		<import addon="script.module.simplejson" />
-		<import addon="script.module.beautifulsoup" version="3.0.8"/>
-		<import addon="script.module.urlresolver"  version="0.0.1"/>
-		<import addon="script.module.t0mm0.common" version="1.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>PhumiKhmer</summary>
-    <description>Watch PhumiKhmer Videos</description>
     <platform>all</platform>
   </extension>
 </addon>
